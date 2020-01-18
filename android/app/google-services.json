@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "977094933321",
+    "firebase_url": "https://taxibooking-e70ea.firebaseio.com",
+    "project_id": "taxibooking-e70ea",
+    "storage_bucket": "taxibooking-e70ea.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:977094933321:android:5497adbb6b62acbbfff898",
+        "android_client_info": {
+          "package_name": "ru.ataxi24.booking"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "977094933321-gg2lmn5veianuhjcv43idrr5t3j35nel.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCJWM_qfV4N0VvrGLadNGPo8xap_t4tXw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "977094933321-gg2lmn5veianuhjcv43idrr5t3j35nel.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
