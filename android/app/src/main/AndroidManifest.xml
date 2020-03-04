@@ -13,7 +13,7 @@
         android:label="booking"
         android:icon="@mipmap/ic_launcher">
         <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCCJWM_qfV4N0VvrGLadNGPo8xap_t4tXw"/>
+            android:value="AIzaSyA6cZDrZ7P-o6Xpkg6QBApO_SyneR2_d8o"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

@@ -1,9 +1,12 @@
 import 'package:booking/services/app_state.dart';
+import 'package:booking/services/map_markers_provider.dart';
 import 'package:booking/services/profile_provider.dart';
+import 'package:booking/ui/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'ui/main_screen.dart';
+import 'ui/route_point/route_point_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -19,11 +22,14 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => ProfileStateProvider(),
         ),
-
+        ChangeNotifierProvider(
+          create: (_) => MapMarkersProvider(),
+        ),
       ],
       child: MainApp(),
     );
   }
+
 }
 
 class MainApp extends StatelessWidget {
@@ -33,12 +39,16 @@ class MainApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primaryColor: Colors.white,
       ),
-      home: MainScreen(),
+      initialRoute: '/splash',
+      routes: {
+        '/main': (context) => MainScreen(),
+        '/route_point': (context) => RoutePointScreen(),
+        '/splash': (context) => SplashScreen(),
+      },
     );
   }
+
+
 }
-
-
-

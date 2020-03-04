@@ -24,13 +24,17 @@ class _MainScreenState extends State<MainScreen> {
         body: Stack(
           children: <Widget>[
             Center(
-              child: Consumer<AppStateProvider>(builder: (context, state, _) {
-                switch (state.curOrderState()){
-                  case CurOrderState.new_order: return NewOrderScreen();break;
-                  default:
-                    return NewOrderScreen();
-                }
-              }),
+              child: Consumer<AppStateProvider>(
+                builder: (context, state, _) {
+                  switch (state.curOrderState()) {
+                    case CurOrderState.new_order:
+                      return NewOrderScreen();
+                      break;
+                    default:
+                      return NewOrderScreen();
+                  }
+                },
+              ),
             ),
             Positioned(
               left: 10,
@@ -42,7 +46,7 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ],
         ));
-  }
+  } // build
+
 
 }
-
