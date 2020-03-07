@@ -17,13 +17,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => AppStateProvider(),
-        ),
-        ChangeNotifierProvider(
           create: (_) => ProfileStateProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => MapMarkersProvider(),
         ),
       ],
       child: MainApp(),

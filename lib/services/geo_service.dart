@@ -2,19 +2,23 @@ import 'dart:convert';
 
 import 'package:booking/models/route_point.dart';
 import 'package:booking/services/app_state.dart';
+import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 class GeoService {
-  final _viewDebugPrint = false;
+  static final GeoService _singleton = GeoService._internal();
+  factory GeoService() {return _singleton;}
+  GeoService._internal();
+
   LatLng _lastGeoCodeLocation = LatLng(0,0);
 
-  static Future<List<RoutePoint>> autocomplete(BuildContext context, String input) async {
+  Future<List<RoutePoint>> autocomplete(String input) async {
     if (input.isEmpty) return null;
     if (input == "") return null;
-    LatLng location = Provider.of<AppStateProvider>(context, listen: false).lastLocation;
+    LatLng location = AppStateProvider().lastLocation;
     // String url = "http://api.toptaxi.org/geo/autocomplete?input=" + Uri.encodeFull(input)  + "&lt=" + location.latitude.toString() + "&ln=" + location.longitude.toString();
     String url =
         "http://geo.toptaxi.org/autocomplete?keyword=" + Uri.encodeFull(input) + "&lt=" + location.latitude.toString() + "&ln=" + location.longitude.toString();
@@ -32,7 +36,7 @@ class GeoService {
     return null;
   }
 
-  static Future<RoutePoint> detail(RoutePoint routePoint) async {
+  Future<RoutePoint> detail(RoutePoint routePoint) async {
     String url = "http://geo.toptaxi.org/detail?uid=" + routePoint.place_id;
     // debugPrint(url);
     http.Response response = await http.get(url);
@@ -48,7 +52,10 @@ class GeoService {
   Future<RoutePoint> geocode(LatLng location) async {
     if (location == null) return null;
     if (location == _lastGeoCodeLocation)return null;
-    String url = "http://geo.toptaxi.org/geocode/driver?lt=" + location.latitude.toString() + "&ln=" + location.longitude.toString();
+    String url = "http://geo.toptaxi.org/geocode/cache?lt=" + location.latitude.toString() + "&ln=" + location.longitude.toString();
+    if (DebugPrint().getGeoCodeDebugPrint()){
+      print("GeoService debugPrint url = " + url);
+    }
     // debugPrint(url);
     http.Response response = await http.get(url);
     if (response == null) return null;
@@ -56,6 +63,9 @@ class GeoService {
     var result = json.decode(response.body);
     if (result['status'] == 'OK') {
       _lastGeoCodeLocation = location;
+      if (DebugPrint().getGeoCodeDebugPrint()){
+        print("GeoService debugPrint result = " + result['result'].toString());
+      }
       return RoutePoint.fromJson(result['result']);
     }
     return null;

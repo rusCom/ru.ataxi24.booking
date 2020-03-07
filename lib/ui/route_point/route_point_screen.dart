@@ -6,23 +6,27 @@ import 'package:booking/services/geo_service.dart';
 import 'package:booking/ui/route_point/route_point_search_bar.dart';
 import 'package:flutter/material.dart';
 
-class RoutePointScreen extends StatefulWidget {
-  @override
-  _RoutePointScreenState createState() => _RoutePointScreenState();
-}
-
-class _RoutePointScreenState extends State<RoutePointScreen> {
+class RoutePointScreen extends StatelessWidget {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final bool isFirst;
+
+
+  RoutePointScreen({this.isFirst = false}): super();
 
   @override
   Widget build(BuildContext context) {
     print("_RoutePointScreenState build");
+    String hintText = "Куда поедите?";
+    if (isFirst){hintText = "Откуда Вас забрать?";}
     var geoAutocompleteBloc = GeoAutocompleteBloc();
     RoutePointSearchBar routePointSearchBar = new RoutePointSearchBar(
+      hintText: hintText,
       onChanged: (value) {
         geoAutocompleteBloc.autocomplete(context, value);
       },
     );
+
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -53,22 +57,18 @@ class _RoutePointScreenState extends State<RoutePointScreen> {
                       title: Text(routePoint.name),
                       subtitle: Text(routePoint.dsc),
                       leading: routePoint.getIcon(),
-                      onTap: () {
-                        print(routePoint.name);
+                      onTap: () async {
+                        //  print(routePoint.name);
                         if (routePoint.type == 'route') {
                           if (routePoint.detail == '0') {
-                            GeoService.detail(routePoint);
+                            GeoService().detail(routePoint);
                           }
                           routePointSearchBar.setText(routePoint.name);
                         } else if (routePoint.detail == '1') {
-                          _scaffoldKey.currentState.showSnackBar(SnackBar(
-                            content: Text(routePoint.name),
-                          ));
+                          Navigator.pop(context, routePoint);
                         } else {
-                          GeoService.detail(routePoint).then((routePoint) {
-                            _scaffoldKey.currentState.showSnackBar(SnackBar(
-                              content: Text(routePoint.name),
-                            ));
+                          GeoService().detail(routePoint).then((routePoint) {
+                            Navigator.pop(context, routePoint);
                           });
                         }
                       },
@@ -86,4 +86,6 @@ class _RoutePointScreenState extends State<RoutePointScreen> {
           }),
     );
   }
+
+
 }

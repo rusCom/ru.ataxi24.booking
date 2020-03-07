@@ -1,10 +1,12 @@
+import 'package:booking/services/app_state.dart';
 import 'package:flutter/material.dart';
 
 class RoutePointSearchBar extends StatelessWidget {
   final ValueChanged<String> onChanged;
   final TextEditingController _controller = new TextEditingController();
+  final String hintText;
 
-  RoutePointSearchBar({this.onChanged}): super();
+  RoutePointSearchBar({this.onChanged, this.hintText}): super();
 
   void setText(String data){
     WidgetsBinding.instance.addPostFrameCallback((_)  {
@@ -14,6 +16,11 @@ class RoutePointSearchBar extends StatelessWidget {
 
     });
     onChanged(data);
+  }
+
+  String getHintText(){
+    if (AppStateProvider().curOrder.routePoints.length == 0){return "Откуда Вас забрать?";}
+    return "Куда поедите?";
   }
 
   @override
@@ -26,7 +33,7 @@ class RoutePointSearchBar extends StatelessWidget {
           controller: _controller,
           onChanged: onChanged,
           decoration: InputDecoration(
-            hintText: "search",
+            hintText: hintText,
             hintStyle: TextStyle(color: Color(0xFF757575), fontSize: 16),
             prefixIcon: Icon(
               Icons.search,

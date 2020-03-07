@@ -11,7 +11,7 @@ class GeoAutocompleteBloc {
   void autocomplete(BuildContext context, String keyword) {
     if (keyword.isNotEmpty) {
       _geoBlocController.sink.add("searching_");
-      GeoService.autocomplete(context, keyword).then((result) {
+      GeoService().autocomplete(keyword).then((result) {
         _geoBlocController.sink.add(result);
       }).catchError((e) {});
     }

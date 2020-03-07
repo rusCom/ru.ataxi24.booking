@@ -6,14 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
-class NewOrderScreen extends StatelessWidget {
+class NewOrderFirstPointScreen extends StatelessWidget {
   final TextEditingController _controller = new TextEditingController();
   final ValueChanged<RoutePoint> onChanged;
   GoogleMapController _mapController;
   BuildContext _context;
 
 
-  NewOrderScreen({this.onChanged}): super();
+  NewOrderFirstPointScreen({this.onChanged}): super();
 
   set mapController(GoogleMapController value) {
     _mapController = value;
@@ -62,19 +62,33 @@ class NewOrderScreen extends StatelessWidget {
                         color: Color(0xFF757575),
                       ),
                       onPressed: () async {
-                        RoutePoint routePoint = await Navigator.push<RoutePoint>(context, MaterialPageRoute(builder: (context) => RoutePointScreen()));
-                        // print("result of RoutePointScreen = " + routePoint.name);
-                        // onChanged(routePoint);
+                        RoutePoint pickUpRoutePoint = await Navigator.push<RoutePoint>(context, MaterialPageRoute(builder: (context) => RoutePointScreen(isFirst: true,)));
+                        if (pickUpRoutePoint != null){
+                          print(pickUpRoutePoint);
+                          RoutePoint destinationRoutePoint = await Navigator.push<RoutePoint>(context, MaterialPageRoute(builder: (context) => RoutePointScreen()));
+                          if (destinationRoutePoint != null){
+                            print(destinationRoutePoint);
+                            AppStateProvider().curOrder.addRoutePoint(pickUpRoutePoint);
+                            AppStateProvider().curOrder.addRoutePoint(destinationRoutePoint);
+                          }
+
+                        }
+                        /*
+
+                        RoutePoint curPickUpRoutePoint = AppStateProvider().curOrder.routePoints.first;
+                        RoutePoint routePoint = await Navigator.push<RoutePoint>(context, MaterialPageRoute(builder: (context) => RoutePointScreen(destenation: 0)));
                         if (routePoint != null){
-                          AppStateProvider().curOrder.addRoutePoint(routePoint);
+                          AppStateProvider().curOrder.addPickUp(routePoint);
                           routePoint = await Navigator.push<RoutePoint>(context, MaterialPageRoute(builder: (context) => RoutePointScreen()));
                           if (routePoint == null){
-                            AppStateProvider().curOrder.routePoints.clear();
+                            AppStateProvider().curOrder.addPickUp(curPickUpRoutePoint);
                           }
                           else {
                             AppStateProvider().curOrder.addRoutePoint(routePoint);
                           }
                         }
+
+                         */
                       },
                     ),
                     border: OutlineInputBorder(
@@ -103,18 +117,12 @@ class NewOrderScreen extends StatelessWidget {
               height: 60,
               child: RaisedButton(
                 onPressed: () async {
-                  /*
-                  AppStateProvider().curOrder.addRoutePoint(MapMarkersProvider().pickUpRoutePoint);
                   RoutePoint routePoint = await Navigator.push<RoutePoint>(context, MaterialPageRoute(builder: (context) => RoutePointScreen()));
-                  if (routePoint == null){
-                    AppStateProvider().curOrder.routePoints.clear();
-                  }
-                  else {
+                  if (routePoint != null){
+                    AppStateProvider().curOrder.addRoutePoint(MapMarkersProvider().pickUpRoutePoint);
                     AppStateProvider().curOrder.addRoutePoint(routePoint);
+                    print(AppStateProvider().curOrder.toJson());
                   }
-
-                   */
-
                 },
                 shape: RoundedRectangleBorder(
                   borderRadius: new BorderRadius.only(bottomLeft: Radius.circular(18), bottomRight: Radius.circular(18)),
@@ -150,7 +158,7 @@ class NewOrderScreen extends StatelessWidget {
   }
 
   void _moveToCurLocation() {
-    LatLng curLocation = Provider.of<AppStateProvider>(_context, listen: false).curLocation;
+    LatLng curLocation = AppStateProvider().curLocation;
     if (curLocation != null) {
       // GoogleMapController controller = await _mapController.future;
       if (_mapController != null) {

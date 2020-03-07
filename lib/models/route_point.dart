@@ -9,6 +9,7 @@ class RoutePoint {
   final String type;
   final String place_id;
   final String detail;
+  String note = "";
 
   RoutePoint({this.name, this.dsc, this.lt, this.ln, this.type, this.place_id, this.detail});
 
@@ -23,6 +24,20 @@ class RoutePoint {
       place_id: json['place_id'] != null ? json['place_id'] : "",
       detail: json['detail'] != null ? json['detail'] : "0",
     );
+  }
+
+  Map<String, dynamic> toJson() =>
+      {
+        'name': name,
+        'dsc': dsc,
+        'lt': lt,
+        'ln': ln,
+      };
+
+
+  @override
+  String toString() {
+    return toJson().toString();
   }
 
   LatLng getLocation(){

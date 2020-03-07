@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:booking/models/order.dart';
 import 'package:booking/services/map_markers_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -12,13 +13,16 @@ enum CurOrderState{
   search_car
 }
 
-class AppStateProvider with ChangeNotifier{
+class AppStateProvider{
+  static final AppStateProvider _singleton = AppStateProvider._internal();
+  factory AppStateProvider() {return _singleton;}
+  AppStateProvider._internal();
+
   SharedPreferences _sharedPreferences;
   LatLng _lastLocation, _curLocation;
   BuildContext _context;
+  Order _curOrder;
 
-
-  AppStateProvider();
 
   init(BuildContext context) async {
     print("AppStateProvider init start");
@@ -29,9 +33,9 @@ class AppStateProvider with ChangeNotifier{
     // текущее местоположение
     var currentLocation = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
     _curLocation = new LatLng(currentLocation.latitude, currentLocation.longitude);
-    var geolocator = Geolocator();
+
     var locationOptions = LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
-    geolocator.getPositionStream(locationOptions).listen(
+    Geolocator().getPositionStream(locationOptions).listen(
             (Position position) {
               if (position != null){
                 _curLocation = new LatLng(position.latitude, position.longitude);
@@ -39,8 +43,14 @@ class AppStateProvider with ChangeNotifier{
               }
         });
 
-    Provider.of<MapMarkersProvider>(context, listen: false).init(context, _curLocation);
+    await MapMarkersProvider().init(context);
+    _curOrder = Order();
+    _curOrder.orderState = OrderState.new_order;
+
   }
+
+
+  Order get curOrder => _curOrder;
 
   get curLocation => _curLocation;
 
@@ -55,7 +65,5 @@ class AppStateProvider with ChangeNotifier{
   CurOrderState curOrderState(){
     return CurOrderState.new_order;
   }
-
-
 
 }
