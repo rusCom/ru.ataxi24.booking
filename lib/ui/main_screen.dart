@@ -1,18 +1,15 @@
+import 'package:booking/main_application.dart';
 import 'package:booking/models/order.dart';
-import 'package:booking/models/route_point.dart';
 import 'package:booking/services/app_blocs.dart';
-import 'package:booking/services/geo_service.dart';
-import 'package:booking/services/map_markers_provider.dart';
-import 'package:booking/services/profile_provider.dart';
-import 'package:booking/services/app_state.dart';
+import 'package:booking/services/map_markers_service.dart';
 import 'package:booking/ui/drawer/drawer.dart';
+import 'package:booking/ui/orders/new_order_calc_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:provider/provider.dart';
 
 import 'orders/new_order_first_point_screen.dart';
-import 'orders/new_order_screen.dart';
+
 
 class MainScreen extends StatefulWidget {
   @override
@@ -24,25 +21,26 @@ class _MainScreenState extends State<MainScreen> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
   MapType _currentMapType = MapType.normal;
   Set<Marker> _markers;
-  double zoomLevel = 17.0;
   DateTime _backButtonPressedTime;
   NewOrderFirstPointScreen newOrderFirstPointScreen;
+  NewOrderCalcScreen newOrderCalcScreen;
 
   @override
   void initState() {
     super.initState();
-    _markers = MapMarkersProvider().markers();
+    _markers = MapMarkersService().markers();
      AppBlocs().mapMarkersStream.listen((markers) {
       setState(() {
         _markers = markers;
       });
     });
     newOrderFirstPointScreen = NewOrderFirstPointScreen();
+    newOrderCalcScreen = NewOrderCalcScreen();
   }
 
   @override
   void dispose() {
-    print("close");
+    print("_MainScreenState dispose");
     super.dispose();
   }
 
@@ -52,14 +50,12 @@ class _MainScreenState extends State<MainScreen> {
       onWillPop: _onWillPop,
       child: Scaffold(
           key: scaffoldKey,
-          drawer: Consumer<ProfileStateProvider>(builder: (context, state, _) {
-            return MainDrawer(state);
-          }),
+          drawer: MainDrawer(),
           body: Stack(
             children: <Widget>[
               GoogleMap(
                 initialCameraPosition: CameraPosition(
-                  target: AppStateProvider().curLocation,
+                  target: MainApplication().currentLocation,
                   zoom: 17.0,
                 ),
                 onMapCreated: _onMapCreated,
@@ -76,19 +72,17 @@ class _MainScreenState extends State<MainScreen> {
                 child: StreamBuilder<Object>(
                   stream: AppBlocs().orderStateStream,
                   builder: (context, snapshot) {
-                    switch (AppStateProvider().curOrder.orderState){
+                    switch (MainApplication().curOrder.orderState){
                       case OrderState.new_order: return newOrderFirstPointScreen;
-                      case OrderState.new_order_calc:{
-                        _mapController.animateCamera(CameraUpdate.newLatLngBounds(
-                            MapMarkersProvider().mapBounds(),
-                            100
-                        ));
-                        return Container();
+                      case OrderState.new_order_calculating:{
+                        newOrderCalcScreen.mapBounds();
+                        return newOrderCalcScreen;
                       }
+
+                      case OrderState.new_order_calculated:return newOrderCalcScreen;
 
                       default: return Container();
                     }
-                    return newOrderFirstPointScreen;
                   }
                 )
               ),
@@ -98,7 +92,8 @@ class _MainScreenState extends State<MainScreen> {
                 child: FloatingActionButton(
                   heroTag: '_onMapTypeButtonPressed',
                   onPressed: _onMapTypeButtonPressed,
-                  child: Icon(Icons.map),
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.landscape, color: Colors.black,),
                 ),
               ),
               Positioned(
@@ -116,39 +111,23 @@ class _MainScreenState extends State<MainScreen> {
 
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
-    newOrderFirstPointScreen.mapController = controller;
-    if (AppStateProvider().curOrder.orderState == OrderState.new_order){
-      MapMarkersProvider().pickUpLocation = AppStateProvider().curLocation;
+    MainApplication().mapController = controller;
+    if (MainApplication().curOrder.orderState == OrderState.new_order){
+      MapMarkersService().pickUpLocation = MainApplication().currentLocation;
     }
     _onCameraIdle();
   }
 
   void _onCameraMove(CameraPosition position) {
-    if (AppStateProvider().curOrder.orderState == OrderState.new_order){
-      MapMarkersProvider().pickUpLocation = position.target;
-      setState(() {
-        zoomLevel = position.zoom;
-      });
+    if (MainApplication().curOrder.orderState == OrderState.new_order){
+      newOrderFirstPointScreen.onCameraMove(position);
     }
   }
 
 
   void _onCameraIdle() {
-    if (AppStateProvider().curOrder.orderState == OrderState.new_order){
-      GeoService().geocode(MapMarkersProvider().pickUpLocation).then((routePoint){
-        if (routePoint != null){
-          MapMarkersProvider().pickUpRoutePoint = routePoint;
-          newOrderFirstPointScreen.setText(routePoint.name + " " + routePoint.dsc);
-          _mapController.animateCamera(
-            CameraUpdate.newCameraPosition(
-              CameraPosition(
-                target: routePoint.getLocation(),
-                zoom: zoomLevel,
-              ),
-            ),
-          );
-        }
-      });
+    if (MainApplication().curOrder.orderState == OrderState.new_order){
+      newOrderFirstPointScreen.onCameraIdle();
     }
   }
 
@@ -169,25 +148,21 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+
+
   Future<bool> _onWillPop() async {
     if (scaffoldKey.currentState.isDrawerOpen){
       Navigator.pop(context);
       return false;
     }
 
-    if (AppStateProvider().curOrder.orderState == OrderState.new_order_calc){
-      LatLng location = AppStateProvider().curOrder.routePoints.first.getLocation();
-      AppStateProvider().curOrder.orderState = OrderState.new_order;
-      MapMarkersProvider().pickUpLocation = location;
-      _mapController.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(
-            target: location,
-            zoom: 17.0,
-          ),
-        ),
-      );
-
+    // Если статус заказа - идет расчет стоимости, то ничего не делаем
+    if (MainApplication().curOrder.orderState == OrderState.new_order_calculating){
+      return false;
+    }
+    // Если расчтет стоимости произведен, то возвращаем на новый заказ
+    if (MainApplication().curOrder.orderState == OrderState.new_order_calculated){
+      newOrderCalcScreen.backPressed();
       return false;
     }
 

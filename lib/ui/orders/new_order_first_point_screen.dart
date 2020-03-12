@@ -1,23 +1,18 @@
+import 'package:booking/main_application.dart';
 import 'package:booking/models/route_point.dart';
-import 'package:booking/services/app_state.dart';
-import 'package:booking/services/map_markers_provider.dart';
+import 'package:booking/services/app_blocs.dart';
+import 'package:booking/services/geo_service.dart';
+import 'package:booking/services/map_markers_service.dart';
 import 'package:booking/ui/route_point/route_point_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:provider/provider.dart';
 
 class NewOrderFirstPointScreen extends StatelessWidget {
   final TextEditingController _controller = new TextEditingController();
   final ValueChanged<RoutePoint> onChanged;
-  GoogleMapController _mapController;
   BuildContext _context;
 
-
-  NewOrderFirstPointScreen({this.onChanged}): super();
-
-  set mapController(GoogleMapController value) {
-    _mapController = value;
-  }
+  NewOrderFirstPointScreen({this.onChanged}) : super();
 
   void setText(String data) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -62,33 +57,22 @@ class NewOrderFirstPointScreen extends StatelessWidget {
                         color: Color(0xFF757575),
                       ),
                       onPressed: () async {
-                        RoutePoint pickUpRoutePoint = await Navigator.push<RoutePoint>(context, MaterialPageRoute(builder: (context) => RoutePointScreen(isFirst: true,)));
-                        if (pickUpRoutePoint != null){
+                        RoutePoint pickUpRoutePoint = await Navigator.push<RoutePoint>(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => RoutePointScreen(
+                                      isFirst: true,
+                                    )));
+                        if (pickUpRoutePoint != null) {
                           print(pickUpRoutePoint);
-                          RoutePoint destinationRoutePoint = await Navigator.push<RoutePoint>(context, MaterialPageRoute(builder: (context) => RoutePointScreen()));
-                          if (destinationRoutePoint != null){
+                          RoutePoint destinationRoutePoint =
+                              await Navigator.push<RoutePoint>(context, MaterialPageRoute(builder: (context) => RoutePointScreen()));
+                          if (destinationRoutePoint != null) {
                             print(destinationRoutePoint);
-                            AppStateProvider().curOrder.addRoutePoint(pickUpRoutePoint);
-                            AppStateProvider().curOrder.addRoutePoint(destinationRoutePoint);
-                          }
-
-                        }
-                        /*
-
-                        RoutePoint curPickUpRoutePoint = AppStateProvider().curOrder.routePoints.first;
-                        RoutePoint routePoint = await Navigator.push<RoutePoint>(context, MaterialPageRoute(builder: (context) => RoutePointScreen(destenation: 0)));
-                        if (routePoint != null){
-                          AppStateProvider().curOrder.addPickUp(routePoint);
-                          routePoint = await Navigator.push<RoutePoint>(context, MaterialPageRoute(builder: (context) => RoutePointScreen()));
-                          if (routePoint == null){
-                            AppStateProvider().curOrder.addPickUp(curPickUpRoutePoint);
-                          }
-                          else {
-                            AppStateProvider().curOrder.addRoutePoint(routePoint);
+                            MainApplication().curOrder.addRoutePoint(pickUpRoutePoint);
+                            MainApplication().curOrder.addRoutePoint(destinationRoutePoint);
                           }
                         }
-
-                         */
                       },
                     ),
                     border: OutlineInputBorder(
@@ -105,42 +89,51 @@ class NewOrderFirstPointScreen extends StatelessWidget {
           ),
         ),
         Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
+          bottom: 8,
+          left: 8,
+          right: 8,
           child: Container(
             constraints: const BoxConstraints(minWidth: double.infinity),
             alignment: Alignment.center,
-            margin: EdgeInsets.only(left: 8, right: 8, bottom: 8),
+            height: 60,
+            width: double.infinity,
+            // margin: EdgeInsets.only(left: 8, right: 8, bottom: 8),
             child: SizedBox(
               width: double.infinity,
               height: 60,
-              child: RaisedButton(
-                onPressed: () async {
-                  RoutePoint routePoint = await Navigator.push<RoutePoint>(context, MaterialPageRoute(builder: (context) => RoutePointScreen()));
-                  if (routePoint != null){
-                    AppStateProvider().curOrder.addRoutePoint(MapMarkersProvider().pickUpRoutePoint);
-                    AppStateProvider().curOrder.addRoutePoint(routePoint);
-                    print(AppStateProvider().curOrder.toJson());
-                  }
-                },
-                shape: RoundedRectangleBorder(
-                  borderRadius: new BorderRadius.only(bottomLeft: Radius.circular(18), bottomRight: Radius.circular(18)),
-                ),
-                splashColor: Colors.yellow[200],
-                textColor: Colors.white,
-                color: Colors.amber,
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: <Widget>[
-                    Container(width: 40, child: Icon(Icons.find_replace)),
-                    new Text(
-                      "Куда?",
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ),
+              child: StreamBuilder(
+                  stream: AppBlocs().pickUpStream,
+                  builder: (context, snapshot) {
+                    print("!!!!!" + snapshot.data.toString());
+                    return RaisedButton(
+                      onPressed: MapMarkersService().pickUpState == PickUpState.enabled ? _mainButtonClick : null,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: new BorderRadius.only(bottomLeft: Radius.circular(18), bottomRight: Radius.circular(18)),
+                      ),
+                      splashColor: Colors.yellow[200],
+                      textColor: Colors.white,
+                      color: Colors.amber,
+                      disabledColor: Colors.grey,
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: <Widget>[
+                          Container(width: 40, child: Icon(Icons.find_replace)),
+                          snapshot.data == PickUpState.disabled
+                              ? Expanded(
+                                  child: Text(
+                                    "Извините, регион не обслуживается",
+                                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                )
+                              : Text(
+                                  "Куда?",
+                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                ),
+                        ],
+                      ),
+                    );
+                  }),
             ),
           ),
         ),
@@ -149,20 +142,55 @@ class NewOrderFirstPointScreen extends StatelessWidget {
           right: 8,
           child: FloatingActionButton(
             heroTag: '_moveToCurLocation',
+            backgroundColor: Colors.white,
             onPressed: _moveToCurLocation,
-            child: Icon(Icons.my_location),
+            child: Icon(Icons.near_me, color: Colors.black,),
           ),
         ),
       ],
     );
   }
 
+  void onCameraMove(CameraPosition position){
+    MapMarkersService().pickUpLocation = position.target;
+    MapMarkersService().zoomLevel = position.zoom;
+  }
+
+  void onCameraIdle(){
+    GeoService().geocode(MapMarkersService().pickUpLocation).then((routePoint){
+      print(routePoint.toString());
+      if (routePoint != MapMarkersService().pickUpRoutePoint){
+        MapMarkersService().pickUpRoutePoint = routePoint;
+        setText(routePoint.name + " " + routePoint.dsc);
+        MainApplication().mapController.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(
+              target: routePoint.getLocation(),
+              zoom: MapMarkersService().zoomLevel,
+            ),
+          ),
+        );
+      }
+      else {
+        MapMarkersService().pickUpRoutePoint.checkPickUp();
+      }
+    });
+  }
+
+  void  _mainButtonClick() async {
+    RoutePoint routePoint = await Navigator.push<RoutePoint>(_context, MaterialPageRoute(builder: (_context) => RoutePointScreen()));
+    if (routePoint != null) {
+      MainApplication().curOrder.addRoutePoint(MapMarkersService().pickUpRoutePoint);
+      MainApplication().curOrder.addRoutePoint(routePoint);
+      print(MainApplication().curOrder.toJson());
+    }
+  }
+
   void _moveToCurLocation() {
-    LatLng curLocation = AppStateProvider().curLocation;
+    LatLng curLocation = MainApplication().currentLocation;
     if (curLocation != null) {
-      // GoogleMapController controller = await _mapController.future;
-      if (_mapController != null) {
-        _mapController.animateCamera(
+      if (MainApplication().mapController != null) {
+        MainApplication().mapController.animateCamera(
           CameraUpdate.newCameraPosition(
             CameraPosition(
               target: curLocation,

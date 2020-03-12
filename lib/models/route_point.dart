@@ -1,5 +1,10 @@
+import 'package:booking/models/order_tariff.dart';
+import 'package:booking/services/app_blocs.dart';
+import 'package:booking/services/map_markers_service.dart';
+import 'package:booking/services/rest_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 class RoutePoint {
   final String name;
@@ -7,40 +12,100 @@ class RoutePoint {
   final String lt;
   final String ln;
   final String type;
-  final String place_id;
+  final String placeId;
   final String detail;
-  String note = "";
+  final List<String> notes;
+  Key key;
+  String _note = "";
+  List<OrderTariff> orderTariffs;
+  bool canPickUp;
 
-  RoutePoint({this.name, this.dsc, this.lt, this.ln, this.type, this.place_id, this.detail});
+  RoutePoint({this.name, this.dsc, this.lt, this.ln, this.type, this.placeId, this.detail, this.canPickUp, this.orderTariffs, this.notes}) {
+    key = ValueKey(Uuid().v1());
+  }
 
-  factory RoutePoint.fromJson(Map<String, dynamic> json) {
-    print("RoutePoint.fromJson json = " + json.toString());
+  factory RoutePoint.fromJson(Map<String, dynamic> jsonData) {
+    // print("RoutePoint.fromJson json = " + jsonData.toString());
     return RoutePoint(
-      name: json['name'] != null ? json['name'] : "",
-      dsc: json['dsc'] != null ? json['dsc'] : "",
-      lt: json['lt'] != null ? json['lt'] : "",
-      ln: json['ln'] != null ? json['ln'] : "",
-      type: json['type'] != null ? json['type'] : "",
-      place_id: json['place_id'] != null ? json['place_id'] : "",
-      detail: json['detail'] != null ? json['detail'] : "0",
+      name: jsonData['name'] != null ? jsonData['name'] : "",
+      dsc: jsonData['dsc'] != null ? jsonData['dsc'] : "",
+      lt: jsonData['lt'] != null ? jsonData['lt'] : "",
+      ln: jsonData['ln'] != null ? jsonData['ln'] : "",
+      type: jsonData['type'] != null ? jsonData['type'] : "",
+      placeId: jsonData['place_id'] != null ? jsonData['place_id'] : "",
+      detail: jsonData['detail'] != null ? jsonData['detail'] : "0",
+      notes: jsonData['notes'] != null ? jsonData['notes'].cast<String>() : [],
     );
   }
 
-  Map<String, dynamic> toJson() =>
-      {
-        'name': name,
-        'dsc': dsc,
-        'lt': lt,
-        'ln': ln,
-      };
+  factory RoutePoint.copy(RoutePoint routePoint) {
+    return RoutePoint(
+        name: routePoint.name,
+        dsc: routePoint.dsc,
+        lt: routePoint.lt,
+        ln: routePoint.ln,
+        type: routePoint.type,
+        placeId: routePoint.placeId,
+        detail: routePoint.detail,
+        canPickUp: routePoint.canPickUp,
+        orderTariffs: routePoint.orderTariffs,
+        notes: routePoint.notes);
+  }
 
+  set note(String value) {
+    _note = value;
+    print("RoutePoint set note " + toString());
+    AppBlocs().newOrderNoteController.sink.add(_note);
+  }
+
+  String get note {
+    if (_note == "") {
+      return "Подъезд";
+    }
+    if (_note == null) {
+      return "Подъезд";
+    }
+    return _note;
+  }
+
+  Map<String, dynamic> toJson() => {
+        "name": name,
+        "dsc": dsc,
+        "lt": lt,
+        "ln": ln,
+        "note": note,
+        "notes": notes,
+      };
 
   @override
   String toString() {
     return toJson().toString();
   }
 
-  LatLng getLocation(){
+  Future<void> checkPickUp() async {
+    if (canPickUp == null) {
+      var response = await RestService().httpGet("/orders/pickup?lt=" + lt + "&ln=" + ln);
+      if (response['status'] == 'OK') {
+        // print (response['result']['pick_up']);
+        if (response['result']['pick_up'].toString() == "true") {
+          Iterable list = response['result']['tariffs'];
+          orderTariffs = list.map((model) => OrderTariff.fromJson(model)).toList();
+          canPickUp = true;
+          MapMarkersService().pickUpState = PickUpState.enabled;
+        } else {
+          canPickUp = false;
+          MapMarkersService().pickUpState = PickUpState.disabled;
+        }
+      }
+    } else {
+      if (canPickUp)
+        MapMarkersService().pickUpState = PickUpState.enabled;
+      else
+        MapMarkersService().pickUpState = PickUpState.disabled;
+    }
+  }
+
+  LatLng getLocation() {
     return new LatLng(double.parse(lt), double.parse(ln));
   }
 

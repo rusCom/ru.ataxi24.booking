@@ -1,4 +1,3 @@
-import 'package:booking/services/app_state.dart';
 import 'package:flutter/material.dart';
 
 class RoutePointSearchBar extends StatelessWidget {
@@ -18,9 +17,8 @@ class RoutePointSearchBar extends StatelessWidget {
     onChanged(data);
   }
 
-  String getHintText(){
-    if (AppStateProvider().curOrder.routePoints.length == 0){return "Откуда Вас забрать?";}
-    return "Куда поедите?";
+  String getText(){
+    return _controller.text;
   }
 
   @override
