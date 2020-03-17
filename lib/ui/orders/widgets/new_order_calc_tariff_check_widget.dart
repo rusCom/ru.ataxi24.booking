@@ -28,7 +28,7 @@ class NewOrderCalcTariffCheckWidget extends StatelessWidget {
               children: <Widget>[
                 getOrderTariff("econom") == null ? Container() : NewOrderCalcTariffWidget(getOrderTariff("econom")),
                 getOrderTariff("comfort") == null ? Container() : NewOrderCalcTariffWidget(getOrderTariff("comfort")),
-                getOrderTariff("comfort+") == null ? Container() : NewOrderCalcTariffWidget(getOrderTariff("comfort+")),
+                getOrderTariff("comfort_plus") == null ? Container() : NewOrderCalcTariffWidget(getOrderTariff("comfort_plus")),
                 getOrderTariff("buisness") == null ? Container() : NewOrderCalcTariffWidget(getOrderTariff("buisness")),
                 getOrderTariff("cargo") == null ? Container() : NewOrderCalcTariffWidget(getOrderTariff("cargo")),
               ],

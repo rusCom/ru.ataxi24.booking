@@ -13,7 +13,7 @@ class NewOrderCalcTariffWidget extends StatelessWidget {
     return Padding(
         padding: const EdgeInsets.only(right: 10.0, top: 0, bottom: 1),
         child: RaisedButton(
-          onPressed: () => MainApplication().curOrder.checkTariff(orderTariff.type),
+          onPressed: () => MainApplication().curOrder.checkedTariff = orderTariff.type,
           shape: orderTariff.checked == true
               ? RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),

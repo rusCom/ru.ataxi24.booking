@@ -4,6 +4,7 @@ import 'package:booking/services/map_markers_service.dart';
 import 'package:booking/services/rest_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:logger/logger.dart';
 import 'package:uuid/uuid.dart';
 
 class RoutePoint {
@@ -17,11 +18,12 @@ class RoutePoint {
   final List<String> notes;
   Key key;
   String _note = "";
-  List<OrderTariff> orderTariffs;
+  List<OrderTariff> orderTariffs = [];
   bool canPickUp;
 
   RoutePoint({this.name, this.dsc, this.lt, this.ln, this.type, this.placeId, this.detail, this.canPickUp, this.orderTariffs, this.notes}) {
     key = ValueKey(Uuid().v1());
+    // orderTariffs = List<OrderTariff>;
   }
 
   factory RoutePoint.fromJson(Map<String, dynamic> jsonData) {
@@ -54,7 +56,7 @@ class RoutePoint {
 
   set note(String value) {
     _note = value;
-    print("RoutePoint set note " + toString());
+    // print("RoutePoint set note " + toString());
     AppBlocs().newOrderNoteController.sink.add(_note);
   }
 
@@ -86,10 +88,10 @@ class RoutePoint {
     if (canPickUp == null) {
       var response = await RestService().httpGet("/orders/pickup?lt=" + lt + "&ln=" + ln);
       if (response['status'] == 'OK') {
-        // print (response['result']['pick_up']);
         if (response['result']['pick_up'].toString() == "true") {
-          Iterable list = response['result']['tariffs'];
-          orderTariffs = list.map((model) => OrderTariff.fromJson(model)).toList();
+          orderTariffs = [];
+          List<String> tariffs = response['result']['tariffs'].cast<String>();
+          tariffs.forEach((tariff) => orderTariffs.add(OrderTariff(type: tariff)));
           canPickUp = true;
           MapMarkersService().pickUpState = PickUpState.enabled;
         } else {

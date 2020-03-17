@@ -1,31 +1,42 @@
 class OrderTariff{
   String type;
-  String name;
+  String _name;
   String price;
   bool checked;
 
 
-  OrderTariff({this.type, this.name, this.price}){
+  OrderTariff({this.type, this.price}){
     checked = false;
   }
 
-  factory OrderTariff.fromJson(Map<String, dynamic> json) {
 
+  factory OrderTariff.fromJson(Map<String, dynamic> json) {
     return OrderTariff(
       type: json['type'] != null ? json['type'] : "",
-      name: json['name'] != null ? json['name'] : "",
       price: json['price'] != null ? json['price'].toString() : "",
     );
+  }
+
+
+  String get name {
+    switch (type){
+      case "econom": return "Эконом";
+      case "comfort": return "Комфорт";
+      case "comfort_plus": return "Комфорт+";
+      case "buisness": return "Бизнес";
+      case "cargo": return "Грузовой";
+    }
+    return "Эконом";
+
   }
 
   String get iconName{
     switch (type){
       case "econom": return "assets/icons/ic_tariff_standard.png";
       case "comfort": return "assets/icons/ic_tariff_comfort.png";
-      case "comfort+": return "assets/icons/ic_tariff_comfort_plus.png";
+      case "comfort_plus": return "assets/icons/ic_tariff_comfort_plus.png";
       case "buisness": return "assets/icons/ic_tariff_business.png";
       case "cargo": return "assets/icons/ic_tariff_cargo.jfif";
-
     }
     return "assets/icons/ic_tariff_econom.png";
   }
@@ -37,32 +48,9 @@ class OrderTariff{
         'price': price,
         'checked': checked
       };
-}
 
-var jsonTariffs = [
-  {
-    "name":"Эконом",
-    "type":"econom",
-    "price":250
-  },
-  {
-    "name":"Комфорт",
-    "type":"comfort",
-    "price":350
-  },
-  {
-    "name":"Комфорт+",
-    "type":"comfort+",
-    "price":450
-  },
-  {
-    "name":"Бизнес",
-    "type":"buisness",
-    "price":550
-  },
-  {
-    "name":"Грузовой",
-    "type":"cargo",
-    "price":650
+  @override
+  String toString() {
+    return toJson().toString();
   }
-];
+}

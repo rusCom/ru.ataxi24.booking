@@ -64,11 +64,11 @@ class NewOrderFirstPointScreen extends StatelessWidget {
                                       isFirst: true,
                                     )));
                         if (pickUpRoutePoint != null) {
-                          print(pickUpRoutePoint);
+                          // print(pickUpRoutePoint);
                           RoutePoint destinationRoutePoint =
                               await Navigator.push<RoutePoint>(context, MaterialPageRoute(builder: (context) => RoutePointScreen()));
                           if (destinationRoutePoint != null) {
-                            print(destinationRoutePoint);
+                            // print(destinationRoutePoint);
                             MainApplication().curOrder.addRoutePoint(pickUpRoutePoint);
                             MainApplication().curOrder.addRoutePoint(destinationRoutePoint);
                           }
@@ -104,7 +104,7 @@ class NewOrderFirstPointScreen extends StatelessWidget {
               child: StreamBuilder(
                   stream: AppBlocs().pickUpStream,
                   builder: (context, snapshot) {
-                    print("!!!!!" + snapshot.data.toString());
+                    // print("!!!!!" + snapshot.data.toString());
                     return RaisedButton(
                       onPressed: MapMarkersService().pickUpState == PickUpState.enabled ? _mainButtonClick : null,
                       shape: RoundedRectangleBorder(
@@ -158,7 +158,7 @@ class NewOrderFirstPointScreen extends StatelessWidget {
 
   void onCameraIdle(){
     GeoService().geocode(MapMarkersService().pickUpLocation).then((routePoint){
-      print(routePoint.toString());
+      // print(routePoint.toString());
       if (routePoint != MapMarkersService().pickUpRoutePoint){
         MapMarkersService().pickUpRoutePoint = routePoint;
         setText(routePoint.name + " " + routePoint.dsc);
@@ -182,7 +182,7 @@ class NewOrderFirstPointScreen extends StatelessWidget {
     if (routePoint != null) {
       MainApplication().curOrder.addRoutePoint(MapMarkersService().pickUpRoutePoint);
       MainApplication().curOrder.addRoutePoint(routePoint);
-      print(MainApplication().curOrder.toJson());
+      // print(MainApplication().curOrder.toJson());
     }
   }
 

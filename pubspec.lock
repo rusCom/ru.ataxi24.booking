@@ -127,7 +127,7 @@ packages:
       name: google_api_availability
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.2"
+    version: "2.0.3"
   google_maps_flutter:
     dependency: "direct main"
     description:
@@ -156,20 +156,34 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.4"
+  io:
+    dependency: transitive
+    description:
+      name: io
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.3"
   list_tile_more_customizable:
     dependency: "direct main"
     description:
       name: list_tile_more_customizable
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.1"
+    version: "1.2.1"
   location_permissions:
     dependency: transitive
     description:
       name: location_permissions
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.4+1"
+    version: "2.0.5"
+  logger:
+    dependency: "direct main"
+    description:
+      name: logger
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.8.3"
   matcher:
     dependency: transitive
     description:
@@ -239,7 +253,7 @@ packages:
       name: shared_preferences
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.6+2"
+    version: "0.5.6+3"
   shared_preferences_macos:
     dependency: transitive
     description:
@@ -266,6 +280,20 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  sliding_up_panel:
+    dependency: "direct main"
+    description:
+      name: sliding_up_panel
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
+  solid_bottom_sheet:
+    dependency: "direct main"
+    description:
+      name: solid_bottom_sheet
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.9"
   source_span:
     dependency: transitive
     description:

@@ -5,6 +5,7 @@ import 'package:booking/services/app_blocs.dart';
 import 'package:booking/services/map_markers_service.dart';
 import 'package:booking/services/rest_service.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 enum OrderState {
   new_order,
@@ -15,6 +16,7 @@ enum OrderState {
 
 class Order {
   OrderState _orderState;
+  String _guid;
   List<RoutePoint> routePoints = [];
   List<OrderTariff> orderTariffs = [];
   List<PaymentType> paymentTypes = [];
@@ -78,7 +80,6 @@ class Order {
       }
 
       if (value == OrderState.new_order_calculated) {
-
         AppBlocs().newOrderTariffController.sink.add(orderTariffs);
         print(toJson());
       }
@@ -87,34 +88,47 @@ class Order {
     }
   }
 
-  void checkTariff(String type) {
-    orderTariffs.asMap().forEach((index, value) {
-      if (value.type == type) {
-        orderTariffs[index].checked = true;
-      } else {
-        orderTariffs[index].checked = false;
-      }
+  Future<void> calcOrder() async {
+    Logger().d(toString());
+    String checkTariff = checkedTariff;
+    var response = await RestService().httpPost("/orders/calc", toJson());
+    if (response["status"] == "OK"){
+      var result = response["result"];
+      _guid = result['guid'];
+      Iterable list = result["tariffs"];
+      orderTariffs = list.map((model) => OrderTariff.fromJson(model)).toList();
+      orderState = OrderState.new_order_calculated;
+      checkedTariff = checkTariff;
+      Logger().d(toString());
+    }
+  }
+
+  set checkedTariff(String type){
+    orderTariffs.forEach((orderTariff) {
+      if (orderTariff.type == type)orderTariff.checked = true;
+      else orderTariff.checked = false;
     });
     AppBlocs().newOrderTariffController.sink.add(orderTariffs);
   }
 
-  Future<void> calcOrder() async {
-    var response = await RestService().httpGet("/orders/calc");
-    if (response["status"] == "OK"){
-      var result = response["result"];
-      Iterable list = result["tariffs"];
-      orderTariffs = list.map((model) => OrderTariff.fromJson(model)).toList();
-      orderTariffs.first.checked = true;
-      orderState = OrderState.new_order_calculated;
-    }
-
-
+  String get checkedTariff{
+    String result = "econom";
+    orderTariffs.forEach((orderTariff) {
+      if (orderTariff.checked)result = orderTariff.type;
+    });
+    return result;
   }
 
   OrderState get orderState => _orderState;
 
   Map<String, dynamic> toJson() => {
         "route": routePoints,
-        "state": orderState,
+        "tariffs":orderTariffs,
+        "tariff":checkedTariff,
+        "state": orderState.toString(),
       };
+  @override
+  String toString() {
+    return toJson().toString();
+  }
 }

@@ -138,7 +138,6 @@ class NewOrderCalcScreen extends StatelessWidget {
                       Expanded(
                         child: FlatButton.icon(
                           icon: Icon(Icons.payment),
-
                           label: Flexible(
                             fit: FlexFit.loose,
                             child: Container(

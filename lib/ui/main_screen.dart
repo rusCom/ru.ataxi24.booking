@@ -7,9 +7,11 @@ import 'package:booking/ui/orders/new_order_calc_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:solid_bottom_sheet/solid_bottom_sheet.dart';
 
+import 'orders/bottom_sheets/order_search_car_bottom_sheet.dart';
 import 'orders/new_order_first_point_screen.dart';
-
+import 'orders/widgets/riples.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -18,24 +20,37 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   GoogleMapController _mapController;
+  SolidController _solidController = SolidController();
   var scaffoldKey = GlobalKey<ScaffoldState>();
   MapType _currentMapType = MapType.normal;
   Set<Marker> _markers;
   DateTime _backButtonPressedTime;
   NewOrderFirstPointScreen newOrderFirstPointScreen;
   NewOrderCalcScreen newOrderCalcScreen;
+  Circle circle;
 
   @override
   void initState() {
     super.initState();
     _markers = MapMarkersService().markers();
-     AppBlocs().mapMarkersStream.listen((markers) {
+    AppBlocs().mapMarkersStream.listen((markers) {
       setState(() {
         _markers = markers;
       });
     });
     newOrderFirstPointScreen = NewOrderFirstPointScreen();
     newOrderCalcScreen = NewOrderCalcScreen();
+
+    /*
+    circle = Circle(
+        circleId: CircleId("car"),
+        radius: 1000,
+        zIndex: 1,
+        strokeColor: Colors.blue,
+        center: MainApplication().currentLocation,
+        fillColor: Colors.blue.withAlpha(70));
+
+     */
   }
 
   @override
@@ -49,84 +64,103 @@ class _MainScreenState extends State<MainScreen> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-          key: scaffoldKey,
-          drawer: MainDrawer(),
-          body: Stack(
-            children: <Widget>[
-              GoogleMap(
-                initialCameraPosition: CameraPosition(
-                  target: MainApplication().currentLocation,
-                  zoom: 17.0,
-                ),
-                onMapCreated: _onMapCreated,
-                myLocationEnabled: true,
-                myLocationButtonEnabled: false,
-                mapType: _currentMapType,
-                compassEnabled: true,
-                markers: _markers,
-                onCameraMove: _onCameraMove,
-                onCameraIdle: _onCameraIdle,
-                onTap: _onMapTap,
+        key: scaffoldKey,
+        drawer: MainDrawer(),
+        body: Stack(
+          children: <Widget>[
+            GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: MainApplication().currentLocation,
+                zoom: 17.0,
               ),
-              Center(
-                child: StreamBuilder<Object>(
-                  stream: AppBlocs().orderStateStream,
-                  builder: (context, snapshot) {
-                    switch (MainApplication().curOrder.orderState){
-                      case OrderState.new_order: return newOrderFirstPointScreen;
-                      case OrderState.new_order_calculating:{
-                        newOrderCalcScreen.mapBounds();
-                        return newOrderCalcScreen;
-                      }
-
-                      case OrderState.new_order_calculated:return newOrderCalcScreen;
-
-                      default: return Container();
-                    }
+              onMapCreated: _onMapCreated,
+              myLocationEnabled: true,
+              myLocationButtonEnabled: false,
+              mapType: _currentMapType,
+              compassEnabled: true,
+              markers: _markers,
+              onCameraMove: _onCameraMove,
+              onCameraIdle: _onCameraIdle,
+              onTap: _onMapTap,
+              circles: Set.of((circle != null) ? [circle] : []),
+            ),
+            Center(
+              child: StreamBuilder<Object>(
+                stream: AppBlocs().orderStateStream,
+                builder: (context, snapshot) {
+                  switch (MainApplication().curOrder.orderState) {
+                    case OrderState.new_order:
+                      return newOrderFirstPointScreen;
+                    case OrderState.new_order_calculating:
+                      newOrderCalcScreen.mapBounds();
+                      return newOrderCalcScreen;
+                    case OrderState.new_order_calculated:
+                      return newOrderCalcScreen;
+                    default:
+                      return Container();
                   }
-                )
+                },
               ),
-              Positioned(
-                top: 50,
-                right: 8,
-                child: FloatingActionButton(
-                  heroTag: '_onMapTypeButtonPressed',
-                  onPressed: _onMapTypeButtonPressed,
-                  backgroundColor: Colors.white,
-                  child: Icon(Icons.landscape, color: Colors.black,),
+            ),
+            Positioned(
+              top: 50,
+              right: 8,
+              child: FloatingActionButton(
+                heroTag: '_onMapTypeButtonPressed',
+                onPressed: _onMapTypeButtonPressed,
+                backgroundColor: Colors.white,
+                child: Icon(
+                  Icons.landscape,
+                  color: Colors.black,
                 ),
               ),
-              Positioned(
-                left: 10,
-                top: 35,
-                child: IconButton(
-                  icon: Icon(Icons.menu),
-                  onPressed: () => scaffoldKey.currentState.openDrawer(),
+            ),
+            Positioned(
+              top: 300,
+              right: 8,
+              child: FloatingActionButton(
+                heroTag: '_sdfsdf',
+                onPressed: _startCircleAnimation,
+                backgroundColor: Colors.white,
+                child: Icon(
+                  Icons.landscape,
+                  color: Colors.black,
                 ),
               ),
-            ],
-          )),
+            ),
+            Positioned(
+              left: 10,
+              top: 35,
+              child: IconButton(
+                icon: Icon(Icons.menu),
+                onPressed: () => scaffoldKey.currentState.openDrawer(),
+              ),
+            ),
+          ],
+        ),
+
+      ),
     );
   } // build
 
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
+
     MainApplication().mapController = controller;
-    if (MainApplication().curOrder.orderState == OrderState.new_order){
+    if (MainApplication().curOrder.orderState == OrderState.new_order) {
       MapMarkersService().pickUpLocation = MainApplication().currentLocation;
     }
     _onCameraIdle();
   }
 
   void _onCameraMove(CameraPosition position) {
-    if (MainApplication().curOrder.orderState == OrderState.new_order){
+    if (MainApplication().curOrder.orderState == OrderState.new_order) {
       newOrderFirstPointScreen.onCameraMove(position);
     }
   }
 
-
   void _onCameraIdle() {
-    if (MainApplication().curOrder.orderState == OrderState.new_order){
+    if (MainApplication().curOrder.orderState == OrderState.new_order) {
       newOrderFirstPointScreen.onCameraIdle();
     }
   }
@@ -148,36 +182,32 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-
-
   Future<bool> _onWillPop() async {
-    if (scaffoldKey.currentState.isDrawerOpen){
+    if (scaffoldKey.currentState.isDrawerOpen) {
       Navigator.pop(context);
       return false;
     }
 
     // Если статус заказа - идет расчет стоимости, то ничего не делаем
-    if (MainApplication().curOrder.orderState == OrderState.new_order_calculating){
+    if (MainApplication().curOrder.orderState == OrderState.new_order_calculating) {
       return false;
     }
     // Если расчтет стоимости произведен, то возвращаем на новый заказ
-    if (MainApplication().curOrder.orderState == OrderState.new_order_calculated){
+    if (MainApplication().curOrder.orderState == OrderState.new_order_calculated) {
       newOrderCalcScreen.backPressed();
       return false;
     }
 
     DateTime currentTime = DateTime.now();
     //Statement 1 Or statement2
-    bool backButton = _backButtonPressedTime == null ||
-        currentTime.difference(_backButtonPressedTime) > Duration(seconds: 3);
+    bool backButton = _backButtonPressedTime == null || currentTime.difference(_backButtonPressedTime) > Duration(seconds: 3);
     if (backButton) {
       _backButtonPressedTime = currentTime;
-      Fluttertoast.showToast(
-          msg: "Double Click to exit app",
-          backgroundColor: Colors.black,
-          textColor: Colors.white);
+      Fluttertoast.showToast(msg: "Double Click to exit app", backgroundColor: Colors.black, textColor: Colors.white);
       return false;
     }
     return true;
   }
+
+  void _startCircleAnimation() {}
 }

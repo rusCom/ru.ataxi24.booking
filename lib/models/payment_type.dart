@@ -10,7 +10,7 @@ class PaymentType {
 
   PaymentType({this.type}) {
     switch (type) {
-      case "cache":
+      case "cash":
         name = "Наличные";
         choseIconName = "Наличный расчет";
         iconName = "assets/icons/ic_payment_cash.png";
@@ -69,5 +69,14 @@ class PaymentType {
     return PaymentType(
       type: jsonData['type'] != null ? jsonData['type'] : "",
     );
+  }
+
+  Map<String, dynamic> toJson() => {
+    "type": type,
+    "name": name,
+  };
+  @override
+  String toString() {
+    return toJson().toString();
   }
 }
