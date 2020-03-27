@@ -1,4 +1,4 @@
-import 'package:booking/main_application.dart';
+import 'package:booking/models/main_application.dart';
 import 'package:booking/models/route_point.dart';
 import 'package:flutter/material.dart';
 

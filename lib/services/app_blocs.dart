@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:booking/models/order.dart';
 import 'package:booking/models/route_point.dart';
 
-import 'map_markers_service.dart';
+
 
 class AppBlocs{
   static final AppBlocs _singleton = AppBlocs._internal();
@@ -71,6 +71,15 @@ class AppBlocs{
     return _newOrderNoteController;
   }
 
+  StreamController _newOrderPaymentController; // = StreamController();
+  Stream get newOrderPaymentStream => newOrderPaymentController.stream;
+  StreamController get newOrderPaymentController{
+    if (_newOrderPaymentController == null){
+      _newOrderPaymentController = StreamController.broadcast();
+    }
+    return _newOrderPaymentController;
+  }
+
   void dispose(){
     if (_pickUpController != null)_pickUpController.close();
     if (_geoAutocompleteController != null)_geoAutocompleteController.close();
@@ -79,6 +88,7 @@ class AppBlocs{
     if (_orderRoutePointsController != null)_orderRoutePointsController.close();
     if (_newOrderTariffController != null)_newOrderTariffController.close();
     if (_newOrderNoteController != null)_newOrderNoteController.close();
+    if (_newOrderPaymentController != null)_newOrderPaymentController.close();
 
   }
 

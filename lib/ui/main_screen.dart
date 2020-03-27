@@ -1,4 +1,4 @@
-import 'package:booking/main_application.dart';
+import 'package:booking/models/main_application.dart';
 import 'package:booking/models/order.dart';
 import 'package:booking/services/app_blocs.dart';
 import 'package:booking/services/map_markers_service.dart';
@@ -9,9 +9,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:solid_bottom_sheet/solid_bottom_sheet.dart';
 
-import 'orders/bottom_sheets/order_search_car_bottom_sheet.dart';
 import 'orders/new_order_first_point_screen.dart';
-import 'orders/widgets/riples.dart';
+import 'orders/order_carried_out_panel.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -96,6 +95,8 @@ class _MainScreenState extends State<MainScreen> {
                       return newOrderCalcScreen;
                     case OrderState.new_order_calculated:
                       return newOrderCalcScreen;
+                    case OrderState.carried_out:
+                      return OrderCarriedOutPanel();
                     default:
                       return Container();
                   }
@@ -103,7 +104,7 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ),
             Positioned(
-              top: 50,
+              top: 40,
               right: 8,
               child: FloatingActionButton(
                 heroTag: '_onMapTypeButtonPressed',
@@ -115,19 +116,21 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               ),
             ),
-            Positioned(
-              top: 300,
-              right: 8,
-              child: FloatingActionButton(
-                heroTag: '_sdfsdf',
-                onPressed: _startCircleAnimation,
-                backgroundColor: Colors.white,
-                child: Icon(
-                  Icons.landscape,
-                  color: Colors.black,
-                ),
-              ),
-            ),
+            MainApplication().curOrder.mapBoundsIcon
+                ? Positioned(
+                    top: 100,
+                    right: 8,
+                    child: FloatingActionButton(
+                      heroTag: '_mapBounds',
+                      onPressed: _onMapBoundsButtonPressed,
+                      backgroundColor: Colors.white,
+                      child: Icon(
+                        Icons.zoom_out_map,
+                        color: Colors.black,
+                      ),
+                    ),
+                  )
+                : Container(),
             Positioned(
               left: 10,
               top: 35,
@@ -138,7 +141,6 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ],
         ),
-
       ),
     );
   } // build
@@ -151,6 +153,9 @@ class _MainScreenState extends State<MainScreen> {
       MapMarkersService().pickUpLocation = MainApplication().currentLocation;
     }
     _onCameraIdle();
+    if (MainApplication().curOrder.mapBoundsIcon){
+      MainApplication().mapController.animateCamera(CameraUpdate.newLatLngBounds(MapMarkersService().mapBounds(), 50));
+    }
   }
 
   void _onCameraMove(CameraPosition position) {
@@ -203,11 +208,13 @@ class _MainScreenState extends State<MainScreen> {
     bool backButton = _backButtonPressedTime == null || currentTime.difference(_backButtonPressedTime) > Duration(seconds: 3);
     if (backButton) {
       _backButtonPressedTime = currentTime;
-      Fluttertoast.showToast(msg: "Double Click to exit app", backgroundColor: Colors.black, textColor: Colors.white);
+      Fluttertoast.showToast(msg: "Для выхода из приложения нажмите кнопку \"Назад\" еще раз.", backgroundColor: Colors.black, textColor: Colors.white);
       return false;
     }
     return true;
   }
 
-  void _startCircleAnimation() {}
+  void _onMapBoundsButtonPressed() {
+    MainApplication().mapController.animateCamera(CameraUpdate.newLatLngBounds(MapMarkersService().mapBounds(), 50));
+  }
 }

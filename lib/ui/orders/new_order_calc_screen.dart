@@ -1,4 +1,4 @@
-import 'package:booking/main_application.dart';
+import 'package:booking/models/main_application.dart';
 import 'package:booking/models/order.dart';
 import 'package:booking/models/route_point.dart';
 import 'package:booking/services/app_blocs.dart';
@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:list_tile_more_customizable/list_tile_more_customizable.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'bottom_sheets/order_modal_bottom_sheets.dart';
 import 'widgets/new_order_calc_tariff_check_widget.dart';
 import 'widgets/new_order_calc_main_button.dart';
 import 'widgets/new_order_notes_dialog.dart';
@@ -62,7 +63,8 @@ class NewOrderCalcScreen extends StatelessWidget {
                               MainApplication().curOrder.routePoints.first.note = note;
                             }
                           } else {
-                            _showNoteDialog(context);
+                            // _showNoteDialog(context);
+                            OrderModalBottomSheets.orderNote(context);
                           }
                         },
                         child: StreamBuilder(
@@ -136,50 +138,27 @@ class NewOrderCalcScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
                       Expanded(
-                        child: FlatButton.icon(
-                          icon: Icon(Icons.payment),
-                          label: Flexible(
-                            fit: FlexFit.loose,
-                            child: Container(
-                              child: Text(
-                                'Корпоративный счет',
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-
-                          onPressed: () {
-                            showModalBottomSheet(
-                                context: context,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
+                        child: StreamBuilder(
+                            stream: AppBlocs().newOrderPaymentStream,
+                            builder: (context, snapshot) {
+                              return FlatButton.icon(
+                                icon: Image.asset(
+                                  MainApplication().curOrder.paymentType.iconName,
+                                  width: 30,
+                                  height: 30,
                                 ),
-                                backgroundColor: Colors.white,
-                                builder: (BuildContext context) {
-                                  return Container(
-                                    child: new Wrap(
-                                      children: <Widget>[
-                                        new ListTile(
-                                          leading: Image.asset("assets/icons/ic_payment_cash.png"),
-                                          title: new Text('Наличные'),
-                                          onTap: () => {},
-                                        ),
-                                        new ListTile(
-                                          leading: new Icon(Icons.videocam),
-                                          title: new Text('Сбербанк Онлайн'),
-                                          onTap: () => {},
-                                        ),
-                                        new ListTile(
-                                          leading: new Icon(Icons.videocam),
-                                          title: new Text('Корпоративный счет'),
-                                          onTap: () => Navigator.pop(context),
-                                        ),
-                                      ],
+                                label: Flexible(
+                                  fit: FlexFit.loose,
+                                  child: Container(
+                                    child: Text(
+                                      MainApplication().curOrder.paymentType.name,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                  );
-                                });
-                          },
-                        ),
+                                  ),
+                                ),
+                                onPressed: () => OrderModalBottomSheets.paymentTypes(context),
+                              );
+                            }),
                       ),
                       Container(height: 40, child: VerticalDivider(color: Colors.amber)),
                       Expanded(

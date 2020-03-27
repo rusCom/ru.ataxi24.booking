@@ -13,7 +13,7 @@ class NewOrderNotesDialog extends StatelessWidget {
     RoutePointSearchBar searchBar = RoutePointSearchBar(
       hintText: "Введите к чему подъехать или выберите из списка",
     );
-    // print(_routePoint.placeId);
+
 
     return Scaffold(
       appBar: AppBar(
@@ -23,16 +23,67 @@ class NewOrderNotesDialog extends StatelessWidget {
         ),
         title: searchBar,
       ),
-      body: ListView.builder(
-        itemCount: _routePoint.notes.length,
-        itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-            leading: Icon(Icons.note),
-            title: Text(_routePoint.notes[index]),
-            onTap: () => Navigator.pop(context, _routePoint.notes[index]),
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(left: 15, right: 15),
+              child: TextField(
+                autofocus: true,
+                // controller: entranceController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Укажите номер подъезда',
+                  icon: Icon(
+                    Icons.format_list_numbered,
+                    color: Color(0xFF757575),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 15, right: 15),
+              child: TextField(
+                // controller: noteController,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'или к чему подъехать',
+                  icon: Icon(
+                    Icons.note,
+                    color: Color(0xFF757575),
+                  ),
+                ),
+              ),
+            ),
+            ListView.builder(
+              physics: NeverScrollableScrollPhysics(), ///
+              shrinkWrap: true,
+              itemCount: _routePoint.notes.length,
+              itemBuilder: (BuildContext context, int index) {
+                return ListTile(
+                  leading: Icon(Icons.note),
+                  title: Text(_routePoint.notes[index]),
+                  onTap: () => Navigator.pop(context, _routePoint.notes[index]),
 
-          );
-        },
+                );
+              },
+            ),
+            ListView.builder(
+              physics: NeverScrollableScrollPhysics(), ///
+              shrinkWrap: true,
+              itemCount: _routePoint.notes.length,
+              itemBuilder: (BuildContext context, int index) {
+                return ListTile(
+                  leading: Icon(Icons.note),
+                  title: Text(_routePoint.notes[index]),
+                  onTap: () => Navigator.pop(context, _routePoint.notes[index]),
+
+                );
+              },
+            )
+          ],
+        ),
       ),
     );
   }

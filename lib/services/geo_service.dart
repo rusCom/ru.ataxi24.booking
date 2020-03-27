@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:booking/main_application.dart';
+import 'package:booking/models/main_application.dart';
 import 'package:booking/models/route_point.dart';
 import 'package:booking/ui/utils/core.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -32,7 +32,7 @@ class GeoService {
       // print("!!" + list.toString());
       List<RoutePoint> listRoutePoints = list.map((model) => RoutePoint.fromJson(model)).toList();
       if (listRoutePoints == null){
-        print("##### listRoutePoints = null");
+        // print("##### listRoutePoints = null");
       }
       // print(listRoutePoints);
       // print("!!" + listRoutePoints.cast<String>().toString());

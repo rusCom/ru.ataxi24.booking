@@ -4,7 +4,6 @@ import 'package:booking/services/map_markers_service.dart';
 import 'package:booking/services/rest_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:logger/logger.dart';
 import 'package:uuid/uuid.dart';
 
 class RoutePoint {

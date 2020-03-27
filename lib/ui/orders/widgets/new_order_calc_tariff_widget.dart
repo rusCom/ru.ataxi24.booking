@@ -1,4 +1,4 @@
-import 'package:booking/main_application.dart';
+import 'package:booking/models/main_application.dart';
 import 'package:booking/models/order.dart';
 import 'package:booking/models/order_tariff.dart';
 import 'package:flutter/material.dart';

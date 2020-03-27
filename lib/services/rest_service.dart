@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:booking/main_application.dart';
+import 'package:booking/models/main_application.dart';
 import 'package:booking/ui/utils/core.dart';
 import 'package:http/http.dart' as http;
 
@@ -118,6 +118,7 @@ class RestService {
       "ln": MainApplication().currentPosition.longitude,
       "platform": MainApplication().targetPlatform,
       "token": MainApplication().clientToken,
+      "test":true,
     };
 
     //print(header);

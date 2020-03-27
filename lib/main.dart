@@ -1,3 +1,4 @@
+import 'package:booking/ui/profile/profile_login_screen.dart';
 import 'package:booking/ui/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'ui/main_screen.dart';
@@ -26,6 +27,7 @@ class MainApp extends StatelessWidget {
       routes: {
         '/main': (context) => MainScreen(),
         '/splash': (context) => SplashScreen(),
+        '/login': (context) => ProfileLoginScreen(),
       },
     );
   }

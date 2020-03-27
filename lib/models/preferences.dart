@@ -1,6 +1,5 @@
 import 'package:booking/models/order_tariff.dart';
 import 'package:booking/models/payment_type.dart';
-import 'package:logger/logger.dart';
 
 class Preferences{
   String administrationPhone;
@@ -25,7 +24,17 @@ class Preferences{
       tariffs.forEach((tariff) => orderTariffs.add(OrderTariff(type: tariff)));
     }
   }
-
+  
+  PaymentType paymentType(String type){
+    paymentTypes.forEach((paymentType)  {
+      if (paymentType.type == type){
+        return paymentType;
+      }
+      return PaymentType(type: "cash");
+    });
+    return PaymentType(type: "cash");
+  }
+  
   Map<String, dynamic> toJson() => {
     "administrationPhone": administrationPhone,
     "paymentTypes": paymentTypes,

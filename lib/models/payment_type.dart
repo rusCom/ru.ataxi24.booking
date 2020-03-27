@@ -1,4 +1,5 @@
-import 'package:booking/main_application.dart';
+import 'package:booking/models/main_application.dart';
+import 'package:flutter/material.dart';
 
 class PaymentType {
   final String type;
@@ -6,19 +7,20 @@ class PaymentType {
   String choseName;
   String iconName;
   String choseIconName;
+  Icon icon;
   bool isChosen;
 
   PaymentType({this.type}) {
     switch (type) {
       case "cash":
         name = "Наличные";
-        choseIconName = "Наличный расчет";
+        choseName = "Наличный расчет";
         iconName = "assets/icons/ic_payment_cash.png";
         choseIconName = "assets/icons/ic_payment_cash_choose.png";
         break;
       case "corporation":
         name = "Организация";
-        choseIconName = "За счет организации";
+        choseName = "За счет организации";
         iconName = "assets/icons/ic_payment_corporation.png";
         choseIconName = "assets/icons/ic_payment_corporation_choose.png";
         break;
@@ -26,13 +28,13 @@ class PaymentType {
         switch (MainApplication().targetPlatform) {
           case "android":
             name = "Google Pay";
-            choseIconName = "Google Pay";
+            choseName = "Google Pay";
             iconName = "assets/icons/ic_payment_google.png";
             choseIconName = "assets/icons/ic_payment_google_choose.png";
             break;
           case "iOS":
             name = "Apple Pay";
-            choseIconName = "Apple Pay Pay";
+            choseName = "Apple Pay Pay";
             iconName = "assets/icons/ic_payment_apple.png";
             choseIconName = "assets/icons/ic_payment_apple_choose.png";
             break;
@@ -40,15 +42,15 @@ class PaymentType {
         break;
       case "sberbank":
         name = "Сбербанк";
-        choseIconName = "Сбербанк Онлайн перевод водителю";
+        choseName = "Сбербанк Онлайн перевод водителю";
         iconName = "assets/icons/ic_payment_sberbank.png";
         choseIconName = "assets/icons/ic_payment_sberbank_choose.png";
         break;
       case "bonus":
         name = "Бонусы";
-        choseIconName = "За счет накопленный бонусов";
+        choseName = "За счет накопленный бонусов";
         iconName = "assets/icons/ic_payment_bonus.png";
-        choseIconName = "assets/icons/ic_payment_sberbank_bonus.png";
+        choseIconName = "assets/icons/ic_payment_bonus_choose.png";
         break;
     }
   }
