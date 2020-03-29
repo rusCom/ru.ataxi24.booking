@@ -42,7 +42,7 @@ class OrderSlidingPanel extends StatelessWidget {
               child: Text(subTitle),
             ),
             SizedBox(
-              height: 18.0,
+              height: 0.0,
             ),
             Expanded(
               child: child,

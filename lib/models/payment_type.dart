@@ -24,33 +24,11 @@ class PaymentType {
         iconName = "assets/icons/ic_payment_corporation.png";
         choseIconName = "assets/icons/ic_payment_corporation_choose.png";
         break;
-      case "credit_card":
-        switch (MainApplication().targetPlatform) {
-          case "android":
-            name = "Google Pay";
-            choseName = "Google Pay";
-            iconName = "assets/icons/ic_payment_google.png";
-            choseIconName = "assets/icons/ic_payment_google_choose.png";
-            break;
-          case "iOS":
-            name = "Apple Pay";
-            choseName = "Apple Pay Pay";
-            iconName = "assets/icons/ic_payment_apple.png";
-            choseIconName = "assets/icons/ic_payment_apple_choose.png";
-            break;
-        }
-        break;
       case "sberbank":
         name = "Сбербанк";
         choseName = "Сбербанк Онлайн перевод водителю";
         iconName = "assets/icons/ic_payment_sberbank.png";
         choseIconName = "assets/icons/ic_payment_sberbank_choose.png";
-        break;
-      case "bonus":
-        name = "Бонусы";
-        choseName = "За счет накопленный бонусов";
-        iconName = "assets/icons/ic_payment_bonus.png";
-        choseIconName = "assets/icons/ic_payment_bonus_choose.png";
         break;
     }
   }

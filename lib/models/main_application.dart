@@ -24,16 +24,16 @@ class MainApplication {
   Order _curOrder;
   String deviceId, _clientToken;
   GoogleMapController mapController;
-  String targetPlatform;
   Preferences preferences = Preferences();
   bool _timerStarted = false;
   bool _dataCycle;
+  TargetPlatform targetPlatform;
 
   Future<bool> init(BuildContext context) async {
     _sharedPreferences = await SharedPreferences.getInstance();
     deviceId = await DeviceId.getID;
 
-    currentPosition = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+    currentPosition = await Geolocator().getLastKnownPosition(desiredAccuracy: LocationAccuracy.lowest);
     var locationOptions = LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
     Geolocator().getPositionStream(locationOptions).listen((Position position) {
       if (position != null) {
@@ -41,14 +41,7 @@ class MainApplication {
       }
     });
 
-    // текущая платформа
-    if (Theme.of(context).platform == TargetPlatform.android) {
-      targetPlatform = "android";
-    } else if (Theme.of(context).platform == TargetPlatform.iOS) {
-      targetPlatform = "iOS";
-    } else if (Theme.of(context).platform == TargetPlatform.fuchsia) {
-      targetPlatform = "fuchsia";
-    }
+    targetPlatform = Theme.of(context).platform;
 
     await MapMarkersService().init(context);
     _clientToken = _sharedPreferences.getString("_clientToken") ?? "";

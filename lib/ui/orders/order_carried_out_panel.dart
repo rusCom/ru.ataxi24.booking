@@ -20,9 +20,9 @@ class OrderCarriedOutPanel extends StatelessWidget {
                 itemCount: MainApplication().curOrder.routePoints.length,
                 itemBuilder: (BuildContext context, int index) {
                   RoutePoint routePoint = MainApplication().curOrder.routePoints[index];
-                  String imageLocation = "assets/icons/ic_conformation_point.png";
-                  if (index == 0){imageLocation = "assets/icons/ic_conformation_pickup.png";}
-                  if (index == MainApplication().curOrder.routePoints.length - 1){imageLocation = "assets/icons/ic_conformation_destination.png";}
+                  String imageLocation = "assets/icons/ic_onboard_address.png";
+                  if (index == 0){imageLocation = "assets/icons/ic_onboard_pick_up.png";}
+                  if (index == MainApplication().curOrder.routePoints.length - 1){imageLocation = "assets/icons/ic_onboard_destination.png";}
 
                   return ListTile(
                     title: Text(routePoint.name),

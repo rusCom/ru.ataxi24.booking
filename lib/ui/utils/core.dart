@@ -13,7 +13,7 @@ List<Color> kitGradients = [
 ];
 
 class Const{
-  // static List<String> restHost = ["http://192.168.1.199:5876", "http://api1.toptaxi.org:5872", "http://api2.toptaxi.org:5872" ];
+  // static List<String> restHost = ["http://192.168.1.199:5876"]; //, "http://api1.toptaxi.org:5872", "http://api2.toptaxi.org:5872" ];
   static List<String> restHost = [ "http://api1.toptaxi.org:5872", "http://api2.toptaxi.org:5872" ];
   static const String dispatchingToken = "E88FF2D642DC9E11D4718385E2A62663";
   static List<Color> kitGradients = [

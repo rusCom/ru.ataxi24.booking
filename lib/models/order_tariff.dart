@@ -22,7 +22,6 @@ class OrderTariff{
     switch (type){
       case "econom": return "Эконом";
       case "comfort": return "Комфорт";
-      case "comfort_plus": return "Комфорт+";
       case "buisness": return "Бизнес";
       case "cargo": return "Грузовой";
     }
@@ -32,9 +31,8 @@ class OrderTariff{
 
   String get iconName{
     switch (type){
-      case "econom": return "assets/icons/ic_tariff_standard.png";
+      case "econom": return "assets/icons/ic_tariff_econom.png";
       case "comfort": return "assets/icons/ic_tariff_comfort.png";
-      case "comfort_plus": return "assets/icons/ic_tariff_comfort_plus.png";
       case "buisness": return "assets/icons/ic_tariff_business.png";
       case "cargo": return "assets/icons/ic_tariff_cargo.jfif";
     }

@@ -179,16 +179,21 @@ class Order {
       MapMarkersService().agentMarkerRefresh();
     }
 
-    if (_lastRoutePoints != jsonData['route'].toString()) {
-      // если есть изменения по точкам маршрута
-      Iterable list = jsonData['route'];
-      routePoints = list.map((model) => RoutePoint.fromJson(model)).toList();
-      MapMarkersService().refresh();
-      if (MainApplication().mapController != null) {
-        MainApplication().mapController.animateCamera(CameraUpdate.newLatLngBounds(MapMarkersService().mapBounds(), 50));
-        _lastRoutePoints = jsonData['route'].toString();
-      }
-    } // if (_lastRoutePoints != jsonData['route'].toString()){
+    if (jsonData.containsKey("route")){
+      if (_lastRoutePoints != jsonData['route'].toString()) {
+        // если есть изменения по точкам маршрута
+        Iterable list = jsonData['route'];
+        routePoints = list.map((model) => RoutePoint.fromJson(model)).toList();
+        MapMarkersService().refresh();
+        if (MainApplication().mapController != null) {
+          MainApplication().mapController.animateCamera(CameraUpdate.newLatLngBounds(MapMarkersService().mapBounds(), 50));
+          _lastRoutePoints = jsonData['route'].toString();
+        }
+      } // if (_lastRoutePoints != jsonData['route'].toString()){
+
+    }
+
+
 
 
     Logger().d(this.toString());

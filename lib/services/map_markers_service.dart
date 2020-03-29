@@ -38,7 +38,7 @@ class MapMarkersService {
 
     _mapPickUpIcon      = BitmapDescriptor.fromBytes(await getBytesFromAsset("assets/icons/ic_onboard_pick_up.png", 200));
     _mapDestinationIcon = BitmapDescriptor.fromBytes(await getBytesFromAsset("assets/icons/ic_onboard_destination.png", 200));
-    _mapAddressIcon     = await BitmapDescriptor.fromAssetImage(configuration, 'assets/icons/ic_onboard_address.png');
+    _mapAddressIcon     = BitmapDescriptor.fromBytes(await getBytesFromAsset("assets/icons/ic_onboard_address.png", 200));
     _mapCarIcon         = BitmapDescriptor.fromBytes(await getBytesFromAsset("assets/icons/ic_onboard_car.png", 80));
 
     _pickUpLocation = MainApplication().currentLocation;

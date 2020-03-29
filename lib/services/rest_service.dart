@@ -116,7 +116,7 @@ class RestService {
       "dispatching": Const.dispatchingToken,
       "lt": MainApplication().currentPosition.latitude,
       "ln": MainApplication().currentPosition.longitude,
-      "platform": MainApplication().targetPlatform,
+      "platform": MainApplication().targetPlatform.toString(),
       "token": MainApplication().clientToken,
       "test":true,
     };
