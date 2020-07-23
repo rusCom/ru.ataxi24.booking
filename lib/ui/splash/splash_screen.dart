@@ -34,10 +34,13 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   profileAuth() async {
     bool isAuth = await Profile().auth();
     if (isAuth) {
+      /*
       Map<String, dynamic> restResult = await RestService().httpGet("/data");
       if ((restResult['status'] == 'OK') & (restResult.containsKey("result"))){
         MainApplication().parseData(restResult['result']);
       }
+
+       */
       setState(() {
         state = "main";
       });

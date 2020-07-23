@@ -7,7 +7,6 @@ import 'package:booking/ui/route_point/route_point_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:list_tile_more_customizable/list_tile_more_customizable.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'bottom_sheets/order_modal_bottom_sheets.dart';
 import 'widgets/new_order_calc_tariff_check_widget.dart';
 import 'widgets/new_order_calc_main_button.dart';
@@ -117,9 +116,9 @@ class NewOrderCalcScreen extends StatelessWidget {
                     onTap: (details) async {
                       if (MainApplication().curOrder.orderState == OrderState.new_order_calculated) {
                         if (MainApplication().curOrder.routePoints.length == 2) {
-                          RoutePoint routePoint = await Navigator.push<RoutePoint>(context, MaterialPageRoute(builder: (context) => RoutePointScreen()));
+                          RoutePoint routePoint = await Navigator.push<RoutePoint>(context, MaterialPageRoute(builder: (context) => RoutePointScreen(viewReturn:  false)));
                           if (routePoint != null) {
-                            MainApplication().curOrder.routePoints.last = routePoint;
+                            MainApplication().curOrder.addRoutePoint(routePoint, isLast: true);
                           }
                         } else {
                           await Navigator.push(context, MaterialPageRoute(builder: (context) => NewOrderRoutePointsReorderDialog()));
@@ -156,7 +155,7 @@ class NewOrderCalcScreen extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                onPressed: () => OrderModalBottomSheets.paymentTypes(context),
+                                onPressed: () => _showPaymentsDialog(context),
                               );
                             }),
                       ),
@@ -206,56 +205,81 @@ class NewOrderCalcScreen extends StatelessWidget {
     );
   }
 
-  _showNoteDialog(BuildContext context) {
-    final entranceController = TextEditingController();
-    final noteController = TextEditingController();
-    Alert(
+  _showPaymentsDialog(BuildContext context) {
+    showModalBottomSheet(
         context: context,
-        title: MainApplication().curOrder.routePoints.first.name,
-        content: Column(
-          children: <Widget>[
-            TextField(
-              autofocus: true,
-              controller: entranceController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: 'Укажите номер подъезда',
-                icon: Icon(
-                  Icons.format_list_numbered,
-                  color: Color(0xFF757575),
-                ),
+        // isScrollControlled: true,
+        builder: (BuildContext bc) {
+          return Container(
+            color: Color(0xFF737373),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Colors.white, borderRadius: BorderRadius.only(topLeft: const Radius.circular(10.0), topRight: const Radius.circular(10.0))),
+              // margin: EdgeInsets.only(left: 8, right: 8),
+              child: new Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  MainApplication().curOrder.isPaymentType("cash")
+                      ? new ListTileMoreCustomizable(
+                          leading: Image.asset(
+                            MainApplication().curOrder.getPaymentType("cash").iconName,
+                            width: 40,
+                            height: 40,
+                          ),
+                          title: new Text(MainApplication().curOrder.getPaymentType("cash").choseName),
+                          onTap: (details) async {
+                            Navigator.pop(context);
+                            MainApplication().curOrder.checkedPayment = "cash";
+                          },
+                        )
+                      : Container(),
+                  MainApplication().curOrder.isPaymentType("corporation")
+                      ? new ListTileMoreCustomizable(
+                          leading: Image.asset(
+                            MainApplication().curOrder.getPaymentType("corporation").iconName,
+                            width: 40,
+                            height: 40,
+                          ),
+                          title: new Text(MainApplication().curOrder.getPaymentType("corporation").choseName),
+                          onTap: (details) async {
+                            Navigator.pop(context);
+                            MainApplication().curOrder.checkedPayment = "corporation";
+                          },
+                        )
+                      : Container(),
+                  MainApplication().curOrder.isPaymentType("sberbank")
+                      ? new ListTileMoreCustomizable(
+                          leading: Image.asset(
+                            MainApplication().curOrder.getPaymentType("sberbank").iconName,
+                            width: 40,
+                            height: 40,
+                          ),
+                          title: new Text(MainApplication().curOrder.getPaymentType("sberbank").choseName),
+                          onTap: (details) async {
+                            Navigator.pop(context);
+                            MainApplication().curOrder.checkedPayment = "sberbank";
+                          },
+                        )
+                      : Container(),
+                  MainApplication().curOrder.isPaymentType("bonuses")
+                      ? new ListTileMoreCustomizable(
+                          leading: Image.asset(
+                            MainApplication().curOrder.getPaymentType("bonuses").iconName,
+                            width: 40,
+                            height: 40,
+                          ),
+                          title: new Text(MainApplication().curOrder.getPaymentType("bonuses").choseName),
+                          onTap: (details) async {
+                            Navigator.pop(context);
+                            MainApplication().curOrder.checkedPayment = "bonuses";
+                          },
+                        )
+                      : Container(),
+                ],
               ),
             ),
-            TextField(
-              controller: noteController,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: 'или к чему подъехать',
-                icon: Icon(
-                  Icons.note,
-                  color: Color(0xFF757575),
-                ),
-              ),
-            ),
-          ],
-        ),
-        buttons: [
-          DialogButton(
-            onPressed: () {
-              Navigator.pop(context);
-              if (entranceController.text != "") {
-                MainApplication().curOrder.routePoints.first.note = entranceController.text + " подъезд";
-              } else if (noteController.text != "") {
-                MainApplication().curOrder.routePoints.first.note = noteController.text;
-              }
-            },
-            child: Text(
-              "Сохранить",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-          )
-        ]).show();
+          );
+        });
   }
 
   void backPressed() {

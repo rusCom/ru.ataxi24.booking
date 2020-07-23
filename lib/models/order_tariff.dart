@@ -1,6 +1,5 @@
 class OrderTariff{
   String type;
-  String _name;
   String price;
   bool checked;
 
@@ -8,7 +7,6 @@ class OrderTariff{
   OrderTariff({this.type, this.price}){
     checked = false;
   }
-
 
   factory OrderTariff.fromJson(Map<String, dynamic> json) {
     return OrderTariff(
@@ -22,8 +20,12 @@ class OrderTariff{
     switch (type){
       case "econom": return "Эконом";
       case "comfort": return "Комфорт";
-      case "buisness": return "Бизнес";
+      case "comfort_plus": return "Комфорт+";
+      case "business": return "Бизнес";
+      case "delivery": return "Доставка";
+      case "sober_driver": return "Перегон";
       case "cargo": return "Грузовой";
+      case "express": return "Экспресс";
     }
     return "Эконом";
 
@@ -33,8 +35,13 @@ class OrderTariff{
     switch (type){
       case "econom": return "assets/icons/ic_tariff_econom.png";
       case "comfort": return "assets/icons/ic_tariff_comfort.png";
-      case "buisness": return "assets/icons/ic_tariff_business.png";
-      case "cargo": return "assets/icons/ic_tariff_cargo.jfif";
+      case "comfort_plus": return "assets/icons/ic_tariff_comfort_plus.png";
+      case "business": return "assets/icons/ic_tariff_business.png";
+      case "delivery": return "assets/icons/ic_tariff_delivery.png";
+      case "sober_driver": return "assets/icons/ic_tariff_sober_driver.png";
+      case "cargo": return "assets/icons/ic_tariff_cargo.png";
+      case "express": return "assets/icons/ic_tariff_express.png";
+
     }
     return "assets/icons/ic_tariff_econom.png";
   }

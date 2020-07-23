@@ -6,6 +6,7 @@ import 'package:booking/models/route_point.dart';
 import 'package:booking/services/app_blocs.dart';
 import 'package:booking/services/map_markers_service.dart';
 import 'package:booking/services/rest_service.dart';
+import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:logger/logger.dart';
@@ -22,10 +23,9 @@ class Order {
   OrderState _orderState;
   String _guid;
   List<RoutePoint> routePoints = [];
-  List<OrderTariff> orderTariffs = [];
-  PaymentType _paymentType;
-  String _lastRoutePoints = "", _lastAgent = "";
-  Agent agent;
+  String _lastRoutePoints = "";
+  Agent agent; // водитель
+  List<PaymentType> paymentTypes = []; // типы платежей и тарифы
 
   String getLastRouteName() {
     if (routePoints.length == 1)
@@ -56,24 +56,30 @@ class Order {
     return true;
   }
 
-  set paymentType(PaymentType value) {
-    if (_paymentType != value) {
-      _paymentType = value;
-      AppBlocs().newOrderPaymentController.sink.add(value);
-      if (orderState == OrderState.new_order_calculated) {
-        orderState = OrderState.new_order_calculating;
-      }
+  List<OrderTariff> get orderTariffs {
+    if (_orderState == OrderState.new_order_calculating) {
+      return routePoints.first.orderTariffs;
     }
-  }
 
-  PaymentType get paymentType => _paymentType;
+    PaymentType result;
+    paymentTypes.forEach((paymentType) {
+      if (paymentType.checked) result = paymentType;
+    });
+    if (result == null) return [];
+    return result.orderTariffs;
+  }
 
   int _indexRoutePointOfKey(Key key) {
     return routePoints.indexWhere((RoutePoint d) => d.key == key);
   }
 
-  void addRoutePoint(RoutePoint routePoint) {
-    routePoints.add(routePoint);
+  void addRoutePoint(RoutePoint routePoint, {bool isLast = false}) {
+    if (isLast) {
+      routePoints.last = routePoint;
+    } else {
+      routePoints.add(routePoint);
+    }
+
     if (routePoints.length > 1) {
       if (orderState == OrderState.new_order) {
         orderState = OrderState.new_order_calculating;
@@ -92,11 +98,10 @@ class Order {
       _orderState = value;
       if (value == OrderState.new_order) {
         routePoints.clear();
-        paymentType = MainApplication().preferences.paymentType("cash");
+        // paymentType = "cash";
       }
 
       if (value == OrderState.new_order_calculating) {
-        orderTariffs = routePoints.first.orderTariffs;
         AppBlocs().newOrderTariffController.sink.add(orderTariffs);
         calcOrder();
       }
@@ -117,18 +122,75 @@ class Order {
   }
 
   Future<void> calcOrder() async {
-    Logger().d(toString());
+    if (DebugPrint().orderCalcDebugPrint) {
+      Logger().d(toString());
+    }
+
+    String checkPayment = checkedPayment;
     String checkTariff = checkedTariff;
+
     var response = await RestService().httpPost("/orders/calc", toJson());
     if (response["status"] == "OK") {
       var result = response["result"];
       _guid = result['guid'];
-      Iterable list = result["tariffs"];
-      orderTariffs = list.map((model) => OrderTariff.fromJson(model)).toList();
+
+      Iterable payments = result["payments"];
+      paymentTypes = payments.map((model) => PaymentType.fromJson(model)).toList();
+
       orderState = OrderState.new_order_calculated;
+      checkedPayment = checkPayment;
       checkedTariff = checkTariff;
-      Logger().d(toString());
+      if (DebugPrint().orderCalcDebugPrint) {
+        Logger().d(toString());
+      }
     }
+  }
+
+  PaymentType getPaymentType(String type) {
+    PaymentType result;
+    paymentTypes.forEach((paymentType) {
+      if (paymentType.type == type) result = paymentType;
+    });
+    return result;
+  }
+
+  bool isPaymentType(String type){
+    bool res = false;
+    paymentTypes.forEach((paymentType) {
+      if (paymentType.type == type) res = true;
+    });
+    return res;
+  }
+
+  PaymentType get paymentType {
+    PaymentType result;
+    paymentTypes.forEach((paymentType) {
+      if (paymentType.checked) result = paymentType;
+    });
+    if (result == null) {
+      return PaymentType(type: "cash");
+    }
+    return result;
+  }
+
+  String get checkedPayment {
+    String result = "cash";
+    paymentTypes.forEach((paymentType) {
+      if (paymentType.checked) result = paymentType.type;
+    });
+    return result;
+  }
+
+  set checkedPayment(String type) {
+    String checkTariff = checkedTariff;
+    paymentTypes.forEach((paymentType) {
+      if (paymentType.type == type)
+        paymentType.checked = true;
+      else
+        paymentType.checked = false;
+    });
+    checkedTariff = checkTariff;
+    AppBlocs().newOrderPaymentController.sink.add(checkTariff);
   }
 
   set checkedTariff(String type) {
@@ -152,11 +214,13 @@ class Order {
   OrderState get orderState => _orderState;
 
   Map<String, dynamic> toJson() => {
-        "route": routePoints,
+        "guid": _guid,
         "tariff": checkedTariff,
-        "payment": paymentType?.type,
+        "payment": checkedPayment,
         "state": orderState.toString(),
         "agent": agent,
+        "route": routePoints,
+        "payments": paymentTypes,
       };
 
   @override
@@ -179,7 +243,7 @@ class Order {
       MapMarkersService().agentMarkerRefresh();
     }
 
-    if (jsonData.containsKey("route")){
+    if (jsonData.containsKey("route")) {
       if (_lastRoutePoints != jsonData['route'].toString()) {
         // если есть изменения по точкам маршрута
         Iterable list = jsonData['route'];
@@ -190,12 +254,7 @@ class Order {
           _lastRoutePoints = jsonData['route'].toString();
         }
       } // if (_lastRoutePoints != jsonData['route'].toString()){
-
     }
-
-
-
-
     Logger().d(this.toString());
   }
 

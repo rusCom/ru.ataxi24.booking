@@ -28,6 +28,7 @@ class MainApplication {
   bool _timerStarted = false;
   bool _dataCycle;
   TargetPlatform targetPlatform;
+  Map<String, dynamic> clientLinks = Map();
 
   Future<bool> init(BuildContext context) async {
     _sharedPreferences = await SharedPreferences.getInstance();
@@ -40,6 +41,8 @@ class MainApplication {
         currentPosition = position;
       }
     });
+
+
 
     targetPlatform = Theme.of(context).platform;
 
@@ -87,6 +90,12 @@ class MainApplication {
 
   parseData(Map<String, dynamic> jsonData) {
     if (jsonData == null) return;
+    if (jsonData.containsKey('client_links')){
+      clientLinks['user_agreement'] = jsonData['client_links']['user_agreement'];
+      clientLinks['privacy_policy'] = jsonData['client_links']['privacy_policy'];
+      clientLinks['license_agreement'] = jsonData['client_links']['license_agreement'];
+
+    }
     if (jsonData.containsKey("preferences")) preferences.parseData(jsonData["preferences"]);
     if (jsonData.containsKey("profile")) Profile().parseData(jsonData["profile"]);
     if (jsonData.containsKey("order"))

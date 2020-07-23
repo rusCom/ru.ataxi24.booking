@@ -1,6 +1,8 @@
+import 'package:booking/models/main_application.dart';
 import 'package:booking/models/order.dart';
 import 'package:booking/services/app_blocs.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 class NewOrderMainButton extends StatelessWidget {
   @override
@@ -19,7 +21,9 @@ class NewOrderMainButton extends StatelessWidget {
               stream: AppBlocs().orderStateStream,
               builder: (context, snapshot) {
                 return RaisedButton(
-                  onPressed: snapshot.data == OrderState.new_order_calculated ? () {} : null,
+                  onPressed: snapshot.data == OrderState.new_order_calculated ? () {
+                    Logger().d(MainApplication().curOrder.toString());
+                  } : null,
                   shape: RoundedRectangleBorder(
                     borderRadius: new BorderRadius.only(bottomLeft: Radius.circular(18), bottomRight: Radius.circular(18)),
                   ),

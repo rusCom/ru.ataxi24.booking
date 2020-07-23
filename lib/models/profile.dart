@@ -22,6 +22,11 @@ class Profile {
         return true;
       }
     }
+    if (restResult['status'] == 'UNAUTHORIZED'){
+      if (restResult.containsKey('error')){
+        MainApplication().parseData(restResult['error']);
+      }
+    }
     return false;
   }
 

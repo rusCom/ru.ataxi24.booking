@@ -211,8 +211,6 @@ class MapMarkersService {
         if (marker.position.longitude < y0) y0 = marker.position.longitude;
       }
     }
-    print (x0);
-    print (x1);
     x0 = x0 - (x1 - x0) * 0.2;
     return LatLngBounds(northeast: LatLng(x1, y1), southwest: LatLng(x0, y0));
   }

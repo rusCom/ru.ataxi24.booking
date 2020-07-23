@@ -188,7 +188,7 @@ Widget _termsText() {
             style: linkStyle,
             recognizer: TapGestureRecognizer()
               ..onTap = () {
-                MainApplication().launchURL("https://taxi-econom.ru/clients.php");
+                MainApplication().launchURL(MainApplication().clientLinks['license_agreement']);
               }),
         TextSpan(text: ', '),
         TextSpan(
@@ -196,7 +196,7 @@ Widget _termsText() {
             style: linkStyle,
             recognizer: TapGestureRecognizer()
               ..onTap = () {
-                MainApplication().launchURL("https://taxi-econom.ru/clients.php");
+                MainApplication().launchURL(MainApplication().clientLinks['user_agreement']);
               }),
         TextSpan(text: ', а так же с обработкой моей персональной информации на условиях '),
         TextSpan(
@@ -204,7 +204,7 @@ Widget _termsText() {
             style: linkStyle,
             recognizer: TapGestureRecognizer()
               ..onTap = () {
-                MainApplication().launchURL("https://taxi-econom.ru/clients.php");
+                MainApplication().launchURL(MainApplication().clientLinks['privacy_policy']);
               }),
       ]),
     ),

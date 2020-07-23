@@ -26,7 +26,6 @@ class RoutePoint {
   }
 
   factory RoutePoint.fromJson(Map<String, dynamic> jsonData) {
-    // print("RoutePoint.fromJson json = " + jsonData.toString());
     return RoutePoint(
       name: jsonData['name'] != null ? jsonData['name'] : "",
       dsc: jsonData['dsc'] != null ? jsonData['dsc'] : "",
@@ -55,7 +54,6 @@ class RoutePoint {
 
   set note(String value) {
     _note = value;
-    // print("RoutePoint set note " + toString());
     AppBlocs().newOrderNoteController.sink.add(_note);
   }
 

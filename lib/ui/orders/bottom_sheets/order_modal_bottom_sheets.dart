@@ -69,7 +69,7 @@ class OrderModalBottomSheets {
                 ),
                 title: Text(paymentType.choseName),
                 onTap: () {
-                  MainApplication().curOrder.paymentType = paymentType;
+                  // MainApplication().curOrder.paymentType = paymentType;
                   Navigator.of(context).pop();
                 },
               );

@@ -10,9 +10,9 @@ import 'package:list_tile_more_customizable/list_tile_more_customizable.dart';
 
 class RoutePointScreen extends StatelessWidget {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  final bool isFirst;
+  final bool isFirst, viewReturn;
 
-  RoutePointScreen({this.isFirst = false}) : super();
+  RoutePointScreen({this.isFirst = false, this.viewReturn = true}) : super();
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +45,7 @@ class RoutePointScreen extends StatelessWidget {
             if ((snapshot.data == null) || (!snapshot.hasData) || (snapshot.data == "null_")){
               return Column(
                 children: <Widget>[
-                  _returnRoutePoint(context),
+                  viewReturn ? _returnRoutePoint(context) : Container(),
                 ],
               );
             }
@@ -111,10 +111,10 @@ class RoutePointScreen extends StatelessWidget {
 
   _autocomplete(String keyword){
     if (keyword.isNotEmpty && keyword != "" && keyword.length > 2) {
-      print("run autocomplete keyword = " + keyword);
+      // print("run autocomplete keyword = " + keyword);
       AppBlocs().geoAutocompleteController.sink.add("searching_");
       GeoService().autocomplete(keyword).then((result) {
-        print("GeoAutocompleteBloc result = " + result.toString());
+        // print("GeoAutocompleteBloc result = " + result.toString());
         if (result == null)AppBlocs().geoAutocompleteController.sink.add("not_found_");
         else {AppBlocs().geoAutocompleteController.sink.add(result);}
       }).catchError((e) {print("catchError " + e.toString());});
