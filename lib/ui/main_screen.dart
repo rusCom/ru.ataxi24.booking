@@ -2,15 +2,13 @@ import 'package:booking/models/main_application.dart';
 import 'package:booking/models/order.dart';
 import 'package:booking/services/app_blocs.dart';
 import 'package:booking/services/map_markers_service.dart';
-import 'package:booking/ui/drawer/drawer.dart';
 import 'package:booking/ui/orders/new_order_calc_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:solid_bottom_sheet/solid_bottom_sheet.dart';
-
+import 'package:logger/logger.dart';
 import 'orders/new_order_first_point_screen.dart';
-import 'orders/order_carried_out_panel.dart';
+import 'orders/sliding_panel/order_sliding_panel.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -19,14 +17,12 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   GoogleMapController _mapController;
-  SolidController _solidController = SolidController();
   var scaffoldKey = GlobalKey<ScaffoldState>();
   MapType _currentMapType = MapType.normal;
   Set<Marker> _markers;
   DateTime _backButtonPressedTime;
   NewOrderFirstPointScreen newOrderFirstPointScreen;
   NewOrderCalcScreen newOrderCalcScreen;
-  Circle circle;
 
   @override
   void initState() {
@@ -39,17 +35,6 @@ class _MainScreenState extends State<MainScreen> {
     });
     newOrderFirstPointScreen = NewOrderFirstPointScreen();
     newOrderCalcScreen = NewOrderCalcScreen();
-
-    /*
-    circle = Circle(
-        circleId: CircleId("car"),
-        radius: 1000,
-        zIndex: 1,
-        strokeColor: Colors.blue,
-        center: MainApplication().currentLocation,
-        fillColor: Colors.blue.withAlpha(70));
-
-     */
   }
 
   @override
@@ -64,7 +49,6 @@ class _MainScreenState extends State<MainScreen> {
       onWillPop: _onWillPop,
       child: Scaffold(
         key: scaffoldKey,
-        drawer: MainDrawer(),
         body: Stack(
           children: <Widget>[
             GoogleMap(
@@ -81,7 +65,6 @@ class _MainScreenState extends State<MainScreen> {
               onCameraMove: _onCameraMove,
               onCameraIdle: _onCameraIdle,
               onTap: _onMapTap,
-              circles: Set.of((circle != null) ? [circle] : []),
             ),
             Center(
               child: StreamBuilder<Object>(
@@ -95,10 +78,8 @@ class _MainScreenState extends State<MainScreen> {
                       return newOrderCalcScreen;
                     case OrderState.new_order_calculated:
                       return newOrderCalcScreen;
-                    case OrderState.carried_out:
-                      return OrderCarriedOutPanel();
                     default:
-                      return Container();
+                      return OrderSlidingPanel();
                   }
                 },
               ),
@@ -118,27 +99,19 @@ class _MainScreenState extends State<MainScreen> {
             ),
             MainApplication().curOrder.mapBoundsIcon
                 ? Positioned(
-                    top: 100,
-                    right: 8,
-                    child: FloatingActionButton(
-                      heroTag: '_mapBounds',
-                      onPressed: _onMapBoundsButtonPressed,
-                      backgroundColor: Colors.white,
-                      child: Icon(
-                        Icons.zoom_out_map,
-                        color: Colors.black,
-                      ),
-                    ),
-                  )
-                : Container(),
-            Positioned(
-              left: 10,
-              top: 35,
-              child: IconButton(
-                icon: Icon(Icons.menu),
-                onPressed: () => scaffoldKey.currentState.openDrawer(),
+              top: 100,
+              right: 8,
+              child: FloatingActionButton(
+                heroTag: '_mapBounds',
+                onPressed: _onMapBoundsButtonPressed,
+                backgroundColor: Colors.white,
+                child: Icon(
+                  Icons.zoom_out_map,
+                  color: Colors.black,
+                ),
               ),
-            ),
+            )
+                : Container(),
           ],
         ),
       ),
@@ -153,7 +126,7 @@ class _MainScreenState extends State<MainScreen> {
       MapMarkersService().pickUpLocation = MainApplication().currentLocation;
     }
     _onCameraIdle();
-    if (MainApplication().curOrder.mapBoundsIcon){
+    if (MainApplication().curOrder.mapBoundsIcon) {
       MainApplication().mapController.animateCamera(CameraUpdate.newLatLngBounds(MapMarkersService().mapBounds(), 50));
     }
   }

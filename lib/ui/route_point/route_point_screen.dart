@@ -7,6 +7,7 @@ import 'package:booking/services/map_markers_service.dart';
 import 'package:booking/ui/route_point/route_point_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:list_tile_more_customizable/list_tile_more_customizable.dart';
+import 'package:logger/logger.dart';
 
 class RoutePointScreen extends StatelessWidget {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -42,56 +43,88 @@ class RoutePointScreen extends StatelessWidget {
           stream: AppBlocs().geoAutocompleteStream,
           builder: (context, snapshot) {
             // print("snapshot.data = " + snapshot.data.toString());
-            if ((snapshot.data == null) || (!snapshot.hasData) || (snapshot.data == "null_")){
+            if ((snapshot.data == null) || (!snapshot.hasData) || (snapshot.data == "null_")) {
               return Column(
                 children: <Widget>[
                   viewReturn ? _returnRoutePoint(context) : Container(),
+                  _nearbyRoutePoint(context),
                 ],
               );
             }
-            if (snapshot.data == "searching_"){
+            if (snapshot.data == "searching_") {
               return Center(
                 child: CircularProgressIndicator(),
               );
             }
-            if (snapshot.data == "not_found_"){
-              return Center(
-                child: Text("Ничего не найдено")
-              );
+            if (snapshot.data == "not_found_") {
+              return Center(child: Text("Ничего не найдено"));
             }
             List<RoutePoint> routePoints = snapshot.data;
-              return Container(
-                child: ListView.builder(
-                  itemCount: routePoints.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    RoutePoint routePoint = routePoints.elementAt(index);
-                    return ListTile(
-                      title: Text(routePoint.name),
-                      subtitle: Text(routePoint.dsc),
-                      leading: routePoint.getIcon(),
-                      onTap: () async {
-                        //  print(routePoint.name);
-                        if (routePoint.type == 'route') {
-                          if (routePoint.detail == '0') {
-                            GeoService().detail(routePoint);
-                          }
-                          routePointSearchBar.setText(routePoint.name);
-                        } else if (routePoint.detail == '1') {
-                          Navigator.pop(context, routePoint);
-                        } else {
-                          GeoService().detail(routePoint).then((routePoint) {
-                            Navigator.pop(context, routePoint);
-                          });
+            return Container(
+              child: ListView.builder(
+                itemCount: routePoints.length,
+                itemBuilder: (BuildContext context, int index) {
+                  RoutePoint routePoint = routePoints.elementAt(index);
+                  return ListTile(
+                    title: Text(routePoint.name),
+                    subtitle: Text(routePoint.dsc),
+                    leading: routePoint.getIcon(),
+                    onTap: () async {
+                      //  print(routePoint.name);
+                      if (routePoint.type == 'route') {
+                        if (routePoint.detail == '0') {
+                          GeoService().detail(routePoint);
                         }
-                      },
-                    );
-                  },
-                  // separatorBuilder: (BuildContext context, int index) => Divider(),
-                ),
-              );
-
+                        routePointSearchBar.setText(routePoint.name);
+                      } else if (routePoint.detail == '1') {
+                        Navigator.pop(context, routePoint);
+                      } else {
+                        GeoService().detail(routePoint).then((routePoint) {
+                          Navigator.pop(context, routePoint);
+                        });
+                      }
+                    },
+                  );
+                },
+                // separatorBuilder: (BuildContext context, int index) => Divider(),
+              ),
+            );
           }),
     );
+  }
+
+  Widget _nearbyRoutePoint(BuildContext context) {
+    // Logger().v(MainApplication().nearbyRoutePoint);
+
+    if (MainApplication().nearbyRoutePoint != null) {
+      var routePoints = MainApplication().nearbyRoutePoint;
+      return Expanded(
+        child: ListView.builder(
+          itemCount: routePoints.length,
+          itemBuilder: (BuildContext context, int index) {
+            RoutePoint routePoint = routePoints.elementAt(index);
+            return ListTile(
+              title: Text(routePoint.name),
+              subtitle: Text(routePoint.dsc),
+              leading: routePoint.getIcon(),
+              onTap: () async {
+                print(routePoint.name);
+                if (routePoint.detail == '1') {
+                  Navigator.pop(context, routePoint);
+                } else {
+                  GeoService().detail(routePoint).then((routePoint) {
+                    Navigator.pop(context, routePoint);
+                  });
+                }
+              },
+            );
+          },
+        ),
+      );
+    }
+
+
+    return Container();
   }
 
   Widget _returnRoutePoint(BuildContext context) {
@@ -109,17 +142,21 @@ class RoutePointScreen extends StatelessWidget {
     return Container();
   }
 
-  _autocomplete(String keyword){
+  _autocomplete(String keyword) {
     if (keyword.isNotEmpty && keyword != "" && keyword.length > 2) {
       // print("run autocomplete keyword = " + keyword);
       AppBlocs().geoAutocompleteController.sink.add("searching_");
       GeoService().autocomplete(keyword).then((result) {
         // print("GeoAutocompleteBloc result = " + result.toString());
-        if (result == null)AppBlocs().geoAutocompleteController.sink.add("not_found_");
-        else {AppBlocs().geoAutocompleteController.sink.add(result);}
-      }).catchError((e) {print("catchError " + e.toString());});
-    }
-    else {
+        if (result == null)
+          AppBlocs().geoAutocompleteController.sink.add("not_found_");
+        else {
+          AppBlocs().geoAutocompleteController.sink.add(result);
+        }
+      }).catchError((e) {
+        print("catchError " + e.toString());
+      });
+    } else {
       AppBlocs().geoAutocompleteController.sink.add("null_");
     }
   }

@@ -16,7 +16,10 @@ enum OrderState {
   new_order_calculating,
   new_order_calculated,
   search_car,
-  carried_out,
+  drive_to_client,
+  drive_at_client,
+  paid_idle,
+  client_in_car,
 }
 
 class Order {
@@ -24,6 +27,7 @@ class Order {
   String _guid;
   List<RoutePoint> routePoints = [];
   String _lastRoutePoints = "";
+  String dispatcherPhone = "";
   Agent agent; // водитель
   List<PaymentType> paymentTypes = []; // типы платежей и тарифы
 
@@ -94,31 +98,58 @@ class Order {
 
   set orderState(OrderState value) {
     if (_orderState != value) {
+      if (DebugPrint().orderDebugPrint) {
+        Logger().d("new order state = " + value.toString());
+      }
       bool startTimer = false;
       _orderState = value;
-      if (value == OrderState.new_order) {
-        routePoints.clear();
-        // paymentType = "cash";
-      }
 
-      if (value == OrderState.new_order_calculating) {
-        AppBlocs().newOrderTariffController.sink.add(orderTariffs);
-        calcOrder();
-      }
+      switch (_orderState) {
+        case OrderState.new_order:
+          startTimer = false;
+          moveToCurLocation();
+          routePoints.clear();
+          break;
+        case OrderState.new_order_calculating:
+          startTimer = false;
+          AppBlocs().newOrderTariffController.sink.add(orderTariffs);
+          calcOrder();
+          break;
+        case OrderState.new_order_calculated:
+          startTimer = false;
+          AppBlocs().newOrderTariffController.sink.add(orderTariffs);
+          break;
 
-      if (value == OrderState.new_order_calculated) {
-        AppBlocs().newOrderTariffController.sink.add(orderTariffs);
-      }
-
-      if (value == OrderState.carried_out) {
-        // Logger().d("Статус заказа поиск авто. Запускаем таймер");
-        startTimer = true;
+        case OrderState.search_car:
+          animateCamera();
+          startTimer = true;
+          break;
+        case OrderState.drive_to_client:
+          animateCamera();
+          MainApplication.audioCache.play(MainApplication.audioAlarmOrderStateChange);
+          startTimer = true;
+          break;
+        case OrderState.drive_at_client:
+          animateCamera();
+          MainApplication.audioCache.play(MainApplication.audioAlarmOrderStateChange);
+          startTimer = true;
+          break;
+        case OrderState.paid_idle:
+          animateCamera();
+          MainApplication.audioCache.play(MainApplication.audioAlarmOrderStateChange);
+          startTimer = true;
+          break;
+        case OrderState.client_in_car:
+          animateCamera();
+          MainApplication.audioCache.play(MainApplication.audioAlarmOrderStateChange);
+          startTimer = true;
+          break;
       }
 
       MainApplication().dataCycle = startTimer;
 
       AppBlocs().orderStateController.sink.add(_orderState);
-    }
+    } // if (_orderState != value)
   }
 
   Future<void> calcOrder() async {
@@ -154,7 +185,7 @@ class Order {
     return result;
   }
 
-  bool isPaymentType(String type){
+  bool isPaymentType(String type) {
     bool res = false;
     paymentTypes.forEach((paymentType) {
       if (paymentType.type == type) res = true;
@@ -215,6 +246,7 @@ class Order {
 
   Map<String, dynamic> toJson() => {
         "guid": _guid,
+        "dispatcher_phone": dispatcherPhone,
         "tariff": checkedTariff,
         "payment": checkedPayment,
         "state": orderState.toString(),
@@ -229,11 +261,25 @@ class Order {
   }
 
   void parseData(Map<String, dynamic> jsonData) {
-    // Logger().d(jsonData.toString());
+    _guid = jsonData['guid'];
+    dispatcherPhone = jsonData['dispatcher_phone'];
     switch (jsonData['state']) {
-      case "client_in_car":
-        orderState = OrderState.carried_out;
+      case "search_car":
+        orderState = OrderState.search_car;
         break;
+      case "drive_to_client":
+        orderState = OrderState.drive_to_client;
+        break;
+      case "drive_at_client":
+        orderState = OrderState.drive_at_client;
+        break;
+      case "paid_idle":
+        orderState = OrderState.paid_idle;
+        break;
+      case "client_in_car":
+        orderState = OrderState.client_in_car;
+        break;
+
       default:
         orderState = OrderState.new_order;
         break;
@@ -241,6 +287,9 @@ class Order {
     if (jsonData.containsKey("agent")) {
       agent = Agent.fromJson(jsonData['agent']);
       MapMarkersService().agentMarkerRefresh();
+    } else {
+      agent = null;
+      MapMarkersService().clearAgentMarker();
     }
 
     if (jsonData.containsKey("route")) {
@@ -249,22 +298,64 @@ class Order {
         Iterable list = jsonData['route'];
         routePoints = list.map((model) => RoutePoint.fromJson(model)).toList();
         MapMarkersService().refresh();
-        if (MainApplication().mapController != null) {
-          MainApplication().mapController.animateCamera(CameraUpdate.newLatLngBounds(MapMarkersService().mapBounds(), 50));
+        if (animateCamera()){
           _lastRoutePoints = jsonData['route'].toString();
         }
       } // if (_lastRoutePoints != jsonData['route'].toString()){
     }
-    Logger().d(this.toString());
+    if (DebugPrint().orderDebugPrint){
+      Logger().d(this.toString());
+    }
+
+  }
+
+  bool animateCamera() {
+
+    if (MainApplication().mapController != null) {
+      MainApplication().mapController.animateCamera(CameraUpdate.newLatLngBounds(MapMarkersService().mapBounds(), 50));
+      return true;
+    }
+    return false;
   }
 
   bool get mapBoundsIcon {
     switch (orderState) {
-      case OrderState.carried_out:
+      case OrderState.drive_to_client:
         return true;
-
+      case OrderState.drive_at_client:
+        return true;
+      case OrderState.paid_idle:
+        return true;
+      case OrderState.client_in_car:
+        return true;
       default:
         return false;
+    }
+  }
+
+  deny(String reason) async {
+    Map<String, dynamic> restResult = await RestService().httpGet("/orders/deny?guid=" + _guid + "&reason=" + Uri.encodeFull(reason));
+    MainApplication().parseData(restResult['result']);
+  }
+
+  add() async {
+    Map<String, dynamic> restResult = await RestService().httpPost("/orders/add", toJson());
+    MainApplication().parseData(restResult['result']);
+  }
+
+  void moveToCurLocation() {
+    LatLng curLocation = MainApplication().currentLocation;
+    if (curLocation != null) {
+      if (MainApplication().mapController != null) {
+        MainApplication().mapController.animateCamera(
+              CameraUpdate.newCameraPosition(
+                CameraPosition(
+                  target: curLocation,
+                  zoom: 17.0,
+                ),
+              ),
+            );
+      }
     }
   }
 }

@@ -14,6 +14,7 @@ import 'widgets/new_order_notes_dialog.dart';
 import 'widgets/new_order_route_points_reorder_dialog.dart';
 
 class NewOrderCalcScreen extends StatelessWidget {
+  NewOrderMainButton newOrderMainButton = NewOrderMainButton();
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -116,7 +117,8 @@ class NewOrderCalcScreen extends StatelessWidget {
                     onTap: (details) async {
                       if (MainApplication().curOrder.orderState == OrderState.new_order_calculated) {
                         if (MainApplication().curOrder.routePoints.length == 2) {
-                          RoutePoint routePoint = await Navigator.push<RoutePoint>(context, MaterialPageRoute(builder: (context) => RoutePointScreen(viewReturn:  false)));
+                          RoutePoint routePoint =
+                              await Navigator.push<RoutePoint>(context, MaterialPageRoute(builder: (context) => RoutePointScreen(viewReturn: false)));
                           if (routePoint != null) {
                             MainApplication().curOrder.addRoutePoint(routePoint, isLast: true);
                           }
@@ -155,7 +157,11 @@ class NewOrderCalcScreen extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                onPressed: () => _showPaymentsDialog(context),
+                                onPressed: () {
+                                  if (MainApplication().curOrder.paymentTypes.length > 1) {
+                                    _showPaymentsDialog(context);
+                                  }
+                                },
                               );
                             }),
                       ),
@@ -174,7 +180,7 @@ class NewOrderCalcScreen extends StatelessWidget {
             ),
           ),
         ),
-        NewOrderMainButton(),
+        newOrderMainButton,
         Positioned(
           bottom: 340,
           right: 8,

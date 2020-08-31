@@ -22,7 +22,7 @@ class NewOrderMainButton extends StatelessWidget {
               builder: (context, snapshot) {
                 return RaisedButton(
                   onPressed: snapshot.data == OrderState.new_order_calculated ? () {
-                    Logger().d(MainApplication().curOrder.toString());
+                    MainApplication().curOrder.add();
                   } : null,
                   shape: RoundedRectangleBorder(
                     borderRadius: new BorderRadius.only(bottomLeft: Radius.circular(18), bottomRight: Radius.circular(18)),

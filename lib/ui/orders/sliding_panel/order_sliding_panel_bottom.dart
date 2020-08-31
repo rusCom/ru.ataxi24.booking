@@ -1,5 +1,6 @@
 import 'package:booking/models/main_application.dart';
 import 'package:flutter/material.dart';
+import 'package:list_tile_more_customizable/list_tile_more_customizable.dart';
 
 class OrderSlidingPanelBottom extends StatelessWidget {
   @override
@@ -17,7 +18,7 @@ class OrderSlidingPanelBottom extends StatelessWidget {
                   color: Colors.black,
                 ),
                 backgroundColor: Colors.white,
-                onPressed: () {},
+                onPressed: () {_showDenyOrderDialog(context);},
                 heroTag: "_denyOrder",
               ),
               Center(
@@ -39,7 +40,9 @@ class OrderSlidingPanelBottom extends StatelessWidget {
                   color: Colors.lightGreen,
                 ),
                 backgroundColor: Colors.white,
-                onPressed: () {},
+                onPressed: () {
+                  MainApplication().launchURL("tel://" + MainApplication().curOrder.dispatcherPhone);
+                },
                 heroTag: "_dispathcerCall",
               ),
               Center(
@@ -51,7 +54,7 @@ class OrderSlidingPanelBottom extends StatelessWidget {
             ],
           ),
         ),
-        MainApplication().curOrder.agent.phone != ""
+        MainApplication().curOrder.agent != null
             ? Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
@@ -62,7 +65,7 @@ class OrderSlidingPanelBottom extends StatelessWidget {
                         color: Colors.green,
                       ),
                       backgroundColor: Colors.white,
-                      onPressed: () {},
+                      onPressed: () {MainApplication().launchURL("tel://" + MainApplication().curOrder.agent.phone);},
                       heroTag: "_agentCall",
                     ),
                     Center(
@@ -78,4 +81,46 @@ class OrderSlidingPanelBottom extends StatelessWidget {
       ],
     );
   }
+
+  _showDenyOrderDialog(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        // isScrollControlled: true,
+        builder: (BuildContext bc) {
+          return Container(
+            color: Color(0xFF737373),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Colors.white, borderRadius: BorderRadius.only(topLeft: const Radius.circular(10.0), topRight: const Radius.circular(10.0))),
+              // margin: EdgeInsets.only(left: 8, right: 8),
+              child: new Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  ListTileMoreCustomizable(
+                      title:new Text("Долгая подача автомобиля"),
+                      onTap: (details) async {
+                        await MainApplication().curOrder.deny("Долгая подача автомобиля");
+                        Navigator.pop(context);
+                      }
+                  ),
+                  ListTileMoreCustomizable(
+                      title:new Text("Не указывать причину"),
+                      onTap: (details) async {
+                        await MainApplication().curOrder.deny("");
+                        Navigator.pop(context);
+                      }
+                  ),
+                  ListTileMoreCustomizable(
+                      title:new Text("Не отменять поездку"),
+                      onTap: (details) async {
+                        Navigator.pop(context);
+                      }
+                  ),
+
+                ],
+              ),
+            ),
+          );
+        });
+  } // _showDenyOrderDialog
 }

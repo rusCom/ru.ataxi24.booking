@@ -143,7 +143,7 @@ class NewOrderFirstPointScreen extends StatelessWidget {
           child: FloatingActionButton(
             heroTag: '_moveToCurLocation',
             backgroundColor: Colors.white,
-            onPressed: _moveToCurLocation,
+            onPressed: (){MainApplication().curOrder.moveToCurLocation();},
             child: Icon(Icons.near_me, color: Colors.black,),
           ),
         ),
@@ -186,19 +186,4 @@ class NewOrderFirstPointScreen extends StatelessWidget {
     }
   }
 
-  void _moveToCurLocation() {
-    LatLng curLocation = MainApplication().currentLocation;
-    if (curLocation != null) {
-      if (MainApplication().mapController != null) {
-        MainApplication().mapController.animateCamera(
-          CameraUpdate.newCameraPosition(
-            CameraPosition(
-              target: curLocation,
-              zoom: 17.0,
-            ),
-          ),
-        );
-      }
-    }
-  }
 }

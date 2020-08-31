@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'package:audioplayers/audio_cache.dart';
 import 'package:booking/models/order.dart';
 import 'package:booking/models/preferences.dart';
 import 'package:booking/models/profile.dart';
+import 'package:booking/models/route_point.dart';
 import 'package:booking/services/map_markers_service.dart';
 import 'package:booking/services/rest_service.dart';
+import 'package:booking/ui/utils/core.dart';
 import 'package:device_id/device_id.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -11,6 +14,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 
 class MainApplication {
   static final MainApplication _singleton = MainApplication._internal();
@@ -29,6 +33,10 @@ class MainApplication {
   bool _dataCycle;
   TargetPlatform targetPlatform;
   Map<String, dynamic> clientLinks = Map();
+  List<RoutePoint> nearbyRoutePoint = null;
+
+  static AudioCache audioCache = new AudioCache();
+  static const audioAlarmOrderStateChange = "sounds/order_state_change.wav";
 
   Future<bool> init(BuildContext context) async {
     _sharedPreferences = await SharedPreferences.getInstance();
@@ -39,6 +47,7 @@ class MainApplication {
     Geolocator().getPositionStream(locationOptions).listen((Position position) {
       if (position != null) {
         currentPosition = position;
+
       }
     });
 
@@ -51,6 +60,8 @@ class MainApplication {
     // _clientToken = "";
     return true;
   }
+
+
 
 
   Order get curOrder {
@@ -89,6 +100,10 @@ class MainApplication {
   }
 
   parseData(Map<String, dynamic> jsonData) {
+    if (DebugPrint().parseDataDebugPrint){
+      Logger().v("##### MainApplication.parseData jsonData = " + jsonData.toString());
+    }
+
     if (jsonData == null) return;
     if (jsonData.containsKey('client_links')){
       clientLinks['user_agreement'] = jsonData['client_links']['user_agreement'];

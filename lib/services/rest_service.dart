@@ -7,7 +7,9 @@ import 'package:logger/logger.dart';
 
 class RestService {
   static final RestService _singleton = RestService._internal();
-  factory RestService() =>  _singleton;
+
+  factory RestService() => _singleton;
+
   RestService._internal();
 
   int _curRestIndex = 0;
@@ -45,7 +47,6 @@ class RestService {
   }
 
   Future<Map<String, dynamic>> httpGet(path) async {
-
     var result;
 
     http.Response response;
@@ -84,11 +85,7 @@ class RestService {
   Future<http.Response> _httpPostH(String url, String body) async {
     http.Response response;
     try {
-      response = await http.post(
-        url,
-        headers: {HttpHeaders.authorizationHeader: "Bearer " + _authHeader()},
-        body: body
-      );
+      response = await http.post(url, headers: {HttpHeaders.authorizationHeader: "Bearer " + _authHeader()}, body: body);
     } catch (e) {
       print(e.toString());
     }
@@ -118,7 +115,7 @@ class RestService {
       "ln": MainApplication().currentPosition.longitude,
       "platform": MainApplication().targetPlatform.toString(),
       "token": MainApplication().clientToken,
-      "test":true,
+      "test": false,
     };
 
     var bytes = utf8.encode(header.toString());

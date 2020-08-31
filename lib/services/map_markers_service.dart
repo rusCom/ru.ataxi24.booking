@@ -9,7 +9,6 @@ import 'package:booking/services/app_blocs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:logger/logger.dart';
 
 enum PickUpState { searching, enabled, disabled }
 
@@ -124,11 +123,19 @@ class MapMarkersService {
 
 
   void agentMarkerRefresh() {
-    Marker updatedPickUpMarker = _mapCarMarker.copyWith(
-      positionParam: MainApplication().curOrder.agent.location,
-    );
-    _markers[_mapCarMarkerID] = updatedPickUpMarker;
-    AppBlocs().mapMarkersController.sink.add(Set<Marker>.of(_markers.values));
+    if (MainApplication().curOrder.agent != null){
+      Marker updatedPickUpMarker = _mapCarMarker.copyWith(
+        positionParam: MainApplication().curOrder.agent.location,
+      );
+      _markers[_mapCarMarkerID] = updatedPickUpMarker;
+      AppBlocs().mapMarkersController.sink.add(Set<Marker>.of(_markers.values));
+    }
+  }
+
+  void clearAgentMarker(){
+    if (_markers[_mapCarMarkerID] != null){
+      _markers[_mapCarMarkerID] = null;
+    }
   }
 
 
@@ -215,8 +222,35 @@ class MapMarkersService {
     return LatLngBounds(northeast: LatLng(x1, y1), southwest: LatLng(x0, y0));
   }
 
+  LatLngBounds get _agentPickUpBounds{
+    List<Marker> list = [];
+    if (_markers[_mapPickUpMarkerID] != null)list.add(_markers[_mapPickUpMarkerID]);
+    if (_markers[_mapCarMarkerID] != null)list.add(_markers[_mapCarMarkerID]);
+    else {list.add(_markers[_mapPickUpMarkerID]);}
+
+    assert(list.isNotEmpty);
+    double x0, x1, y0, y1;
+    for (Marker marker in list) {
+      if (x0 == null) {
+        x0 = x1 = marker.position.latitude;
+        y0 = y1 = marker.position.longitude;
+      } else {
+        if (marker.position.latitude > x1) x1 = marker.position.latitude;
+        if (marker.position.latitude < x0) x0 = marker.position.latitude;
+        if (marker.position.longitude > y1) y1 = marker.position.longitude;
+        if (marker.position.longitude < y0) y0 = marker.position.longitude;
+      }
+    }
+    x0 = x0 - (x1 - x0) * 0.2;
+    return LatLngBounds(northeast: LatLng(x1, y1), southwest: LatLng(x0, y0));
+  }
+
   LatLngBounds mapBounds() {
-    if (MainApplication().curOrder.orderState == OrderState.carried_out)return _agentDestinationBounds;
+    if (MainApplication().curOrder.orderState == OrderState.drive_to_client)return _agentPickUpBounds;
+    if (MainApplication().curOrder.orderState == OrderState.drive_at_client)return _agentPickUpBounds;
+    if (MainApplication().curOrder.orderState == OrderState.paid_idle)return _agentPickUpBounds;
+    if (MainApplication().curOrder.orderState == OrderState.client_in_car)return _agentDestinationBounds;
+
 
     List<Marker> list = List<Marker>.of(_markers.values);
     assert(list.isNotEmpty);

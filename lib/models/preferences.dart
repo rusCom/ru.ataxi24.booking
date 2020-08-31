@@ -3,6 +3,7 @@ import 'package:booking/models/payment_type.dart';
 
 class Preferences{
   String administrationPhone;
+  String googleKey = "";
   int timerTask;
   List<PaymentType> paymentTypes = [];
   List<OrderTariff> orderTariffs = [];
@@ -12,6 +13,7 @@ class Preferences{
 
   void parseData(Map<String, dynamic> jsonData){
     administrationPhone = jsonData['administration_phone'] != null ? jsonData['administration_phone'] : "";
+    googleKey           = jsonData['google_key'] != null ? jsonData['google_key'] : "";
     timerTask           = jsonData['timer'] != null ? int.parse(jsonData['timer']) : 5;
     if (jsonData.containsKey('payments')){
       paymentTypes = [];

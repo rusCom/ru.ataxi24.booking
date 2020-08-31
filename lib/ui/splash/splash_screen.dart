@@ -1,5 +1,6 @@
 import 'package:booking/models/main_application.dart';
 import 'package:booking/models/profile.dart';
+import 'package:booking/services/geo_service.dart';
 import 'package:booking/services/rest_service.dart';
 import 'package:booking/ui/main_screen.dart';
 import 'package:booking/ui/profile/profile_login_screen.dart';
@@ -34,13 +35,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   profileAuth() async {
     bool isAuth = await Profile().auth();
     if (isAuth) {
-      /*
-      Map<String, dynamic> restResult = await RestService().httpGet("/data");
-      if ((restResult['status'] == 'OK') & (restResult.containsKey("result"))){
-        MainApplication().parseData(restResult['result']);
-      }
-
-       */
+      MainApplication().nearbyRoutePoint = await GeoService().nearby();
       setState(() {
         state = "main";
       });

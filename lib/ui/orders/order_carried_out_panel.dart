@@ -1,6 +1,6 @@
 import 'package:booking/models/main_application.dart';
 import 'package:booking/models/route_point.dart';
-import 'package:booking/ui/orders/widgets/order_sliding_panel.dart';
+import 'file:///C:/Projects/ataxi24/booking/lib/ui/orders/sliding_panel/order_sliding_panel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -9,8 +9,6 @@ class OrderCarriedOutPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OrderSlidingPanel(
-      title: "В пути",
-      subTitle: MainApplication().curOrder.agent.car,
       child: SingleChildScrollView(
         child: Column(
           children: <Widget>[

@@ -1,5 +1,7 @@
 import 'package:booking/models/main_application.dart';
 import 'package:booking/services/rest_service.dart';
+import 'package:booking/ui/utils/core.dart';
+import 'package:logger/logger.dart';
 
 class Profile {
   static final Profile _singleton = Profile._internal();
@@ -9,13 +11,15 @@ class Profile {
   String phone = "", code = "";
 
 
-
   void parseData(Map<String, dynamic> jsonData) {}
 
   Future<bool> auth() async{
     Map<String, dynamic> restResult = await RestService().httpGet("/profile/auth");
     if (restResult['status'] == 'OK'){
-      parseData(restResult['result']);
+      if (DebugPrint().parseDataDebugPrint){
+        Logger().d(restResult['result']);
+      }
+      MainApplication().parseData(restResult['result']);
       if (restResult['result'].containsKey("profile")){
         restResult = await RestService().httpGet("/data");
         MainApplication().parseData(restResult['result']);
