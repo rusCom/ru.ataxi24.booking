@@ -68,6 +68,7 @@ class RoutePoint {
   }
 
   Map<String, dynamic> toJson() => {
+        "place_id": placeId,
         "name": name,
         "dsc": dsc,
         "lt": lt,

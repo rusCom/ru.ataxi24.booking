@@ -23,7 +23,7 @@ class MapMarkersService {
 
   Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
   BitmapDescriptor _mapPickUpIcon, _mapDestinationIcon, _mapAddressIcon, _mapCarIcon;
-  BuildContext _context;
+
   MarkerId _mapPickUpMarkerID, _mapDestinationMarkerID, _mapCarMarkerID;
   Marker _mapPickUpMarker, _mapDestinationMarker, _mapCarMarker;
   LatLng _pickUpLocation;
@@ -32,8 +32,6 @@ class MapMarkersService {
   double zoomLevel = 17.0;
 
   init(BuildContext context) async {
-    _context = context;
-    ImageConfiguration configuration = createLocalImageConfiguration(_context);
 
     _mapPickUpIcon      = BitmapDescriptor.fromBytes(await getBytesFromAsset("assets/icons/ic_onboard_pick_up.png", 200));
     _mapDestinationIcon = BitmapDescriptor.fromBytes(await getBytesFromAsset("assets/icons/ic_onboard_destination.png", 200));

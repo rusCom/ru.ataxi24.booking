@@ -29,11 +29,11 @@ class MainApplication {
   String deviceId, _clientToken;
   GoogleMapController mapController;
   Preferences preferences = Preferences();
-  bool _timerStarted = false;
+  bool _timerStarted = false, _lastLocation = true;
   bool _dataCycle;
   TargetPlatform targetPlatform;
   Map<String, dynamic> clientLinks = Map();
-  List<RoutePoint> nearbyRoutePoint = null;
+  List<RoutePoint> nearbyRoutePoint;
 
   static AudioCache audioCache = new AudioCache();
   static const audioAlarmOrderStateChange = "sounds/order_state_change.wav";
@@ -42,30 +42,39 @@ class MainApplication {
     _sharedPreferences = await SharedPreferences.getInstance();
     deviceId = await DeviceId.getID;
 
-    currentPosition = await Geolocator().getLastKnownPosition(desiredAccuracy: LocationAccuracy.lowest);
-    var locationOptions = LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
-    Geolocator().getPositionStream(locationOptions).listen((Position position) {
-      if (position != null) {
-        currentPosition = position;
+    currentPosition = await getLastKnownPosition();
 
-      }
-    });
+    if (currentPosition == null){
+      currentPosition = new Position(latitude: 54.7184554, longitude: 55.9257656);
+      _lastLocation = false;
+    }
 
+    targetPlatform = Theme
+        .of(context)
+        .platform;
 
-
-    targetPlatform = Theme.of(context).platform;
+    getPositionStream(desiredAccuracy: LocationAccuracy.high).listen(
+          (Position position) {
+        if (position != null) {
+          currentPosition = position;
+          if (!_lastLocation){
+            _lastLocation = true;
+            MainApplication().curOrder.moveToCurLocation();
+          }
+        }
+      },
+    );
 
     await MapMarkersService().init(context);
     _clientToken = _sharedPreferences.getString("_clientToken") ?? "";
-    // _clientToken = "";
     return true;
   }
 
 
-
-
   Order get curOrder {
-    if (_curOrder == null){_curOrder = Order();}
+    if (_curOrder == null) {
+      _curOrder = Order();
+    }
     return _curOrder;
   }
 
@@ -85,10 +94,11 @@ class MainApplication {
     showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => Center(
+        builder: (context) =>
+            Center(
               child: CircularProgressIndicator(
-                  //backgroundColor: Colors.yellow,
-                  ),
+                //backgroundColor: Colors.yellow,
+              ),
             ));
   }
 
@@ -100,16 +110,15 @@ class MainApplication {
   }
 
   parseData(Map<String, dynamic> jsonData) {
-    if (DebugPrint().parseDataDebugPrint){
+    if (DebugPrint().parseDataDebugPrint) {
       Logger().v("##### MainApplication.parseData jsonData = " + jsonData.toString());
     }
 
     if (jsonData == null) return;
-    if (jsonData.containsKey('client_links')){
+    if (jsonData.containsKey('client_links')) {
       clientLinks['user_agreement'] = jsonData['client_links']['user_agreement'];
       clientLinks['privacy_policy'] = jsonData['client_links']['privacy_policy'];
       clientLinks['license_agreement'] = jsonData['client_links']['license_agreement'];
-
     }
     if (jsonData.containsKey("preferences")) preferences.parseData(jsonData["preferences"]);
     if (jsonData.containsKey("profile")) Profile().parseData(jsonData["profile"]);
@@ -134,26 +143,19 @@ class MainApplication {
 
   set dataCycle(bool value) {
     _dataCycle = value;
-    if (_dataCycle == false){
+    if (_dataCycle == false) {
       _timerStarted = false;
     }
-    // Logger().d("check start data cycle");
 
     if (_dataCycle) {
-      // Logger().d("check start data cycle");
       if (!_timerStarted) {
-        // Logger().d("start data cycle");
         _timerStarted = true;
         Timer.periodic(Duration(seconds: 5), (timer) async {
-          // print("data cycle tick");
-
           Map<String, dynamic> restResult = await RestService().httpGet("/data");
           if ((restResult['status'] == 'OK') & (restResult.containsKey("result"))) {
             parseData(restResult['result']);
           }
-
           if (!_timerStarted) {
-            // print("start data cycle");
             timer.cancel();
           }
         });

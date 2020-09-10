@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:booking/models/main_application.dart';
 import 'package:booking/ui/utils/core.dart';
 import 'package:http/http.dart' as http;
-import 'package:logger/logger.dart';
 
 class RestService {
+  final String TAG = (RestService).toString(); // ignore: non_constant_identifier_names
   static final RestService _singleton = RestService._internal();
 
   factory RestService() => _singleton;
@@ -15,9 +15,7 @@ class RestService {
   int _curRestIndex = 0;
 
   Future<dynamic> httpPost(String path, Map<String, dynamic> body) async {
-    if (DebugPrint().restServiceDebugPrint) {
-      Logger().d("##### RestService httpGet path = $path");
-    }
+    DebugPrint().log(TAG, "httpPost", "path = $path");
     var result;
 
     http.Response response;
@@ -40,9 +38,8 @@ class RestService {
         result = json.decode(response.body);
       }
     }
-    if (DebugPrint().restServiceDebugPrint) {
-      Logger().d("##### RestService httpGet result = $result");
-    }
+    DebugPrint().log(TAG, "httpPost", "result = $result");
+
     return result;
   }
 
@@ -51,15 +48,12 @@ class RestService {
 
     http.Response response;
     String url = Const.restHost[_curRestIndex] + path;
-    if (DebugPrint().restServiceDebugPrint) {
-      Logger().d("##### RestService httpGet path = $url");
-    }
+    DebugPrint().log(TAG, "httpGet", "path = $url");
     response = await _httpGetH(url);
     if (response == null) {
       for (var host in Const.restHost) {
         if ((response == null) & (Const.restHost.indexOf(host) != _curRestIndex)) {
           url = host + path;
-
           response = await _httpGetH(url);
           if (response != null) {
             _curRestIndex = Const.restHost.indexOf(host);
@@ -76,18 +70,22 @@ class RestService {
         result = json.decode(response.body);
       }
     }
-    if (DebugPrint().restServiceDebugPrint) {
-      Logger().d("##### RestService httpGet result = $result");
-    }
+    DebugPrint().log(TAG, "httpGet", "result = $result");
     return result;
   }
 
   Future<http.Response> _httpPostH(String url, String body) async {
     http.Response response;
     try {
-      response = await http.post(url, headers: {HttpHeaders.authorizationHeader: "Bearer " + _authHeader()}, body: body);
+      response = await http.post(url, headers: {HttpHeaders.authorizationHeader: "Bearer " + _authHeader()}, body: body).timeout(
+        Duration(seconds: 10),
+        onTimeout: () {
+          DebugPrint().log(TAG, "_httpPostH", "$url timeout");
+          return null;
+        },
+      );
     } catch (e) {
-      print(e.toString());
+      DebugPrint().log(TAG, "_httpPostH", "$url catch error = " + e.toString());
     }
 
     return response;
@@ -99,9 +97,15 @@ class RestService {
       response = await http.get(
         url,
         headers: {HttpHeaders.authorizationHeader: "Bearer " + _authHeader()},
+      ).timeout(
+        Duration(seconds: 10),
+        onTimeout: () {
+          DebugPrint().log(TAG, "_httpGetH", "$url timeout");
+          return null;
+        },
       );
     } catch (e) {
-      print(e.toString());
+      DebugPrint().log(TAG, "_httpGetH", "catch error = " + e.toString());
     }
 
     return response;
@@ -115,7 +119,7 @@ class RestService {
       "ln": MainApplication().currentPosition.longitude,
       "platform": MainApplication().targetPlatform.toString(),
       "token": MainApplication().clientToken,
-      "test": false,
+      "test": DebugPrint().isTest,
     };
 
     var bytes = utf8.encode(header.toString());

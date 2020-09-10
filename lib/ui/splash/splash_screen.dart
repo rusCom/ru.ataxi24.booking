@@ -1,12 +1,12 @@
 import 'package:booking/models/main_application.dart';
 import 'package:booking/models/profile.dart';
 import 'package:booking/services/geo_service.dart';
-import 'package:booking/services/rest_service.dart';
 import 'package:booking/ui/main_screen.dart';
 import 'package:booking/ui/profile/profile_login_screen.dart';
-import 'package:booking/ui/profile/profile_registration_screen.dart';
 import 'package:booking/ui/utils/background.dart';
+import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/material.dart';
+
 import 'package:page_transition/page_transition.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -15,6 +15,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
+  final String TAG = (SplashScreen).toString(); // ignore: non_constant_identifier_names
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   String state = "init";
   double posLogoBottom = 0;
@@ -28,13 +29,16 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   AnimationController _logoMoveAnimationControllerBottom, _logoMoveAnimationControllerLeft;
 
   startTime() async {
+    DebugPrint().log(TAG, "startTime", "start MainApplication().init(context)");
     await MainApplication().init(context);
+    DebugPrint().log(TAG, "startTime", "start profileAuth()");
     await profileAuth();
   }
 
   profileAuth() async {
     bool isAuth = await Profile().auth();
     if (isAuth) {
+      DebugPrint().log(TAG, "profileAuth", "success");
       MainApplication().nearbyRoutePoint = await GeoService().nearby();
       setState(() {
         state = "main";
@@ -56,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     _logoScaleAnimationController.forward();
     _logoScaleAnimationController.addStatusListener((status) {
       if (status == AnimationStatus.dismissed) {
-        print("AnimationStatus.completed state = $state");
+        DebugPrint().log(TAG, "logoScaleAnimationController.StatusListener", "AnimationStatus.completed state = $state");
         if (state == "init") {
           _logoScaleAnimationController.forward();
         } else if (state == "main") {
@@ -70,7 +74,6 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     });
 
     startTime();
-
     initLogoMove();
   }
 
@@ -133,4 +136,5 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       ),
     );
   }
+
 }

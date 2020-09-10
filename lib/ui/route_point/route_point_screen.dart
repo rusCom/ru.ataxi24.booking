@@ -71,6 +71,7 @@ class RoutePointScreen extends StatelessWidget {
                     leading: routePoint.getIcon(),
                     onTap: () async {
                       //  print(routePoint.name);
+                      GeoService().check(routePoint);
                       if (routePoint.type == 'route') {
                         if (routePoint.detail == '0') {
                           GeoService().detail(routePoint);

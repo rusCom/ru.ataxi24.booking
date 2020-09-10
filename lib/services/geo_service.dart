@@ -1,6 +1,6 @@
 import 'dart:convert';
-
 import 'package:booking/models/main_application.dart';
+import 'package:booking/models/profile.dart';
 import 'package:booking/models/route_point.dart';
 import 'package:booking/ui/utils/core.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -8,14 +8,10 @@ import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 
 class GeoService {
+  final String TAG = (GeoService).toString(); // ignore: non_constant_identifier_names
   static final GeoService _singleton = GeoService._internal();
-
-  factory GeoService() {
-    return _singleton;
-  }
-
+  factory GeoService() => _singleton;
   GeoService._internal();
-
   RoutePoint _lastGeoCodeRoutePoint;
 
   LatLng _lastGeoCodeLocation = LatLng(0, 0);
@@ -63,6 +59,13 @@ class GeoService {
     return null;
   }
 
+  check(RoutePoint routePoint) async {
+    String url = "http://geo.toptaxi.org/check?place_id=" + routePoint.placeId;
+    http.Response response = await http.get(url);
+    DebugPrint().log(TAG, "check", url);
+    DebugPrint().log(TAG, "check", response.toString());
+  }
+
   Future<RoutePoint> detail(RoutePoint routePoint) async {
     String url = "http://geo.toptaxi.org/detail?uid=" + routePoint.placeId + "&key=" + MainApplication().preferences.googleKey;
     http.Response response = await http.get(url);
@@ -73,6 +76,14 @@ class GeoService {
       return RoutePoint.fromJson(result['result']);
     }
     return routePoint;
+  }
+
+  Future<bool> geocodeReplace(String from, String to) async {
+    String url = "http://geo.toptaxi.org/geocode/replace?from=" + from + "&to=" + to + "&phone=" + Profile().phone;
+    DebugPrint().log(TAG, "geocodeReplace", "url = " + url);
+    http.Response response = await http.get(url);
+    DebugPrint().log(TAG, "geocodeReplace", "response = " + response.toString());
+    return true;
   }
 
   Future<RoutePoint> geocode(LatLng location) async {

@@ -42,6 +42,11 @@ class Order {
       return "Еще " + (routePoints.length - 1).toString() + " адреса";
   }
 
+  String getLastRouteDsc() {
+    if (routePoints.length == 2)return routePoints.last.dsc;
+    return "";
+  }
+
   void deleteRoutePoint(Key item) {
     routePoints.removeAt(_indexRoutePointOfKey(item));
     AppBlocs().orderRoutePointsController.sink.add(routePoints);
@@ -236,6 +241,7 @@ class Order {
 
   String get checkedTariff {
     String result = "econom";
+    if (orderTariffs == null){return result;}
     orderTariffs.forEach((orderTariff) {
       if (orderTariff.checked) result = orderTariff.type;
     });

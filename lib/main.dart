@@ -19,7 +19,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'aTaxi.Заказ такси',
+      title: 'Сервис Заказа Такси',
       theme: ThemeData(
         primaryColor: Colors.white,
       ),

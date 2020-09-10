@@ -1,8 +1,5 @@
-import 'package:booking/models/main_application.dart';
 import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
-
 import 'order_tariff.dart';
 
 class PaymentType {

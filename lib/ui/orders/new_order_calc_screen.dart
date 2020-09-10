@@ -14,7 +14,8 @@ import 'widgets/new_order_notes_dialog.dart';
 import 'widgets/new_order_route_points_reorder_dialog.dart';
 
 class NewOrderCalcScreen extends StatelessWidget {
-  NewOrderMainButton newOrderMainButton = NewOrderMainButton();
+  final NewOrderMainButton newOrderMainButton = NewOrderMainButton();
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -43,14 +44,25 @@ class NewOrderCalcScreen extends StatelessWidget {
                   ListTileMoreCustomizable(
                     leading: Icon(Icons.person_pin_circle),
                     title: StreamBuilder(
-                        stream: AppBlocs().orderStateStream,
-                        builder: (context, snapshot) {
-                          return Text(
-                            MainApplication().curOrder.routePoints.first.name,
-                            style: TextStyle(fontSize: 15),
-                            overflow: TextOverflow.ellipsis,
-                          );
-                        }),
+                      stream: AppBlocs().orderStateStream,
+                      builder: (context, snapshot) {
+                        return Text(
+                          MainApplication().curOrder.routePoints.first.name,
+                          style: TextStyle(fontSize: 15),
+                          overflow: TextOverflow.ellipsis,
+                        );
+                      },
+                    ),
+                    subtitle: StreamBuilder(
+                      stream: AppBlocs().orderStateStream,
+                      builder: (context, snapshot) {
+                        return Text(
+                          MainApplication().curOrder.routePoints.first.dsc,
+                          style: TextStyle(fontSize: 10),
+                          overflow: TextOverflow.ellipsis,
+                        );
+                      },
+                    ),
                     trailing: SizedBox(
                       width: 110,
                       height: 40,
@@ -89,14 +101,25 @@ class NewOrderCalcScreen extends StatelessWidget {
                   ListTileMoreCustomizable(
                     leading: Icon(Icons.add_location),
                     title: StreamBuilder(
-                        stream: AppBlocs().orderStateStream,
-                        builder: (context, snapshot) {
-                          return Text(
-                            MainApplication().curOrder.getLastRouteName(),
-                            style: TextStyle(fontSize: 15),
-                            overflow: TextOverflow.ellipsis,
-                          );
-                        }),
+                      stream: AppBlocs().orderStateStream,
+                      builder: (context, snapshot) {
+                        return Text(
+                          MainApplication().curOrder.getLastRouteName(),
+                          style: TextStyle(fontSize: 15),
+                          overflow: TextOverflow.ellipsis,
+                        );
+                      },
+                    ),
+                    subtitle:StreamBuilder(
+                      stream: AppBlocs().orderStateStream,
+                      builder: (context, snapshot) {
+                        return Text(
+                          MainApplication().curOrder.getLastRouteDsc(),
+                          style: TextStyle(fontSize: 10),
+                          overflow: TextOverflow.ellipsis,
+                        );
+                      },
+                    ),
                     trailing: IconButton(
                       icon: Icon(Icons.add),
                       onPressed: () async {

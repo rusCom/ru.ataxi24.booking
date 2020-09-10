@@ -4,6 +4,7 @@ import 'package:booking/ui/utils/core.dart';
 import 'package:logger/logger.dart';
 
 class Profile {
+  final String TAG = (Profile).toString(); // ignore: non_constant_identifier_names
   static final Profile _singleton = Profile._internal();
   factory Profile() => _singleton;
   Profile._internal();
@@ -11,7 +12,10 @@ class Profile {
   String phone = "", code = "";
 
 
-  void parseData(Map<String, dynamic> jsonData) {}
+  void parseData(Map<String, dynamic> jsonData) {
+    phone = jsonData['phone'] != null ? jsonData['phone'] : "";
+
+  }
 
   Future<bool> auth() async{
     Map<String, dynamic> restResult = await RestService().httpGet("/profile/auth");

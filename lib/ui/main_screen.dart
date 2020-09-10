@@ -6,7 +6,6 @@ import 'package:booking/ui/orders/new_order_calc_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:logger/logger.dart';
 import 'orders/new_order_first_point_screen.dart';
 import 'orders/sliding_panel/order_sliding_panel.dart';
 
