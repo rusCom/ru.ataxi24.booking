@@ -14,6 +14,7 @@ class Preferences{
   bool mapAdmin = false;
   List<PaymentType> paymentTypes = [];
   List<OrderTariff> orderTariffs = [];
+  bool geocodeMove = true;
 
 
   void parseData(Map<String, dynamic> jsonData){

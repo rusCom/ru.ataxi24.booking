@@ -9,7 +9,6 @@ import 'package:booking/services/rest_service.dart';
 import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:logger/logger.dart';
 
 enum OrderState {
   new_order,
@@ -23,13 +22,16 @@ enum OrderState {
 }
 
 class Order {
+  final String TAG = (Order).toString(); // ignore: non_constant_identifier_names
   OrderState _orderState;
-  String _guid;
+  String _uid;
   List<RoutePoint> routePoints = [];
   String _lastRoutePoints = "";
   String dispatcherPhone = "";
   Agent agent; // водитель
   List<PaymentType> paymentTypes = []; // типы платежей и тарифы
+  String cost, _payType = "";
+  DateTime _workDate;
 
   String getLastRouteName() {
     if (routePoints.length == 1)
@@ -43,7 +45,7 @@ class Order {
   }
 
   String getLastRouteDsc() {
-    if (routePoints.length == 2)return routePoints.last.dsc;
+    if (routePoints.length == 2) return routePoints.last.dsc;
     return "";
   }
 
@@ -91,26 +93,36 @@ class Order {
 
     if (routePoints.length > 1) {
       if (orderState == OrderState.new_order) {
-        orderState = OrderState.new_order_calculating;
+        calcOrder();
       }
       if (orderState == OrderState.new_order_calculated) {
-        orderState = OrderState.new_order_calculating;
+        calcOrder();
       }
       MapMarkersService().refresh();
     }
     AppBlocs().orderRoutePointsController.sink.add(routePoints);
   }
 
+
+  set workDate(DateTime value) {
+    if (_workDate != value){
+      _workDate = value;
+      calcOrder();
+    }
+  }
+
+
+
   set orderState(OrderState value) {
     if (_orderState != value) {
-      if (DebugPrint().orderDebugPrint) {
-        Logger().d("new order state = " + value.toString());
-      }
+      DebugPrint().log(TAG, "orderState", "new order state = " + value.toString());
+
       bool startTimer = false;
       _orderState = value;
 
       switch (_orderState) {
         case OrderState.new_order:
+          _workDate = null;
           startTimer = false;
           moveToCurLocation();
           routePoints.clear();
@@ -118,13 +130,11 @@ class Order {
         case OrderState.new_order_calculating:
           startTimer = false;
           AppBlocs().newOrderTariffController.sink.add(orderTariffs);
-          calcOrder();
           break;
         case OrderState.new_order_calculated:
           startTimer = false;
           AppBlocs().newOrderTariffController.sink.add(orderTariffs);
           break;
-
         case OrderState.search_car:
           animateCamera();
           startTimer = true;
@@ -158,9 +168,8 @@ class Order {
   }
 
   Future<void> calcOrder() async {
-    if (DebugPrint().orderCalcDebugPrint) {
-      Logger().d(toString());
-    }
+    DebugPrint().log(TAG, "calcOrder", this.toString());
+    orderState = OrderState.new_order_calculating;
 
     String checkPayment = checkedPayment;
     String checkTariff = checkedTariff;
@@ -168,7 +177,7 @@ class Order {
     var response = await RestService().httpPost("/orders/calc", toJson());
     if (response["status"] == "OK") {
       var result = response["result"];
-      _guid = result['guid'];
+      _uid = result['uid'];
 
       Iterable payments = result["payments"];
       paymentTypes = payments.map((model) => PaymentType.fromJson(model)).toList();
@@ -176,9 +185,7 @@ class Order {
       orderState = OrderState.new_order_calculated;
       checkedPayment = checkPayment;
       checkedTariff = checkTariff;
-      if (DebugPrint().orderCalcDebugPrint) {
-        Logger().d(toString());
-      }
+      DebugPrint().log(TAG, "calcOrder", this.toString());
     }
   }
 
@@ -198,7 +205,11 @@ class Order {
     return res;
   }
 
+
+  DateTime get workDate => _workDate;
+
   PaymentType get paymentType {
+    if (_payType != "") return PaymentType(type: _payType);
     PaymentType result;
     paymentTypes.forEach((paymentType) {
       if (paymentType.checked) result = paymentType;
@@ -241,7 +252,9 @@ class Order {
 
   String get checkedTariff {
     String result = "econom";
-    if (orderTariffs == null){return result;}
+    if (orderTariffs == null) {
+      return result;
+    }
     orderTariffs.forEach((orderTariff) {
       if (orderTariff.checked) result = orderTariff.type;
     });
@@ -251,10 +264,11 @@ class Order {
   OrderState get orderState => _orderState;
 
   Map<String, dynamic> toJson() => {
-        "guid": _guid,
+        "uid": _uid,
         "dispatcher_phone": dispatcherPhone,
         "tariff": checkedTariff,
         "payment": checkedPayment,
+        "work_date": workDate != null ? workDate.toString() : "",
         "state": orderState.toString(),
         "agent": agent,
         "route": routePoints,
@@ -267,8 +281,12 @@ class Order {
   }
 
   void parseData(Map<String, dynamic> jsonData) {
-    _guid = jsonData['guid'];
+    DebugPrint().log(TAG, "parseData", jsonData.toString());
+    _uid = jsonData['uid'];
     dispatcherPhone = jsonData['dispatcher_phone'];
+    cost = jsonData['cost'] != null ? jsonData['cost'] : "";
+    _payType = jsonData['payment'] != null ? jsonData['payment'] : "";
+
     switch (jsonData['state']) {
       case "search_car":
         orderState = OrderState.search_car;
@@ -304,19 +322,15 @@ class Order {
         Iterable list = jsonData['route'];
         routePoints = list.map((model) => RoutePoint.fromJson(model)).toList();
         MapMarkersService().refresh();
-        if (animateCamera()){
+        if (animateCamera()) {
           _lastRoutePoints = jsonData['route'].toString();
         }
       } // if (_lastRoutePoints != jsonData['route'].toString()){
     }
-    if (DebugPrint().orderDebugPrint){
-      Logger().d(this.toString());
-    }
-
+    DebugPrint().log(TAG, "parseData", this.toString());
   }
 
   bool animateCamera() {
-
     if (MainApplication().mapController != null) {
       MainApplication().mapController.animateCamera(CameraUpdate.newLatLngBounds(MapMarkersService().mapBounds(), 50));
       return true;
@@ -340,7 +354,7 @@ class Order {
   }
 
   deny(String reason) async {
-    Map<String, dynamic> restResult = await RestService().httpGet("/orders/deny?guid=" + _guid + "&reason=" + Uri.encodeFull(reason));
+    Map<String, dynamic> restResult = await RestService().httpGet("/orders/deny?uid=" + _uid + "&reason=" + Uri.encodeFull(reason));
     MainApplication().parseData(restResult['result']);
   }
 

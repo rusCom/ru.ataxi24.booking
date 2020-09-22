@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'order_tariff.dart';
 
 class PaymentType {
+  final String TAG = (PaymentType).toString(); // ignore: non_constant_identifier_names
   final String type;
   String name;
   String choseName;
@@ -46,9 +47,8 @@ class PaymentType {
   int get hashCode => type.hashCode;
 
   factory PaymentType.fromJson(Map<String, dynamic> jsonData) {
-    if (DebugPrint().orderCalcDebugPrint){
-      // Logger().d(jsonData['tariffs']);
-    }
+    DebugPrint().log("PaymentType", "fromJson", jsonData.toString());
+
 
     List<OrderTariff> orderTariffs = [];
     if (jsonData.containsKey('tariffs')){

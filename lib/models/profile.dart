@@ -1,7 +1,6 @@
 import 'package:booking/models/main_application.dart';
 import 'package:booking/services/rest_service.dart';
 import 'package:booking/ui/utils/core.dart';
-import 'package:logger/logger.dart';
 
 class Profile {
   final String TAG = (Profile).toString(); // ignore: non_constant_identifier_names
@@ -19,10 +18,8 @@ class Profile {
 
   Future<bool> auth() async{
     Map<String, dynamic> restResult = await RestService().httpGet("/profile/auth");
+    DebugPrint().log(TAG, "auth", restResult.toString());
     if (restResult['status'] == 'OK'){
-      if (DebugPrint().parseDataDebugPrint){
-        Logger().d(restResult['result']);
-      }
       MainApplication().parseData(restResult['result']);
       if (restResult['result'].containsKey("profile")){
         restResult = await RestService().httpGet("/data");
@@ -49,7 +46,7 @@ class Profile {
   Future<String> registration() async{
     Map<String, dynamic> restResult = await RestService().httpGet("/profile/registration?phone=" + phone + "&code=" + code);
     if (restResult['status'] == 'OK'){
-      print(restResult['result']);
+      DebugPrint().log(TAG, "registration", restResult['result']);
       MainApplication().clientToken = restResult['result'];
       return "OK";
     }

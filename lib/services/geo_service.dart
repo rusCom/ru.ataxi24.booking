@@ -5,7 +5,6 @@ import 'package:booking/models/route_point.dart';
 import 'package:booking/ui/utils/core.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:logger/logger.dart';
 
 class GeoService {
   final String TAG = (GeoService).toString(); // ignore: non_constant_identifier_names
@@ -23,14 +22,12 @@ class GeoService {
 
     String url =
         "http://geo.toptaxi.org/autocomplete?keyword=" + Uri.encodeFull(input) + "&lt=" + location.latitude.toString() + "&ln=" + location.longitude.toString() + "&key=" + MainApplication().preferences.googleKey;
+    DebugPrint().log(TAG, "autocomplete", url);
     http.Response response = await http.get(url);
     if (response == null) return null;
     if (response.statusCode != 200) return null;
     var result = json.decode(response.body);
-    if (DebugPrint().geoDebugPrint) {
-      Logger().d(url);
-      Logger().d(result.toString());
-    }
+    DebugPrint().log(TAG, "autocomplete", result.toString());
 
     if (result['status'] == 'OK') {
       Iterable list = result['result'];
@@ -47,9 +44,7 @@ class GeoService {
     if (response == null) return null;
     if (response.statusCode != 200) return null;
     var result = json.decode(response.body);
-    if (DebugPrint().geoCodeDebugPrint) {
-      Logger().d(result.toString());
-    }
+    DebugPrint().log(TAG, "nearby", result.toString());
 
     if (result['status'] == 'OK') {
       Iterable list = result['result'];
@@ -57,13 +52,6 @@ class GeoService {
       return listRoutePoints;
     }
     return null;
-  }
-
-  check(RoutePoint routePoint) async {
-    String url = "http://geo.toptaxi.org/check?place_id=" + routePoint.placeId;
-    http.Response response = await http.get(url);
-    DebugPrint().log(TAG, "check", url);
-    DebugPrint().log(TAG, "check", response.toString());
   }
 
   Future<RoutePoint> detail(RoutePoint routePoint) async {
@@ -86,22 +74,26 @@ class GeoService {
     return true;
   }
 
+  Future<bool> geocodeClear(RoutePoint routePoint) async {
+    String url = "http://geo.toptaxi.org/geocode/clear?place_id=" + routePoint.placeId + "&phone=" + Profile().phone;
+    DebugPrint().log(TAG, "geocodeClear", "url = " + url);
+    http.Response response = await http.get(url);
+    DebugPrint().log(TAG, "geocodeClear", "response = " + response.toString());
+    return true;
+  }
+
   Future<RoutePoint> geocode(LatLng location) async {
     if (location == null) return null;
     if (location == _lastGeoCodeLocation) return _lastGeoCodeRoutePoint;
     String url = "http://geo.toptaxi.org/geocode?lt=" + location.latitude.toString() + "&ln=" + location.longitude.toString() + "&key=" + MainApplication().preferences.googleKey;
-    if (DebugPrint().geoCodeDebugPrint) {
-      Logger().d("########## GeoService.geocode debugPrint url = " + url);
-    }
+    DebugPrint().log(TAG, "geocode", "url = " + url);
     http.Response response = await http.get(url);
     if (response == null) return null;
     if (response.statusCode != 200) return null;
     var result = json.decode(response.body);
+    DebugPrint().log(TAG, "geocode", "result = " + result.toString());
     if (result['status'] == 'OK') {
       _lastGeoCodeLocation = location;
-      if (DebugPrint().geoCodeDebugPrint) {
-        Logger().d("########## GeoService.geocode debugPrint result = " + result['result'].toString());
-      }
       RoutePoint routePoint = RoutePoint.fromJson(result['result']);
       _lastGeoCodeRoutePoint = routePoint;
       return routePoint;

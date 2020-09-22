@@ -11,12 +11,12 @@ import 'package:device_id/device_id.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 
 class MainApplication {
+  final String TAG = (MainApplication).toString(); // ignore: non_constant_identifier_names
   static final MainApplication _singleton = MainApplication._internal();
 
   factory MainApplication() => _singleton;
@@ -110,9 +110,7 @@ class MainApplication {
   }
 
   parseData(Map<String, dynamic> jsonData) {
-    if (DebugPrint().parseDataDebugPrint) {
-      Logger().v("##### MainApplication.parseData jsonData = " + jsonData.toString());
-    }
+    DebugPrint().log(TAG, "parseData", jsonData);
 
     if (jsonData == null) return;
     if (jsonData.containsKey('client_links')) {

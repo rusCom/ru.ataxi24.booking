@@ -123,6 +123,8 @@ class RoutePoint {
         return Icon(Icons.store);
       case 'locality':
         return Icon(Icons.location_city);
+      case 'city':
+        return Icon(Icons.location_city);
     }
     return Icon(Icons.location_on);
   }

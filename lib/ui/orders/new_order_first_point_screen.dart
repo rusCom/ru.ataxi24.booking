@@ -6,7 +6,6 @@ import 'package:booking/services/geo_service.dart';
 import 'package:booking/services/map_markers_service.dart';
 import 'package:booking/ui/route_point/route_point_screen.dart';
 import 'package:booking/ui/system/geocde_replace_screen.dart';
-import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -56,7 +55,7 @@ class NewOrderFirstPointScreen extends StatelessWidget {
                         color: Color(0xFF757575),
                       ),
                       onPressed: () async {
-                        if (Preferences().mapAdmin){
+                        if (Preferences().mapAdmin) {
                           await Navigator.push(context, MaterialPageRoute(builder: (context) => GeoCodeReplaceScreen(MapMarkersService().pickUpRoutePoint)));
                         }
                       },
@@ -68,18 +67,17 @@ class NewOrderFirstPointScreen extends StatelessWidget {
                       ),
                       onPressed: () async {
                         RoutePoint pickUpRoutePoint = await Navigator.push<RoutePoint>(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => RoutePointScreen(
-                                      isFirst: true,
-                                    )));
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RoutePointScreen(
+                              isFirst: true,
+                            ),
+                          ),
+                        );
                         if (pickUpRoutePoint != null) {
-                          // print(pickUpRoutePoint);
                           RoutePoint destinationRoutePoint =
                               await Navigator.push<RoutePoint>(context, MaterialPageRoute(builder: (context) => RoutePointScreen()));
                           if (destinationRoutePoint != null) {
-                            GeoService().check(pickUpRoutePoint);
-                            // print(destinationRoutePoint);
                             MainApplication().curOrder.addRoutePoint(pickUpRoutePoint);
                             MainApplication().curOrder.addRoutePoint(destinationRoutePoint);
                           }
@@ -171,18 +169,25 @@ class NewOrderFirstPointScreen extends StatelessWidget {
 
   void onCameraIdle() {
     GeoService().geocode(MapMarkersService().pickUpLocation).then((routePoint) {
-      // print(routePoint.toString());
       if (routePoint != MapMarkersService().pickUpRoutePoint) {
         MapMarkersService().pickUpRoutePoint = routePoint;
-        setText(routePoint.name + " " + routePoint.dsc);
-        MainApplication().mapController.animateCamera(
-              CameraUpdate.newCameraPosition(
-                CameraPosition(
-                  target: routePoint.getLocation(),
-                  zoom: MapMarkersService().zoomLevel,
+        if (routePoint.type == "street_address" || routePoint.type == "premise"){
+          setText(routePoint.name);
+        }
+        else {
+          setText(routePoint.name + ", " + routePoint.dsc);
+        }
+
+        if (Preferences().geocodeMove) {
+          MainApplication().mapController.animateCamera(
+                CameraUpdate.newCameraPosition(
+                  CameraPosition(
+                    target: routePoint.getLocation(),
+                    zoom: MapMarkersService().zoomLevel,
+                  ),
                 ),
-              ),
-            );
+              );
+        }
       } else {
         MapMarkersService().pickUpRoutePoint.checkPickUp();
       }

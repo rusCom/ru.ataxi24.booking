@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'core.dart';
-
 class GradientButton extends StatelessWidget {
   final GestureTapCallback onPressed;
   final String text;
@@ -15,7 +13,6 @@ class GradientButton extends StatelessWidget {
       height: 50.0,
       child: RaisedButton(
         onPressed: onPressed,
-
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(80.0)),
         padding: EdgeInsets.all(0.0),
         child: Ink(

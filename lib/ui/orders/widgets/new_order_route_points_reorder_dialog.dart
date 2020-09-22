@@ -172,7 +172,7 @@ class Item extends StatelessWidget {
                       ),
                       child: Text(
                         data.name,
-                        style: Theme.of(context).textTheme.subhead,
+                        style: Theme.of(context).textTheme.subtitle1,
                       ),
                     ),
                   ),

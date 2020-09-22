@@ -5,11 +5,12 @@ import 'package:booking/services/app_blocs.dart';
 import 'package:booking/services/geo_service.dart';
 import 'package:booking/services/map_markers_service.dart';
 import 'package:booking/ui/route_point/route_point_search_bar.dart';
+import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/material.dart';
 import 'package:list_tile_more_customizable/list_tile_more_customizable.dart';
-import 'package:logger/logger.dart';
 
 class RoutePointScreen extends StatelessWidget {
+  final String TAG = (RoutePointScreen).toString(); // ignore: non_constant_identifier_names
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final bool isFirst, viewReturn;
 
@@ -21,7 +22,8 @@ class RoutePointScreen extends StatelessWidget {
     if (isFirst) {
       hintText = "Откуда Вас забрать?";
     }
-    print(MapMarkersService().pickUpRoutePoint);
+
+    DebugPrint().log(TAG, "build", MapMarkersService().pickUpRoutePoint);
 
     RoutePointSearchBar routePointSearchBar = new RoutePointSearchBar(
       hintText: hintText,
@@ -42,7 +44,6 @@ class RoutePointScreen extends StatelessWidget {
       body: StreamBuilder(
           stream: AppBlocs().geoAutocompleteStream,
           builder: (context, snapshot) {
-            // print("snapshot.data = " + snapshot.data.toString());
             if ((snapshot.data == null) || (!snapshot.hasData) || (snapshot.data == "null_")) {
               return Column(
                 children: <Widget>[
@@ -70,8 +71,6 @@ class RoutePointScreen extends StatelessWidget {
                     subtitle: Text(routePoint.dsc),
                     leading: routePoint.getIcon(),
                     onTap: () async {
-                      //  print(routePoint.name);
-                      GeoService().check(routePoint);
                       if (routePoint.type == 'route') {
                         if (routePoint.detail == '0') {
                           GeoService().detail(routePoint);
@@ -95,8 +94,6 @@ class RoutePointScreen extends StatelessWidget {
   }
 
   Widget _nearbyRoutePoint(BuildContext context) {
-    // Logger().v(MainApplication().nearbyRoutePoint);
-
     if (MainApplication().nearbyRoutePoint != null) {
       var routePoints = MainApplication().nearbyRoutePoint;
       return Expanded(
@@ -109,7 +106,7 @@ class RoutePointScreen extends StatelessWidget {
               subtitle: Text(routePoint.dsc),
               leading: routePoint.getIcon(),
               onTap: () async {
-                print(routePoint.name);
+                DebugPrint().log(TAG, "onTap", routePoint.name);
                 if (routePoint.detail == '1') {
                   Navigator.pop(context, routePoint);
                 } else {
@@ -145,17 +142,15 @@ class RoutePointScreen extends StatelessWidget {
 
   _autocomplete(String keyword) {
     if (keyword.isNotEmpty && keyword != "" && keyword.length > 2) {
-      // print("run autocomplete keyword = " + keyword);
       AppBlocs().geoAutocompleteController.sink.add("searching_");
       GeoService().autocomplete(keyword).then((result) {
-        // print("GeoAutocompleteBloc result = " + result.toString());
         if (result == null)
           AppBlocs().geoAutocompleteController.sink.add("not_found_");
         else {
           AppBlocs().geoAutocompleteController.sink.add(result);
         }
       }).catchError((e) {
-        print("catchError " + e.toString());
+        DebugPrint().log(TAG, "_autocomplete catchError", e.toString());
       });
     } else {
       AppBlocs().geoAutocompleteController.sink.add("null_");

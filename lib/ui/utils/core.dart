@@ -13,8 +13,8 @@ List<Color> kitGradients = [
 ];
 
 class Const{
-  static List<String> restHost = ["http://192.168.1.199:5872", "http://api1.toptaxi.org:5872", "http://api2.toptaxi.org:5872" ];
-  // static List<String> restHost = [ "http://api1.toptaxi.org:5872", "http://api2.toptaxi.org:5872" ];
+  // static List<String> restHost = ["http://192.168.1.99:5872", "http://api1.toptaxi.org:5872", "http://api2.toptaxi.org:5872" ];
+  static List<String> restHost = [ "http://api1.toptaxi.org:5872", "http://api2.toptaxi.org:5872" ];
   static const String dispatchingToken = "C3345D6297882D04F0AAE85A19611119";
   static const int dbVersion = 1;
 
@@ -37,58 +37,49 @@ class DebugPrint{
   final _allDebugPrint = true;
 
   final _splashScreen = false;
+  final _geoCodeReplaceScreen = false;
+  final _routePointScreen = false;
+
+
+
+
+
   final _restService = false;
-  final _preferences = false;
-  final _geoCodeReplaceScreen = true;
-  final _geoService = true;
+  final _geoService = false;
+
+  final _mainApplication = false;
+  final _preferences    = false;
+  final _profile        = false;
+  final _order          = false;
+  final _paymentType    = false;
 
 
+  // final String TAG = (Preferences).toString(); // ignore: non_constant_identifier_names
   log(className, classMethod,  message) {
     bool isPrint = false;
     if (_allDebugPrint){
       if (className == "SplashScreen" && _splashScreen)isPrint = true;
       if (className == "RestService" && _restService)isPrint = true;
       if (className == "Preferences" && _preferences)isPrint = true;
+      if (className == "Profile" && _profile)isPrint = true;
       if (className == "GeoCodeReplaceScreen" && _geoCodeReplaceScreen)isPrint = true;
       if (className == "GeoService" && _geoService)isPrint = true;
+      if (className == "MainApplication" && _mainApplication)isPrint = true;
+      if (className == "Order" && _order)isPrint = true;
+      if (className == "PaymentType" && _paymentType)isPrint = true;
+      if (className == "RoutePointScreen" && _routePointScreen)isPrint = true;
+
 
     }
 
     if (isPrint){
-      Logger().d("########## " + className + "." + classMethod + ": " + message.toString());
+      Logger().v("########## " + className + "." + classMethod + ": " + message.toString());
     }
   }
 
   flog(message){
-    Logger().d("########## " + message);
+    Logger().v("########## " + message);
   }
-
-
-
-
-  final _parseDataDebugPrint = true;
-
-  final _geoDebugPrint = true;
-  final _geoCodeDebugPrint = false;
-
-  final _restServiceDebugPrint = false;
-
-  final _orderDebugPrint = true;
-  final _orderCalcDebugPrint = true;
-
-  final _splashDebugPrint = true;
-
-
-  get restServiceDebugPrint => _restServiceDebugPrint && _allDebugPrint;
-  get geoCodeDebugPrint => _geoDebugPrint && _geoCodeDebugPrint && _allDebugPrint;
-  get orderCalcDebugPrint => _orderCalcDebugPrint && _orderDebugPrint && _allDebugPrint;
-  get orderDebugPrint => _orderDebugPrint && _allDebugPrint;
-  get parseDataDebugPrint => _parseDataDebugPrint && _allDebugPrint;
-
-  get geoDebugPrint => _geoDebugPrint && _allDebugPrint;
-  get splashDebugPrint => _splashDebugPrint && _allDebugPrint;
-
-
 
 }
 

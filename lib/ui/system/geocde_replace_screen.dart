@@ -61,6 +61,16 @@ class _GeoCodeReplaceScreenState extends State<GeoCodeReplaceScreen> {
 
 
             ):Container(),
+
+            RaisedButton(
+              child: Text("Очистить кэш по геокодингу для выбранной точки."),
+
+              onPressed: () async {
+                GeoService().geocodeClear(widget.fromRoutePoint);
+                Navigator.pop(context);
+              },
+
+            ),
           ],
         ),
       ),

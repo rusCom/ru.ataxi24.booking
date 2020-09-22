@@ -11,7 +11,6 @@ class Agent{
   Agent({this.id, this.name, this.car, this.phone, this.lt, this.ln});
 
   factory Agent.fromJson(Map<String, dynamic> jsonData) {
-    // print("RoutePoint.fromJson json = " + jsonData.toString());
     return Agent(
       id: jsonData['id'] != null ? jsonData['id'] : "",
       name: jsonData['name'] != null ? jsonData['name'] : "",

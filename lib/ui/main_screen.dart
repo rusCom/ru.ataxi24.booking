@@ -37,17 +37,12 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   @override
-  void dispose() {
-    print("_MainScreenState dispose");
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
         key: scaffoldKey,
+        resizeToAvoidBottomInset: false,
         body: Stack(
           children: <Widget>[
             GoogleMap(
