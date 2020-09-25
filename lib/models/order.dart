@@ -1,6 +1,7 @@
 import 'package:booking/models/agent.dart';
 import 'package:booking/models/main_application.dart';
 import 'package:booking/models/order_tariff.dart';
+import 'package:booking/models/order_wishes.dart';
 import 'package:booking/models/payment_type.dart';
 import 'package:booking/models/route_point.dart';
 import 'package:booking/services/app_blocs.dart';
@@ -32,6 +33,8 @@ class Order {
   List<PaymentType> paymentTypes = []; // типы платежей и тарифы
   String cost, _payType = "";
   DateTime _workDate;
+  String driverNote = "";
+  OrderWishes orderWishes = OrderWishes();
 
   String getLastRouteName() {
     if (routePoints.length == 1)
@@ -103,15 +106,12 @@ class Order {
     AppBlocs().orderRoutePointsController.sink.add(routePoints);
   }
 
-
   set workDate(DateTime value) {
-    if (_workDate != value){
+    if (_workDate != value) {
       _workDate = value;
       calcOrder();
     }
   }
-
-
 
   set orderState(OrderState value) {
     if (_orderState != value) {
@@ -205,7 +205,6 @@ class Order {
     return res;
   }
 
-
   DateTime get workDate => _workDate;
 
   PaymentType get paymentType {
@@ -250,6 +249,25 @@ class Order {
     AppBlocs().newOrderTariffController.sink.add(orderTariffs);
   }
 
+  set orderTariff(OrderTariff setOrderTariff){
+    orderTariffs.forEach((orderTariff) {
+      if (orderTariff.type == setOrderTariff.type)
+        orderTariff.checked = true;
+      else
+        orderTariff.checked = false;
+    });
+    AppBlocs().newOrderTariffController.sink.add(orderTariffs);
+  }
+
+  OrderTariff get orderTariff {
+    if (orderTariffs == null){return OrderTariff(type: "econom");}
+    orderTariffs.forEach((orderTariff) {
+      DebugPrint().flog("orderTariff " + orderTariff.toString());
+      if (orderTariff.checked) return orderTariff;
+    });
+    return OrderTariff(type: "econom");
+  }
+
   String get checkedTariff {
     String result = "econom";
     if (orderTariffs == null) {
@@ -261,18 +279,23 @@ class Order {
     return result;
   }
 
+
+
   OrderState get orderState => _orderState;
 
   Map<String, dynamic> toJson() => {
         "uid": _uid,
         "dispatcher_phone": dispatcherPhone,
-        "tariff": checkedTariff,
+        // "tariff": checkedTariff,
+        "tariff": orderTariff.type,
         "payment": checkedPayment,
         "work_date": workDate != null ? workDate.toString() : "",
         "state": orderState.toString(),
         "agent": agent,
         "route": routePoints,
         "payments": paymentTypes,
+        "driver_note": driverNote,
+        "wishes": orderWishes,
       };
 
   @override
@@ -286,6 +309,7 @@ class Order {
     dispatcherPhone = jsonData['dispatcher_phone'];
     cost = jsonData['cost'] != null ? jsonData['cost'] : "";
     _payType = jsonData['payment'] != null ? jsonData['payment'] : "";
+    driverNote = jsonData['driver_note'] != null ? jsonData['driver_note'] : "";
 
     switch (jsonData['state']) {
       case "search_car":

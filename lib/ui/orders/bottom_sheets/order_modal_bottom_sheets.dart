@@ -1,16 +1,67 @@
 import 'package:booking/models/main_application.dart';
+import 'package:booking/models/order_wishes.dart';
+import 'package:booking/ui/orders/wishes/order_wishes_baby_seats.dart';
+import 'package:booking/ui/orders/wishes/order_wishes_driver_note.dart';
+import 'package:booking/ui/orders/wishes/order_wishes_title.dart';
+import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:list_tile_more_customizable/list_tile_more_customizable.dart';
 
 class OrderModalBottomSheets {
+  static const borderRadius = Radius.circular(10.0);
+
+  static orderWishes(BuildContext context) {
+    OrderWishes orderWishes = MainApplication().curOrder.orderWishes;
+    showModalBottomSheet(
+      context: context,
+      useRootNavigator: true,
+      isDismissible: true,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return FractionallySizedBox(
+          heightFactor: 0.8,
+          child: DraggableScrollableSheet(
+            initialChildSize: 0.8,
+            maxChildSize: 1,
+            minChildSize: 0.25,
+            builder: (BuildContext context, ScrollController scrollController) {
+              return Container(
+                decoration: BoxDecoration(borderRadius: BorderRadius.only(topRight: borderRadius, topLeft: borderRadius), color: Colors.white),
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 8, right: 8, top: 16),
+                  child: Column(children: [
+                    OrderWishesTitle("Пожелания"),
+                    OrderWishesDriverNote(value: orderWishes.driverNote, onChanged: (value) => orderWishes.driverNote = value),
+                    Expanded(
+                      child: ListView(controller: scrollController, children: [
+                        MainApplication().curOrder.orderTariff.wishesBabySeats
+                            ? OrderWishesBabySeats(orderBabySeats: orderWishes.orderBabySeats, onChanged: (value) => orderWishes.orderBabySeats = value)
+                            : null,
+                      ]),
+                    ),
+                  ]),
+                ),
+              );
+            },
+          ),
+        );
+      },
+    ).whenComplete(() {
+      DebugPrint().flog(orderWishes);
+      MainApplication().curOrder.orderWishes = orderWishes;
+      MainApplication().curOrder.calcOrder();
+    });
+  }
+
   static orderDate(BuildContext context) {
     DateTime choseDateTime = DateTime.now().add(Duration(minutes: 46));
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
+        borderRadius: BorderRadius.only(topLeft: borderRadius, topRight: borderRadius),
       ),
       builder: (BuildContext context) {
         return Padding(
@@ -87,7 +138,7 @@ class OrderModalBottomSheets {
             minChildSize: 0.25,
             builder: (BuildContext context, ScrollController scrollController) {
               return Container(
-                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.white),
+                decoration: BoxDecoration(borderRadius: BorderRadius.only(topRight: borderRadius, topLeft: borderRadius), color: Colors.white),
                 child: Padding(
                   padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 8, right: 8, top: 16),
                   child: Column(
@@ -222,7 +273,6 @@ class OrderModalBottomSheets {
   static paymentTypes(BuildContext context) {
     showModalBottomSheet(
         context: context,
-        // isScrollControlled: true,
         builder: (BuildContext bc) {
           return Container(
             color: Color(0xFF737373),

@@ -1,6 +1,7 @@
 import 'package:booking/models/main_application.dart';
 import 'package:booking/models/order.dart';
 import 'package:booking/models/order_tariff.dart';
+import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/material.dart';
 
 class NewOrderCalcTariffWidget extends StatelessWidget {
@@ -13,7 +14,10 @@ class NewOrderCalcTariffWidget extends StatelessWidget {
     return Padding(
         padding: const EdgeInsets.only(right: 10.0, top: 0, bottom: 1),
         child: RaisedButton(
-          onPressed: () => MainApplication().curOrder.checkedTariff = orderTariff.type,
+          onPressed: () {
+            DebugPrint().flog("NewOrderCalcTariffWidget pressed " + orderTariff.toString());
+            MainApplication().curOrder.orderTariff = orderTariff;
+          },
           shape: orderTariff.checked == true
               ? RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),

@@ -175,8 +175,7 @@ class NewOrderCalcScreen extends StatelessWidget {
                           icon: Icon(Icons.wrap_text),
                           label: Text("Пожелания"),
                           onPressed: () {
-
-
+                            OrderModalBottomSheets.orderWishes(context);
                           },
                         ),
                       ),

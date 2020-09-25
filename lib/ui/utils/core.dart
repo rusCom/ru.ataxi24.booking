@@ -13,8 +13,8 @@ List<Color> kitGradients = [
 ];
 
 class Const{
-  // static List<String> restHost = ["http://192.168.1.99:5872", "http://api1.toptaxi.org:5872", "http://api2.toptaxi.org:5872" ];
-  static List<String> restHost = [ "http://api1.toptaxi.org:5872", "http://api2.toptaxi.org:5872" ];
+  static List<String> restHost = ["http://192.168.1.99:5872", "http://api1.toptaxi.org:5872", "http://api2.toptaxi.org:5872" ];
+  // static List<String> restHost = [ "http://api1.toptaxi.org:5872", "http://api2.toptaxi.org:5872" ];
   static const String dispatchingToken = "C3345D6297882D04F0AAE85A19611119";
   static const int dbVersion = 1;
 
@@ -78,7 +78,7 @@ class DebugPrint{
   }
 
   flog(message){
-    Logger().v("########## " + message);
+    Logger().v("########## " + message.toString());
   }
 
 }

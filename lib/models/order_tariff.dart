@@ -20,7 +20,7 @@ class OrderTariff{
     switch (type){
       case "econom": return "Эконом";
       case "comfort": return "Комфорт";
-      case "comfort_plus": return "Комфорт+";
+
       case "business": return "Бизнес";
       case "delivery": return "Доставка";
       case "sober_driver": return "Перегон";
@@ -35,15 +35,23 @@ class OrderTariff{
     switch (type){
       case "econom": return "assets/icons/ic_tariff_econom.png";
       case "comfort": return "assets/icons/ic_tariff_comfort.png";
-      case "comfort_plus": return "assets/icons/ic_tariff_comfort_plus.png";
       case "business": return "assets/icons/ic_tariff_business.png";
       case "delivery": return "assets/icons/ic_tariff_delivery.png";
       case "sober_driver": return "assets/icons/ic_tariff_sober_driver.png";
       case "cargo": return "assets/icons/ic_tariff_cargo.png";
       case "express": return "assets/icons/ic_tariff_express.png";
-
     }
     return "assets/icons/ic_tariff_econom.png";
+  }
+
+  bool get wishesBabySeats{
+    switch (type){
+      case "econom": return true;
+      case "comfort": return true;
+      case "business": return true;
+      case "express": return true;
+    }
+    return false;
   }
 
   Map<String, dynamic> toJson() =>
@@ -51,7 +59,8 @@ class OrderTariff{
         'type': type,
         'name': name,
         'price': price,
-        'checked': checked
+        'checked': checked,
+        "wishesBabySeats":wishesBabySeats,
       };
 
   @override
