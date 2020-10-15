@@ -16,9 +16,9 @@ class NewOrderCalcTariffWidget extends StatelessWidget {
         child: RaisedButton(
           onPressed: () {
             DebugPrint().flog("NewOrderCalcTariffWidget pressed " + orderTariff.toString());
-            MainApplication().curOrder.orderTariff = orderTariff;
+            MainApplication().curOrder.selectedOrderTariff = orderTariff.type;
           },
-          shape: orderTariff.checked == true
+          shape: orderTariff.selected == true
               ? RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                   side: BorderSide(color: Colors.amber, width: 2),

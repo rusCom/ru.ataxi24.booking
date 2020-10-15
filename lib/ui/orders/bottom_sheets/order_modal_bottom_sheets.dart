@@ -1,9 +1,11 @@
 import 'package:booking/models/main_application.dart';
 import 'package:booking/models/order_wishes.dart';
+import 'package:booking/models/payment_type.dart';
+import 'package:booking/services/app_blocs.dart';
 import 'package:booking/ui/orders/wishes/order_wishes_baby_seats.dart';
 import 'package:booking/ui/orders/wishes/order_wishes_driver_note.dart';
+import 'package:booking/ui/orders/wishes/order_wishes_switch.dart';
 import 'package:booking/ui/orders/wishes/order_wishes_title.dart';
-import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:list_tile_more_customizable/list_tile_more_customizable.dart';
@@ -27,21 +29,40 @@ class OrderModalBottomSheets {
             maxChildSize: 1,
             minChildSize: 0.25,
             builder: (BuildContext context, ScrollController scrollController) {
+              // DebugPrint().flog(MainApplication().curOrder.orderTariff);
               return Container(
                 decoration: BoxDecoration(borderRadius: BorderRadius.only(topRight: borderRadius, topLeft: borderRadius), color: Colors.white),
                 child: Padding(
                   padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 8, right: 8, top: 16),
-                  child: Column(children: [
-                    OrderWishesTitle("Пожелания"),
-                    OrderWishesDriverNote(value: orderWishes.driverNote, onChanged: (value) => orderWishes.driverNote = value),
-                    Expanded(
-                      child: ListView(controller: scrollController, children: [
-                        MainApplication().curOrder.orderTariff.wishesBabySeats
-                            ? OrderWishesBabySeats(orderBabySeats: orderWishes.orderBabySeats, onChanged: (value) => orderWishes.orderBabySeats = value)
-                            : null,
-                      ]),
-                    ),
-                  ]),
+                  child: Column(
+                    children: [
+                      OrderWishesTitle("Пожелания"),
+                      OrderWishesDriverNote(value: orderWishes.driverNote, onChanged: (value) => orderWishes.driverNote = value),
+                      Expanded(
+                        child: ListView(
+                          controller: scrollController,
+                          children: [
+                            OrderWishesBabySeats(orderBabySeats: orderWishes.orderBabySeats, onChanged: (value) => orderWishes.orderBabySeats = value),
+                            OrderWishesSwitch(
+                                orderWishesValue: orderWishes.conditioner,
+                                caption: "Кондиционер",
+                                onChanged: (value) => orderWishes.conditioner = value,
+                                viewSwitch: MainApplication().curOrder.orderTariff.wishesConditioner),
+                            OrderWishesSwitch(
+                                orderWishesValue: orderWishes.petTransportation,
+                                caption: "Перевозка питомца",
+                                onChanged: (value) => orderWishes.petTransportation = value,
+                                viewSwitch: MainApplication().curOrder.orderTariff.wishesPetTransportation),
+                            OrderWishesSwitch(
+                                orderWishesValue: orderWishes.nonSmokingSalon,
+                                caption: "Не курящий салон",
+                                onChanged: (value) => orderWishes.nonSmokingSalon = value,
+                                viewSwitch: MainApplication().curOrder.orderTariff.wishesNonSmokingSalon),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
@@ -49,9 +70,10 @@ class OrderModalBottomSheets {
         );
       },
     ).whenComplete(() {
-      DebugPrint().flog(orderWishes);
+      // DebugPrint().flog(orderWishes);
       MainApplication().curOrder.orderWishes = orderWishes;
       MainApplication().curOrder.calcOrder();
+      AppBlocs().newOrderWishesController.sink.add(null);
     });
   }
 
@@ -93,7 +115,7 @@ class OrderModalBottomSheets {
                     Expanded(
                       child: MaterialButton(
                         onPressed: () {
-                          MainApplication().curOrder.workDate = null;
+                          MainApplication().curOrder.orderWishes.workDate = null;
                           Navigator.of(context).pop();
                         },
                         child: Text("На текущее время"),
@@ -102,7 +124,7 @@ class OrderModalBottomSheets {
                     Expanded(
                       child: MaterialButton(
                         onPressed: () {
-                          MainApplication().curOrder.workDate = choseDateTime;
+                          MainApplication().curOrder.orderWishes.workDate = choseDateTime;
                           Navigator.of(context).pop();
                         },
                         child: Text("Выбрать"),
@@ -118,7 +140,7 @@ class OrderModalBottomSheets {
           ),
         );
       },
-    );
+    ).whenComplete(() => MainApplication().curOrder.calcOrder());
   }
 
   static orderNotes(BuildContext context) {
@@ -271,71 +293,75 @@ class OrderModalBottomSheets {
   }
 
   static paymentTypes(BuildContext context) {
+    PaymentType cashPaymentType = MainApplication().curOrder.paymentType(type: "cash");
+    PaymentType corporationPaymentType = MainApplication().curOrder.paymentType(type: "corporation");
+    PaymentType sberbankPaymentType = MainApplication().curOrder.paymentType(type: "sberbank");
+    PaymentType bonusesPaymentType = MainApplication().curOrder.paymentType(type: "bonuses");
+
     showModalBottomSheet(
         context: context,
         builder: (BuildContext bc) {
           return Container(
             color: Color(0xFF737373),
             child: Container(
-              decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.only(topLeft: const Radius.circular(10.0), topRight: const Radius.circular(10.0))),
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.only(topLeft: const Radius.circular(10.0), topRight: const Radius.circular(10.0))),
               // margin: EdgeInsets.only(left: 8, right: 8),
               child: new Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  MainApplication().curOrder.isPaymentType("cash")
+                  cashPaymentType != null
                       ? new ListTileMoreCustomizable(
                           leading: Image.asset(
-                            MainApplication().curOrder.getPaymentType("cash").iconName,
+                            cashPaymentType.iconName,
                             width: 40,
                             height: 40,
                           ),
-                          title: new Text(MainApplication().curOrder.getPaymentType("cash").choseName),
+                          title: new Text(cashPaymentType.choseName),
                           onTap: (details) async {
                             Navigator.pop(context);
-                            MainApplication().curOrder.checkedPayment = "cash";
+                            MainApplication().curOrder.selectedPaymentType = "cash";
                           },
                         )
                       : Container(),
-                  MainApplication().curOrder.isPaymentType("corporation")
+                  corporationPaymentType != null
                       ? new ListTileMoreCustomizable(
                           leading: Image.asset(
-                            MainApplication().curOrder.getPaymentType("corporation").iconName,
+                            corporationPaymentType.iconName,
                             width: 40,
                             height: 40,
                           ),
-                          title: new Text(MainApplication().curOrder.getPaymentType("corporation").choseName),
+                          title: new Text(corporationPaymentType.choseName),
                           onTap: (details) async {
                             Navigator.pop(context);
-                            MainApplication().curOrder.checkedPayment = "corporation";
+                            MainApplication().curOrder.selectedPaymentType = "corporation";
                           },
                         )
                       : Container(),
-                  MainApplication().curOrder.isPaymentType("sberbank")
+                  sberbankPaymentType != null
                       ? new ListTileMoreCustomizable(
                           leading: Image.asset(
-                            MainApplication().curOrder.getPaymentType("sberbank").iconName,
+                            sberbankPaymentType.iconName,
                             width: 40,
                             height: 40,
                           ),
-                          title: new Text(MainApplication().curOrder.getPaymentType("sberbank").choseName),
+                          title: new Text(sberbankPaymentType.choseName),
                           onTap: (details) async {
                             Navigator.pop(context);
-                            MainApplication().curOrder.checkedPayment = "sberbank";
+                            MainApplication().curOrder.selectedPaymentType = "sberbank";
                           },
                         )
                       : Container(),
-                  MainApplication().curOrder.isPaymentType("bonuses")
+                  bonusesPaymentType != null
                       ? new ListTileMoreCustomizable(
                           leading: Image.asset(
-                            MainApplication().curOrder.getPaymentType("bonuses").iconName,
+                            bonusesPaymentType.iconName,
                             width: 40,
                             height: 40,
                           ),
-                          title: new Text(MainApplication().curOrder.getPaymentType("bonuses").choseName),
+                          title: new Text(bonusesPaymentType.choseName),
                           onTap: (details) async {
                             Navigator.pop(context);
-                            MainApplication().curOrder.checkedPayment = "bonuses";
+                            MainApplication().curOrder.selectedPaymentType = "bonuses";
                           },
                         )
                       : Container(),

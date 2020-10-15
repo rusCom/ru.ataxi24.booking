@@ -30,10 +30,8 @@ class Order {
   String _lastRoutePoints = "";
   String dispatcherPhone = "";
   Agent agent; // водитель
-  List<PaymentType> paymentTypes = []; // типы платежей и тарифы
-  String cost, _payType = "";
-  DateTime _workDate;
-  String driverNote = "";
+
+  String cost;
   OrderWishes orderWishes = OrderWishes();
 
   String getLastRouteName() {
@@ -70,19 +68,6 @@ class Order {
     return true;
   }
 
-  List<OrderTariff> get orderTariffs {
-    if (_orderState == OrderState.new_order_calculating) {
-      return routePoints.first.orderTariffs;
-    }
-
-    PaymentType result;
-    paymentTypes.forEach((paymentType) {
-      if (paymentType.checked) result = paymentType;
-    });
-    if (result == null) return [];
-    return result.orderTariffs;
-  }
-
   int _indexRoutePointOfKey(Key key) {
     return routePoints.indexWhere((RoutePoint d) => d.key == key);
   }
@@ -106,23 +91,22 @@ class Order {
     AppBlocs().orderRoutePointsController.sink.add(routePoints);
   }
 
-  set workDate(DateTime value) {
-    if (_workDate != value) {
-      _workDate = value;
-      calcOrder();
-    }
-  }
-
   set orderState(OrderState value) {
     if (_orderState != value) {
       DebugPrint().log(TAG, "orderState", "new order state = " + value.toString());
 
       bool startTimer = false;
       _orderState = value;
+      if (_selectedPaymentType == "") {
+        _selectedPaymentType = "cash";
+      }
+      if (_selectedOrderTariff == "") {
+        _selectedOrderTariff = "econom";
+      }
 
       switch (_orderState) {
         case OrderState.new_order:
-          _workDate = null;
+          orderWishes.clear();
           startTimer = false;
           moveToCurLocation();
           routePoints.clear();
@@ -171,9 +155,6 @@ class Order {
     DebugPrint().log(TAG, "calcOrder", this.toString());
     orderState = OrderState.new_order_calculating;
 
-    String checkPayment = checkedPayment;
-    String checkTariff = checkedTariff;
-
     var response = await RestService().httpPost("/orders/calc", toJson());
     if (response["status"] == "OK") {
       var result = response["result"];
@@ -181,121 +162,24 @@ class Order {
 
       Iterable payments = result["payments"];
       paymentTypes = payments.map((model) => PaymentType.fromJson(model)).toList();
-
       orderState = OrderState.new_order_calculated;
-      checkedPayment = checkPayment;
-      checkedTariff = checkTariff;
+
       DebugPrint().log(TAG, "calcOrder", this.toString());
     }
   }
-
-  PaymentType getPaymentType(String type) {
-    PaymentType result;
-    paymentTypes.forEach((paymentType) {
-      if (paymentType.type == type) result = paymentType;
-    });
-    return result;
-  }
-
-  bool isPaymentType(String type) {
-    bool res = false;
-    paymentTypes.forEach((paymentType) {
-      if (paymentType.type == type) res = true;
-    });
-    return res;
-  }
-
-  DateTime get workDate => _workDate;
-
-  PaymentType get paymentType {
-    if (_payType != "") return PaymentType(type: _payType);
-    PaymentType result;
-    paymentTypes.forEach((paymentType) {
-      if (paymentType.checked) result = paymentType;
-    });
-    if (result == null) {
-      return PaymentType(type: "cash");
-    }
-    return result;
-  }
-
-  String get checkedPayment {
-    String result = "cash";
-    paymentTypes.forEach((paymentType) {
-      if (paymentType.checked) result = paymentType.type;
-    });
-    return result;
-  }
-
-  set checkedPayment(String type) {
-    String checkTariff = checkedTariff;
-    paymentTypes.forEach((paymentType) {
-      if (paymentType.type == type)
-        paymentType.checked = true;
-      else
-        paymentType.checked = false;
-    });
-    checkedTariff = checkTariff;
-    AppBlocs().newOrderPaymentController.sink.add(checkTariff);
-  }
-
-  set checkedTariff(String type) {
-    orderTariffs.forEach((orderTariff) {
-      if (orderTariff.type == type)
-        orderTariff.checked = true;
-      else
-        orderTariff.checked = false;
-    });
-    AppBlocs().newOrderTariffController.sink.add(orderTariffs);
-  }
-
-  set orderTariff(OrderTariff setOrderTariff){
-    orderTariffs.forEach((orderTariff) {
-      if (orderTariff.type == setOrderTariff.type)
-        orderTariff.checked = true;
-      else
-        orderTariff.checked = false;
-    });
-    AppBlocs().newOrderTariffController.sink.add(orderTariffs);
-  }
-
-  OrderTariff get orderTariff {
-    if (orderTariffs == null){return OrderTariff(type: "econom");}
-    orderTariffs.forEach((orderTariff) {
-      DebugPrint().flog("orderTariff " + orderTariff.toString());
-      if (orderTariff.checked) return orderTariff;
-    });
-    return OrderTariff(type: "econom");
-  }
-
-  String get checkedTariff {
-    String result = "econom";
-    if (orderTariffs == null) {
-      return result;
-    }
-    orderTariffs.forEach((orderTariff) {
-      if (orderTariff.checked) result = orderTariff.type;
-    });
-    return result;
-  }
-
-
 
   OrderState get orderState => _orderState;
 
   Map<String, dynamic> toJson() => {
         "uid": _uid,
+        "wishes": orderWishes,
         "dispatcher_phone": dispatcherPhone,
-        // "tariff": checkedTariff,
-        "tariff": orderTariff.type,
-        "payment": checkedPayment,
-        "work_date": workDate != null ? workDate.toString() : "",
+        "tariff": selectedOrderTariff,
+        "payment": selectedPaymentType,
         "state": orderState.toString(),
         "agent": agent,
         "route": routePoints,
         "payments": paymentTypes,
-        "driver_note": driverNote,
-        "wishes": orderWishes,
       };
 
   @override
@@ -308,8 +192,8 @@ class Order {
     _uid = jsonData['uid'];
     dispatcherPhone = jsonData['dispatcher_phone'];
     cost = jsonData['cost'] != null ? jsonData['cost'] : "";
-    _payType = jsonData['payment'] != null ? jsonData['payment'] : "";
-    driverNote = jsonData['driver_note'] != null ? jsonData['driver_note'] : "";
+    selectedPaymentType = jsonData['payment'] != null ? jsonData['payment'] : "";
+    if (jsonData['wishes'] != null){orderWishes.parseData(jsonData['wishes']);}
 
     switch (jsonData['state']) {
       case "search_car":
@@ -401,5 +285,87 @@ class Order {
             );
       }
     }
+  }
+
+  /// ************************** PaymentTypes ****************************************///
+  List<PaymentType> paymentTypes = [];
+  String _selectedPaymentType = "cash";
+
+  String get selectedPaymentType => _selectedPaymentType;
+
+  set selectedPaymentType(String value) {
+    if (_selectedPaymentType != value) {
+      _selectedPaymentType = value;
+      AppBlocs().newOrderPaymentController.sink.add(_selectedPaymentType);
+    }
+  }
+
+  PaymentType paymentType({type = ""}) {
+    PaymentType searchingPaymentType;
+
+    if (type == "") {
+      if (paymentTypes.isEmpty) {
+        if (searchingPaymentType == null) {
+          routePoints[0].paymentTypes.forEach((paymentType) {
+            if (paymentType.selected) searchingPaymentType = paymentType;
+          });
+        }
+      }
+      paymentTypes.forEach((paymentType) {
+        if (paymentType.selected) searchingPaymentType = paymentType;
+      });
+      if (searchingPaymentType == null) {
+        if (_orderState == OrderState.new_order_calculating || _orderState == OrderState.new_order_calculated){
+          _selectedPaymentType = "cash";
+        }
+
+        searchingPaymentType = PaymentType(type: _selectedPaymentType);
+      }
+    } // if (type == ""){
+    else {
+      paymentTypes.forEach((paymentType) {
+        if (paymentType.type == type) searchingPaymentType = paymentType;
+      });
+    } // if (type == ""){ ... else
+    return searchingPaymentType;
+  }
+
+  /// ************************** OrderTariffs ****************************************///
+  String _selectedOrderTariff = "econom";
+
+  String get selectedOrderTariff => _selectedOrderTariff;
+
+  set selectedOrderTariff(String value) {
+    if (_selectedOrderTariff != value) {
+      _selectedOrderTariff = value;
+      AppBlocs().newOrderTariffController.sink.add(orderTariffs);
+    }
+  }
+
+  List<OrderTariff> get orderTariffs {
+    if (paymentTypes.isEmpty) {
+      return routePoints.first.orderTariffs;
+    }
+    PaymentType result;
+    paymentTypes.forEach((paymentType) {
+      if (paymentType.selected) result = paymentType;
+    });
+    if (result == null) return [];
+    return result.orderTariffs;
+  }
+
+  OrderTariff get orderTariff {
+    // DebugPrint().flog(orderTariffs.toString());
+    OrderTariff selectedOrderTariff;
+    orderTariffs.forEach((orderTariff) {
+      if (orderTariff.selected) {
+        // DebugPrint().flog("return $orderTariff.toString()");
+        selectedOrderTariff = orderTariff;
+      }
+    });
+    if (selectedOrderTariff == null) {
+      selectedOrderTariff = OrderTariff(type: "econom");
+    }
+    return selectedOrderTariff;
   }
 }

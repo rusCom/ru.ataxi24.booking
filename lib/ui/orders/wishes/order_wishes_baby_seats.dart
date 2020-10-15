@@ -1,3 +1,4 @@
+import 'package:booking/models/main_application.dart';
 import 'package:booking/models/order_baby_seats.dart';
 import 'package:booking/ui/orders/wishes/order_wishes_title.dart';
 import 'package:booking/ui/widgets/number_counter.dart';
@@ -20,6 +21,7 @@ class _OrderWishesBabySeatsState extends State<OrderWishesBabySeats> {
 
   @override
   Widget build(BuildContext context) {
+    if (!MainApplication().curOrder.orderTariff.wishesBabySeats)return Container();
     if (orderBabySeats == null) {
       orderBabySeats = widget.orderBabySeats;
     }

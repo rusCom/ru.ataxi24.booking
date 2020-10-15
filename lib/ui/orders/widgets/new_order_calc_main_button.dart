@@ -3,30 +3,14 @@ import 'package:booking/models/order.dart';
 import 'package:booking/services/app_blocs.dart';
 import 'package:booking/ui/orders/bottom_sheets/order_modal_bottom_sheets.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+
 
 class NewOrderMainButton extends StatelessWidget {
   String getCaption(){
     if (MainApplication().curOrder.orderState == OrderState.new_order_calculating)
       return "Расчет стоимости ...";
-    if (MainApplication().curOrder.workDate != null){
-      final now = DateTime.now();
-      final today = DateTime(now.year, now.month, now.day);
-      final tomorrow = DateTime(now.year, now.month, now.day + 1);
-      final aDate = DateTime(MainApplication().curOrder.workDate.year, MainApplication().curOrder.workDate.month, MainApplication().curOrder.workDate.day);
-      String date = "";
-      if(aDate == today){
-        date = "сегодня на " + DateFormat('HH:mm', 'ru').format(MainApplication().curOrder.workDate);
-      }
-      else if (aDate == tomorrow){
-        date = "завтра на " + DateFormat('HH:mm', 'ru').format(MainApplication().curOrder.workDate);
-      }
-      else {
-        date = DateFormat('dd MMMM на HH:mm', 'ru').format(MainApplication().curOrder.workDate);
-      }
-
-
-      return "Запланировать поездку\n" + date;
+    if (MainApplication().curOrder.orderWishes.workDate != null){
+      return "Запланировать поездку\n" + MainApplication().curOrder.orderWishes.workDateCaption;
     }
 
     return "Заказать такси";

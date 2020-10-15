@@ -4,6 +4,7 @@ import 'package:booking/models/route_point.dart';
 import 'package:booking/services/app_blocs.dart';
 import 'package:booking/services/map_markers_service.dart';
 import 'package:booking/ui/route_point/route_point_screen.dart';
+import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:list_tile_more_customizable/list_tile_more_customizable.dart';
@@ -121,8 +122,7 @@ class NewOrderCalcScreen extends StatelessWidget {
                     onTap: (details) async {
                       if (MainApplication().curOrder.orderState == OrderState.new_order_calculated) {
                         if (MainApplication().curOrder.routePoints.length == 2) {
-                          RoutePoint routePoint =
-                              await Navigator.push<RoutePoint>(context, MaterialPageRoute(builder: (context) => RoutePointScreen(viewReturn: false)));
+                          RoutePoint routePoint = await Navigator.push<RoutePoint>(context, MaterialPageRoute(builder: (context) => RoutePointScreen(viewReturn: false)));
                           if (routePoint != null) {
                             MainApplication().curOrder.addRoutePoint(routePoint, isLast: true);
                           }
@@ -148,7 +148,7 @@ class NewOrderCalcScreen extends StatelessWidget {
                             builder: (context, snapshot) {
                               return FlatButton.icon(
                                 icon: Image.asset(
-                                  MainApplication().curOrder.paymentType.iconName,
+                                  MainApplication().curOrder.paymentType().iconName,
                                   width: 30,
                                   height: 30,
                                 ),
@@ -156,7 +156,7 @@ class NewOrderCalcScreen extends StatelessWidget {
                                   fit: FlexFit.loose,
                                   child: Container(
                                     child: Text(
-                                      MainApplication().curOrder.paymentType.name,
+                                      MainApplication().curOrder.paymentType().name,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
@@ -172,7 +172,12 @@ class NewOrderCalcScreen extends StatelessWidget {
                       Container(height: 40, child: VerticalDivider(color: Colors.amber)),
                       Expanded(
                         child: FlatButton.icon(
-                          icon: Icon(Icons.wrap_text),
+                          icon: StreamBuilder(
+                            stream: AppBlocs().newOrderWishesStream,
+                            builder: (context, snapshot) {
+                              return wishesCount();
+                            }
+                          ),
                           label: Text("Пожелания"),
                           onPressed: () {
                             OrderModalBottomSheets.orderWishes(context);
@@ -214,6 +219,22 @@ class NewOrderCalcScreen extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget wishesCount() {
+    if (MainApplication().curOrder.orderWishes.count == 0) {
+      return Icon(Icons.wrap_text);
+    }
+    return ClipOval(
+      child: Container(
+        color: Colors.amberAccent,
+        height: 24,
+        width: 24,
+        child: Center(
+          child: Text(MainApplication().curOrder.orderWishes.count.toString()),
+        ),
+      ),
     );
   }
 

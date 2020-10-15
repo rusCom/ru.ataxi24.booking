@@ -1,8 +1,6 @@
 import 'package:booking/models/main_application.dart';
 import 'package:booking/models/route_point.dart';
 import 'package:flutter/material.dart';
-import 'package:list_tile_more_customizable/list_tile_more_customizable.dart';
-
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'order_sliding_panel_bottom.dart';
 import 'order_sliding_panel_caption.dart';
@@ -32,13 +30,12 @@ class OrderSlidingPanel extends StatelessWidget {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    ListTileMoreCustomizable(
-                      leading: CircleAvatar(backgroundImage: AssetImage(MainApplication().curOrder.paymentType.iconName), backgroundColor: Colors.white,),
+                    ListTile(
+                      leading: CircleAvatar(backgroundImage: AssetImage(MainApplication().curOrder.paymentType().iconName), backgroundColor: Colors.white,),
                       title: Text("Стоимость поездки"),
-                      subtitle: Text(MainApplication().curOrder.paymentType.choseName),
+                      subtitle: Text(MainApplication().curOrder.paymentType().choseName),
                       trailing: Text(MainApplication().curOrder.cost + " \u20BD"),
-                      horizontalTitleGap: 8.0,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
+
                     ),
                     MediaQuery.removePadding(
                       context: context,
@@ -56,17 +53,18 @@ class OrderSlidingPanel extends StatelessWidget {
                           if (index == MainApplication().curOrder.routePoints.length - 1) {
                             imageLocation = "assets/icons/ic_onboard_destination.png";
                           }
-
-                          return ListTileMoreCustomizable(
+                          return ListTile(
                             leading: CircleAvatar(backgroundImage: AssetImage(imageLocation), backgroundColor: Colors.white,),
                             title: Text(routePoint.name),
                             subtitle: Text(routePoint.dsc),
-                            horizontalTitleGap: 8.0,
-                            contentPadding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
-
                           );
                         },
                       ),
+                    ),
+                    ListTile(
+                      leading: CircleAvatar(backgroundImage: AssetImage("assets/icons/ic_date_range_black.png"), backgroundColor: Colors.white,),
+                      title: Text("Какой либо текст"),
+
                     ),
                   ],
                 ),

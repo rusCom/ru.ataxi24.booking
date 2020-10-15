@@ -4,6 +4,8 @@ import 'package:logger/logger.dart';
 const Color black = Colors.black;
 const Color white = Colors.white;
 
+
+
 List<Color> kitGradients = [
   // new Color.fromRGBO(103, 218, 255, 1.0),
   // new Color.fromRGBO(3, 169, 244, 1.0),
@@ -12,9 +14,25 @@ List<Color> kitGradients = [
   Colors.black87,
 ];
 
+
+
+class MainUtils{
+  static bool parseBool(var value){
+    if (value == null)return false;
+    if (value.toString().toLowerCase() == "true")return true;
+    return false;
+  }
+
+  static int parseInt(var value, {var def = 0}){
+    if (value == null)return def;
+    return int.parse(value.toString());
+
+  }
+}
+
 class Const{
-  static List<String> restHost = ["http://192.168.1.99:5872", "http://api1.toptaxi.org:5872", "http://api2.toptaxi.org:5872" ];
-  // static List<String> restHost = [ "http://api1.toptaxi.org:5872", "http://api2.toptaxi.org:5872" ];
+  static List<String> restHost = ["http://lkt.toptaxi.org:5872", "http://api1.toptaxi.org:5872", "http://api2.toptaxi.org:5872" ];
+  //static List<String> restHost = [ "http://api1.toptaxi.org:5872", "http://api2.toptaxi.org:5872" ];
   static const String dispatchingToken = "C3345D6297882D04F0AAE85A19611119";
   static const int dbVersion = 1;
 
@@ -50,7 +68,7 @@ class DebugPrint{
   final _mainApplication = false;
   final _preferences    = false;
   final _profile        = false;
-  final _order          = false;
+  final _order          = true;
   final _paymentType    = false;
 
 
@@ -82,4 +100,5 @@ class DebugPrint{
   }
 
 }
+
 

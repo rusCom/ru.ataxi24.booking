@@ -40,6 +40,7 @@ class GeoService {
   Future<List<RoutePoint>> nearby() async {
     LatLng location = MainApplication().currentLocation;
     String url = "http://geo.toptaxi.org/nearby?lt=" + location.latitude.toString() + "&ln=" + location.longitude.toString() + "&key=" + MainApplication().preferences.googleKey;
+    DebugPrint().log(TAG, "nearby", url);
     http.Response response = await http.get(url);
     if (response == null) return null;
     if (response.statusCode != 200) return null;

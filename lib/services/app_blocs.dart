@@ -53,6 +53,15 @@ class AppBlocs{
     return _orderRoutePointsController;
   }
 
+  StreamController _newOrderWishesController;
+  Stream get newOrderWishesStream => newOrderWishesController.stream;
+  StreamController get newOrderWishesController{
+    if (_newOrderWishesController == null){
+      _newOrderWishesController = StreamController.broadcast();
+    }
+    return _newOrderWishesController;
+  }
+
   StreamController _newOrderTariffController; // = StreamController();
   Stream get newOrderTariffStream => newOrderTariffController.stream;
   StreamController get newOrderTariffController{
@@ -62,7 +71,7 @@ class AppBlocs{
     return _newOrderTariffController;
   }
 
-  StreamController _newOrderNoteController; // = StreamController();
+  StreamController _newOrderNoteController;
   Stream get newOrderNoteStream => newOrderNoteController.stream;
   StreamController get newOrderNoteController{
     if (_newOrderNoteController == null){
@@ -89,6 +98,7 @@ class AppBlocs{
     if (_newOrderTariffController != null)_newOrderTariffController.close();
     if (_newOrderNoteController != null)_newOrderNoteController.close();
     if (_newOrderPaymentController != null)_newOrderPaymentController.close();
+    if (_newOrderWishesController != null)_newOrderWishesController.close();
 
   }
 

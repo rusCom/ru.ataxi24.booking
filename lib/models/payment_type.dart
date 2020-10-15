@@ -1,5 +1,5 @@
+import 'package:booking/models/main_application.dart';
 import 'package:booking/ui/utils/core.dart';
-import 'package:flutter/material.dart';
 import 'order_tariff.dart';
 
 class PaymentType {
@@ -8,10 +8,6 @@ class PaymentType {
   String name;
   String choseName;
   String iconName;
-  String choseIconName;
-  Icon icon;
-  bool isChosen;
-  bool checked;
   List<OrderTariff> orderTariffs = [];
 
   PaymentType({this.type, this.orderTariffs}) {
@@ -37,7 +33,11 @@ class PaymentType {
         iconName = "assets/icons/ic_payment_bonus.png";
         break;
     }
-    checked = false;
+  }
+
+  bool get selected{
+    if (type == MainApplication().curOrder.selectedPaymentType)return true;
+    return false;
   }
 
   @override
@@ -48,7 +48,6 @@ class PaymentType {
 
   factory PaymentType.fromJson(Map<String, dynamic> jsonData) {
     DebugPrint().log("PaymentType", "fromJson", jsonData.toString());
-
 
     List<OrderTariff> orderTariffs = [];
     if (jsonData.containsKey('tariffs')){

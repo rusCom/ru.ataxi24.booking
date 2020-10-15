@@ -1,4 +1,5 @@
 import 'package:booking/models/order_tariff.dart';
+import 'package:booking/models/payment_type.dart';
 import 'package:booking/services/app_blocs.dart';
 import 'package:booking/services/map_markers_service.dart';
 import 'package:booking/services/rest_service.dart';
@@ -18,6 +19,7 @@ class RoutePoint {
   Key key;
   String _note = "";
   List<OrderTariff> orderTariffs = [];
+  List<PaymentType> paymentTypes = [];
   bool canPickUp;
 
   RoutePoint({this.name, this.dsc, this.lt, this.ln, this.type, this.placeId, this.detail, this.canPickUp, this.orderTariffs, this.notes}) {
@@ -68,6 +70,7 @@ class RoutePoint {
   }
 
   Map<String, dynamic> toJson() => {
+        "payments": paymentTypes,
         "place_id": placeId,
         "name": name,
         "dsc": dsc,
@@ -90,6 +93,10 @@ class RoutePoint {
           orderTariffs = [];
           List<String> tariffs = response['result']['tariffs'].cast<String>();
           tariffs.forEach((tariff) => orderTariffs.add(OrderTariff(type: tariff)));
+
+          paymentTypes = [];
+          List<String> payments = response['result']['payments'].cast<String>();
+          payments.forEach((payment) => paymentTypes.add(PaymentType(type: payment)));
           canPickUp = true;
           MapMarkersService().pickUpState = PickUpState.enabled;
         } else {
