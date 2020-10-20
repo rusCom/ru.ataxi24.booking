@@ -26,11 +26,24 @@ class OrderWishes {
     if (petTransportation){count ++;}
     if (nonSmokingSalon){count ++;}
     if (conditioner){count ++;}
-    // if (workDate != null){count ++;}
-
+    if (workDate != null){count ++;}
     return count;
   }
 
+  int get countWithOutWorkDate{
+    if (count == 0) return 0;
+    if (workDate != null)return (count - 1);
+    return count;
+  }
+
+  String get orderSlidingTitle{
+    if (count == 1){
+      if (workDate != null){
+        return workDateCaption;
+      }
+    }
+    return "";
+  }
 
 
   String get workDateCaption{

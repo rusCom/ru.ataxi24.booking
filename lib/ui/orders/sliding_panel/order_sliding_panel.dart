@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'order_sliding_panel_bottom.dart';
 import 'order_sliding_panel_caption.dart';
+import 'order_sliding_panel_wishes_tile.dart';
 
 class OrderSlidingPanel extends StatelessWidget {
   final Widget child;
@@ -28,14 +29,16 @@ class OrderSlidingPanel extends StatelessWidget {
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     ListTile(
-                      leading: CircleAvatar(backgroundImage: AssetImage(MainApplication().curOrder.paymentType().iconName), backgroundColor: Colors.white,),
+                      leading: CircleAvatar(
+                        backgroundImage: AssetImage(MainApplication().curOrder.paymentType().iconName),
+                        backgroundColor: Colors.white,
+                      ),
                       title: Text("Стоимость поездки"),
                       subtitle: Text(MainApplication().curOrder.paymentType().choseName),
                       trailing: Text(MainApplication().curOrder.cost + " \u20BD"),
-
                     ),
                     MediaQuery.removePadding(
                       context: context,
@@ -54,18 +57,17 @@ class OrderSlidingPanel extends StatelessWidget {
                             imageLocation = "assets/icons/ic_onboard_destination.png";
                           }
                           return ListTile(
-                            leading: CircleAvatar(backgroundImage: AssetImage(imageLocation), backgroundColor: Colors.white,),
+                            leading: CircleAvatar(
+                              backgroundImage: AssetImage(imageLocation),
+                              backgroundColor: Colors.white,
+                            ),
                             title: Text(routePoint.name),
                             subtitle: Text(routePoint.dsc),
                           );
                         },
                       ),
                     ),
-                    ListTile(
-                      leading: CircleAvatar(backgroundImage: AssetImage("assets/icons/ic_date_range_black.png"), backgroundColor: Colors.white,),
-                      title: Text("Какой либо текст"),
-
-                    ),
+                    OrderSlidingPanelWishesTile(MainApplication().curOrder.orderWishes),
                   ],
                 ),
               ),

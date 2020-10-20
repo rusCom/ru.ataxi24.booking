@@ -4,8 +4,8 @@ import 'package:booking/models/route_point.dart';
 import 'package:booking/services/app_blocs.dart';
 import 'package:booking/services/map_markers_service.dart';
 import 'package:booking/ui/route_point/route_point_screen.dart';
-import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:list_tile_more_customizable/list_tile_more_customizable.dart';
 import 'bottom_sheets/order_modal_bottom_sheets.dart';
@@ -223,8 +223,12 @@ class NewOrderCalcScreen extends StatelessWidget {
   }
 
   Widget wishesCount() {
-    if (MainApplication().curOrder.orderWishes.count == 0) {
-      return Icon(Icons.wrap_text);
+    if (MainApplication().curOrder.orderWishes.countWithOutWorkDate == 0) {
+      return SvgPicture.asset(
+        "assets/icons/ic_wishes.svg",
+        width: 24,
+        height: 24,
+      );
     }
     return ClipOval(
       child: Container(
@@ -232,7 +236,7 @@ class NewOrderCalcScreen extends StatelessWidget {
         height: 24,
         width: 24,
         child: Center(
-          child: Text(MainApplication().curOrder.orderWishes.count.toString()),
+          child: Text(MainApplication().curOrder.orderWishes.countWithOutWorkDate.toString()),
         ),
       ),
     );

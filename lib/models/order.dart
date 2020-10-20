@@ -194,6 +194,9 @@ class Order {
     cost = jsonData['cost'] != null ? jsonData['cost'] : "";
     selectedPaymentType = jsonData['payment'] != null ? jsonData['payment'] : "";
     if (jsonData['wishes'] != null){orderWishes.parseData(jsonData['wishes']);}
+    else {orderWishes.clear();}
+
+    // DebugPrint().flog(orderWishes.count);
 
     switch (jsonData['state']) {
       case "search_car":

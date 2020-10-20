@@ -48,6 +48,8 @@ class Const{
     Color(0xFFFF9945),
     Color(0xFFFc6076),
   ];
+
+  static const modalBottomSheetsBorderRadius = Radius.circular(10.0);
 }
 
 class DebugPrint{

@@ -1,5 +1,6 @@
 import 'package:booking/ui/orders/wishes/order_wishes_title.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 typedef void OrderWishesDriverNoteChangeCallback(String value);
 
@@ -19,7 +20,10 @@ class _OrderWishesDriverNoteState extends State<OrderWishesDriverNote> {
   Widget build(BuildContext context) {
     if (value == null){value = widget.value;}
     return ListTile(
-      leading: Icon(Icons.note),
+      leading: CircleAvatar(
+        child: SvgPicture.asset("assets/icons/ic_wishes_driver_note.svg"),
+        backgroundColor: Colors.transparent,
+      ),
       title: value == "" ? Text("Комментарий водителю") : Text(value),
       subtitle: value == ""? null : Text("Комментарий водителю"),
       onTap: () async {
@@ -84,8 +88,10 @@ class _OrderWishesDriverNoteState extends State<OrderWishesDriverNote> {
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   hintText: 'Ваш комментарий для водителя',
-                  icon: Icon(
-                    Icons.note,
+                  icon: SvgPicture.asset(
+                    "assets/icons/ic_wishes_driver_note.svg",
+                    width: 32.0,
+                    height: 32.0,
                     color: Color(0xFF757575),
                   ),
                 ),

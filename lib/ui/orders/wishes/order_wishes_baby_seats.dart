@@ -3,6 +3,7 @@ import 'package:booking/models/order_baby_seats.dart';
 import 'package:booking/ui/orders/wishes/order_wishes_title.dart';
 import 'package:booking/ui/widgets/number_counter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 typedef void OrderWishesBabySeatsChangeCallback(OrderBabySeats value);
 
@@ -21,26 +22,27 @@ class _OrderWishesBabySeatsState extends State<OrderWishesBabySeats> {
 
   @override
   Widget build(BuildContext context) {
-    if (!MainApplication().curOrder.orderTariff.wishesBabySeats)return Container();
+    if (!MainApplication().curOrder.orderTariff.wishesBabySeats) return Container();
     if (orderBabySeats == null) {
       orderBabySeats = widget.orderBabySeats;
     }
     return ListTile(
-      leading: Icon(Icons.airline_seat_recline_normal),
+      leading: CircleAvatar(
+        child: SvgPicture.asset("assets/icons/ic_wishes_baby_seats.svg"),
+        backgroundColor: Colors.transparent,
+      ),
       title: Text("Детское кресло"),
       trailing: IconButton(
         icon: Icon(orderBabySeats.isClearButton ? Icons.clear : Icons.keyboard_arrow_right),
         onPressed: () async {
-          if (orderBabySeats.isClearButton){
+          if (orderBabySeats.isClearButton) {
             setState(() {
               orderBabySeats.clear();
               if (widget.onChanged != null) {
                 widget.onChanged(orderBabySeats);
               }
             });
-
-          }
-          else {
+          } else {
             OrderBabySeats newOrderBabySeats = await orderWishesBabySeats(context, orderBabySeats);
             setState(() {
               orderBabySeats = newOrderBabySeats;
