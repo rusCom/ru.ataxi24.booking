@@ -1,3 +1,4 @@
+import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -27,9 +28,10 @@ class _OrderWishesSwitchState extends State<OrderWishesSwitch> {
     }
     if (widget.svgAssets != null) {
       return ListTile(
-        leading: CircleAvatar(
-          child: SvgPicture.asset(widget.svgAssets),
-          backgroundColor: Colors.transparent,
+        leading: SvgPicture.asset(
+          widget.svgAssets,
+          height: Const.modalBottomSheetsLeadingSize,
+          width: Const.modalBottomSheetsLeadingSize,
         ),
         title: Text(widget.caption),
         trailing: _switch(),

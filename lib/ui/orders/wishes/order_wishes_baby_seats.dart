@@ -1,6 +1,7 @@
 import 'package:booking/models/main_application.dart';
 import 'package:booking/models/order_baby_seats.dart';
 import 'package:booking/ui/orders/wishes/order_wishes_title.dart';
+import 'package:booking/ui/utils/core.dart';
 import 'package:booking/ui/widgets/number_counter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -27,9 +28,10 @@ class _OrderWishesBabySeatsState extends State<OrderWishesBabySeats> {
       orderBabySeats = widget.orderBabySeats;
     }
     return ListTile(
-      leading: CircleAvatar(
-        child: SvgPicture.asset("assets/icons/ic_wishes_baby_seats.svg"),
-        backgroundColor: Colors.transparent,
+      leading: SvgPicture.asset(
+        "assets/icons/ic_wishes_baby_seats.svg",
+        height: Const.modalBottomSheetsLeadingSize,
+        width: Const.modalBottomSheetsLeadingSize,
       ),
       title: Text("Детское кресло"),
       trailing: IconButton(

@@ -42,7 +42,10 @@ class NewOrderCalcScreen extends StatelessWidget {
                         return NewOrderCalcTariffCheckWidget();
                       }),
                   ListTileMoreCustomizable(
-                    leading: Icon(Icons.person_pin_circle),
+                    leading: CircleAvatar(
+                      child: Image.asset("assets/icons/ic_onboard_pick_up.png"),
+                      backgroundColor: Colors.transparent,
+                    ),
                     title: StreamBuilder(
                       stream: AppBlocs().orderStateStream,
                       builder: (context, snapshot) {
@@ -81,7 +84,10 @@ class NewOrderCalcScreen extends StatelessWidget {
                     contentPadding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 0.0),
                   ),
                   ListTileMoreCustomizable(
-                    leading: Icon(Icons.add_location),
+                    leading: CircleAvatar(
+                      child: Image.asset("assets/icons/ic_onboard_destination.png"),
+                      backgroundColor: Colors.transparent,
+                    ),
                     title: StreamBuilder(
                       stream: AppBlocs().orderStateStream,
                       builder: (context, snapshot) {
@@ -147,10 +153,11 @@ class NewOrderCalcScreen extends StatelessWidget {
                             stream: AppBlocs().newOrderPaymentStream,
                             builder: (context, snapshot) {
                               return FlatButton.icon(
-                                icon: Image.asset(
+                                icon: SvgPicture.asset(
                                   MainApplication().curOrder.paymentType().iconName,
-                                  width: 30,
-                                  height: 30,
+                                  width: 32,
+                                  height: 32,
+                                  color: Colors.deepOrangeAccent,
                                 ),
                                 label: Flexible(
                                   fit: FlexFit.loose,
@@ -173,11 +180,10 @@ class NewOrderCalcScreen extends StatelessWidget {
                       Expanded(
                         child: FlatButton.icon(
                           icon: StreamBuilder(
-                            stream: AppBlocs().newOrderWishesStream,
-                            builder: (context, snapshot) {
-                              return wishesCount();
-                            }
-                          ),
+                              stream: AppBlocs().newOrderWishesStream,
+                              builder: (context, snapshot) {
+                                return wishesCount();
+                              }),
                           label: Text("Пожелания"),
                           onPressed: () {
                             OrderModalBottomSheets.orderWishes(context);
@@ -228,6 +234,7 @@ class NewOrderCalcScreen extends StatelessWidget {
         "assets/icons/ic_wishes.svg",
         width: 24,
         height: 24,
+        color: Colors.deepOrangeAccent,
       );
     }
     return ClipOval(

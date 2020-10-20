@@ -1,6 +1,8 @@
 import 'package:booking/models/main_application.dart';
 import 'package:booking/models/route_point.dart';
+import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'order_sliding_panel_bottom.dart';
 import 'order_sliding_panel_caption.dart';
@@ -32,9 +34,10 @@ class OrderSlidingPanel extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: AssetImage(MainApplication().curOrder.paymentType().iconName),
-                        backgroundColor: Colors.white,
+                      leading: SvgPicture.asset(
+                        MainApplication().curOrder.paymentType().iconName,
+                        width: Const.modalBottomSheetsLeadingSize,
+                        height: Const.modalBottomSheetsLeadingSize,
                       ),
                       title: Text("Стоимость поездки"),
                       subtitle: Text(MainApplication().curOrder.paymentType().choseName),
@@ -59,7 +62,7 @@ class OrderSlidingPanel extends StatelessWidget {
                           return ListTile(
                             leading: CircleAvatar(
                               backgroundImage: AssetImage(imageLocation),
-                              backgroundColor: Colors.white,
+                              backgroundColor: Colors.transparent,
                             ),
                             title: Text(routePoint.name),
                             subtitle: Text(routePoint.dsc),

@@ -15,22 +15,22 @@ class PaymentType {
       case "cash":
         name = "Наличные";
         choseName = "Наличный расчет";
-        iconName = "assets/icons/ic_payment_cash.png";
+        iconName = "assets/icons/ic_payment_cash.svg";
         break;
       case "corporation":
         name = "Организация";
         choseName = "За счет организации";
-        iconName = "assets/icons/ic_payment_corporation.png";
+        iconName = "assets/icons/ic_payment_corporation.svg";
         break;
       case "sberbank":
         name = "Сбербанк";
         choseName = "Сбербанк Онлайн перевод водителю";
-        iconName = "assets/icons/ic_payment_sberbank.png";
+        iconName = "assets/icons/ic_payment_sberbank.svg";
         break;
       case "bonuses":
         name = "Бонусы";
         choseName = "Оплата бонусами";
-        iconName = "assets/icons/ic_payment_bonus.png";
+        iconName = "assets/icons/ic_payment_bonus.svg";
         break;
     }
   }

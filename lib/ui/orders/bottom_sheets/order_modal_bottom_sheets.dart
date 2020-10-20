@@ -8,6 +8,7 @@ import 'package:booking/ui/orders/wishes/order_wishes_switch.dart';
 import 'package:booking/ui/orders/wishes/order_wishes_title.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:list_tile_more_customizable/list_tile_more_customizable.dart';
 
 class OrderModalBottomSheets {
@@ -314,10 +315,11 @@ class OrderModalBottomSheets {
                 children: <Widget>[
                   cashPaymentType != null
                       ? new ListTileMoreCustomizable(
-                          leading: Image.asset(
+                          leading: SvgPicture.asset(
                             cashPaymentType.iconName,
-                            width: 40,
-                            height: 40,
+                            width: 32,
+                            height: 32,
+                            color: Colors.deepOrangeAccent,
                           ),
                           title: new Text(cashPaymentType.choseName),
                           onTap: (details) async {
@@ -328,10 +330,11 @@ class OrderModalBottomSheets {
                       : Container(),
                   corporationPaymentType != null
                       ? new ListTileMoreCustomizable(
-                          leading: Image.asset(
+                          leading: SvgPicture.asset(
                             corporationPaymentType.iconName,
-                            width: 40,
-                            height: 40,
+                            width: 32,
+                            height: 32,
+                            color: Colors.deepOrangeAccent,
                           ),
                           title: new Text(corporationPaymentType.choseName),
                           onTap: (details) async {
@@ -342,10 +345,11 @@ class OrderModalBottomSheets {
                       : Container(),
                   sberbankPaymentType != null
                       ? new ListTileMoreCustomizable(
-                          leading: Image.asset(
+                          leading: SvgPicture.asset(
                             sberbankPaymentType.iconName,
-                            width: 40,
-                            height: 40,
+                            width: 32,
+                            height: 32,
+                            color: Colors.deepOrangeAccent,
                           ),
                           title: new Text(sberbankPaymentType.choseName),
                           onTap: (details) async {
@@ -356,10 +360,11 @@ class OrderModalBottomSheets {
                       : Container(),
                   bonusesPaymentType != null
                       ? new ListTileMoreCustomizable(
-                          leading: Image.asset(
+                          leading: SvgPicture.asset(
                             bonusesPaymentType.iconName,
-                            width: 40,
-                            height: 40,
+                            width: 32,
+                            height: 32,
+                            color: Colors.deepOrangeAccent,
                           ),
                           title: new Text(bonusesPaymentType.choseName),
                           onTap: (details) async {

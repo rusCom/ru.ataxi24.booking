@@ -40,13 +40,15 @@ class Order {
     else if (routePoints.length == 2)
       return routePoints.last.name;
     else if (routePoints.length == 3)
-      return routePoints[1].name + " -> " + routePoints.last.name;
+      // return routePoints[1].name + " -> " + routePoints.last.name;
+      return routePoints.last.name;
     else
       return "Еще " + (routePoints.length - 1).toString() + " адреса";
   }
 
   String getLastRouteDsc() {
     if (routePoints.length == 2) return routePoints.last.dsc;
+    if (routePoints.length == 3) return "через " + routePoints[1].name;
     return "";
   }
 

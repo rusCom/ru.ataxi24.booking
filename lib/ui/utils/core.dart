@@ -50,6 +50,7 @@ class Const{
   ];
 
   static const modalBottomSheetsBorderRadius = Radius.circular(10.0);
+  static const modalBottomSheetsLeadingSize = 32.0;
 }
 
 class DebugPrint{

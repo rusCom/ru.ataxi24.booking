@@ -14,9 +14,10 @@ class OrderSlidingPanelWishesTile extends StatelessWidget {
   Widget build(BuildContext context) {
     if (orderWishes.count > 1) {
       return ListTile(
-        leading: CircleAvatar(
-          child: SvgPicture.asset("assets/icons/ic_wishes.svg"),
-          backgroundColor: Colors.transparent,
+        leading: SvgPicture.asset(
+          "assets/icons/ic_wishes.svg",
+          height: Const.modalBottomSheetsLeadingSize,
+          width: Const.modalBottomSheetsLeadingSize,
         ),
         title: Text("Пожелания к заказу"),
         trailing: ClipOval(
@@ -112,9 +113,10 @@ class OrderSlidingPanelWishesTile extends StatelessWidget {
   Widget _petTransportation() {
     if (!orderWishes.petTransportation) return Container();
     return ListTile(
-      leading: CircleAvatar(
-        child: SvgPicture.asset("assets/icons/ic_wishes_pet_transportation.svg"),
-        backgroundColor: Colors.transparent,
+      leading: SvgPicture.asset(
+        "assets/icons/ic_wishes_pet_transportation.svg",
+        height: Const.modalBottomSheetsLeadingSize,
+        width: Const.modalBottomSheetsLeadingSize,
       ),
       title: Text("Перевозка питомца"),
     );
@@ -123,9 +125,10 @@ class OrderSlidingPanelWishesTile extends StatelessWidget {
   Widget _conditioner() {
     if (!orderWishes.conditioner) return Container();
     return ListTile(
-      leading: CircleAvatar(
-        child: SvgPicture.asset("assets/icons/ic_wishes_conditioner.svg"),
-        backgroundColor: Colors.transparent,
+      leading: SvgPicture.asset(
+        "assets/icons/ic_wishes_conditioner.svg",
+        height: Const.modalBottomSheetsLeadingSize,
+        width: Const.modalBottomSheetsLeadingSize,
       ),
       title: Text("Кондиционер"),
     );
@@ -134,9 +137,10 @@ class OrderSlidingPanelWishesTile extends StatelessWidget {
   Widget _nonSmokingSalon() {
     if (!orderWishes.nonSmokingSalon) return Container();
     return ListTile(
-      leading: CircleAvatar(
-        child: SvgPicture.asset("assets/icons/ic_wishes_non_smoking_salon.svg"),
-        backgroundColor: Colors.transparent,
+      leading: SvgPicture.asset(
+        "assets/icons/ic_wishes_non_smoking_salon.svg",
+        height: Const.modalBottomSheetsLeadingSize,
+        width: Const.modalBottomSheetsLeadingSize,
       ),
       title: Text("Не курящий салон"),
     );
@@ -145,9 +149,10 @@ class OrderSlidingPanelWishesTile extends StatelessWidget {
   Widget _orderBabySeats() {
     if (orderWishes.orderBabySeats.getCount() == 0) return Container();
     return ListTile(
-      leading: CircleAvatar(
-        child: SvgPicture.asset("assets/icons/ic_wishes_baby_seats.svg"),
-        backgroundColor: Colors.transparent,
+      leading: SvgPicture.asset(
+        "assets/icons/ic_wishes_baby_seats.svg",
+        height: Const.modalBottomSheetsLeadingSize,
+        width: Const.modalBottomSheetsLeadingSize,
       ),
       title: orderWishes.orderBabySeats.subtitle,
     );
@@ -156,10 +161,12 @@ class OrderSlidingPanelWishesTile extends StatelessWidget {
   Widget _driverNote() {
     if (orderWishes.driverNote == "") return Container();
     return ListTile(
-      leading: CircleAvatar(
-        child: SvgPicture.asset("assets/icons/ic_wishes_driver_note.svg"),
-        backgroundColor: Colors.transparent,
+      leading: SvgPicture.asset(
+        "assets/icons/ic_wishes_driver_note.svg",
+        height: Const.modalBottomSheetsLeadingSize,
+        width: Const.modalBottomSheetsLeadingSize,
       ),
+
       title: Text(orderWishes.driverNote),
       // subtitle: Text(),
     );
@@ -168,9 +175,10 @@ class OrderSlidingPanelWishesTile extends StatelessWidget {
   Widget _workDate() {
     if (orderWishes.workDate == null) return Container();
     return ListTile(
-      leading: CircleAvatar(
-        child: SvgPicture.asset("assets/icons/ic_wishes_work_date.svg"),
-        backgroundColor: Colors.transparent,
+      leading: SvgPicture.asset(
+        "assets/icons/ic_wishes_work_date.svg",
+        height: Const.modalBottomSheetsLeadingSize,
+        width: Const.modalBottomSheetsLeadingSize,
       ),
       title: Text("Запланированная поездка"),
       subtitle: Text(orderWishes.workDateCaption),

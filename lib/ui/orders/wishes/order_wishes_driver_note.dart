@@ -1,4 +1,5 @@
 import 'package:booking/ui/orders/wishes/order_wishes_title.dart';
+import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -16,25 +17,28 @@ class OrderWishesDriverNote extends StatefulWidget {
 
 class _OrderWishesDriverNoteState extends State<OrderWishesDriverNote> {
   String value;
+
   @override
   Widget build(BuildContext context) {
-    if (value == null){value = widget.value;}
+    if (value == null) {
+      value = widget.value;
+    }
     return ListTile(
-      leading: CircleAvatar(
-        child: SvgPicture.asset("assets/icons/ic_wishes_driver_note.svg"),
-        backgroundColor: Colors.transparent,
+      leading: SvgPicture.asset(
+        "assets/icons/ic_wishes_driver_note.svg",
+        height: Const.modalBottomSheetsLeadingSize,
+        width: Const.modalBottomSheetsLeadingSize,
       ),
       title: value == "" ? Text("Комментарий водителю") : Text(value),
-      subtitle: value == ""? null : Text("Комментарий водителю"),
+      subtitle: value == "" ? null : Text("Комментарий водителю"),
       onTap: () async {
         String newValue = await orderWishesDriverNote(context, value);
         setState(() {
-          if (widget.onChanged != null){
+          if (widget.onChanged != null) {
             widget.onChanged(newValue);
           }
           value = newValue;
         });
-
       },
       trailing: IconButton(
         icon: Icon(value == "" ? Icons.keyboard_arrow_right : Icons.clear),
@@ -42,15 +46,14 @@ class _OrderWishesDriverNoteState extends State<OrderWishesDriverNote> {
           if (value == "") {
             String newValue = await orderWishesDriverNote(context, value);
             setState(() {
-              if (widget.onChanged != null){
+              if (widget.onChanged != null) {
                 widget.onChanged(newValue);
               }
               value = newValue;
             });
-          }
-          else {
+          } else {
             setState(() {
-              if (widget.onChanged != null){
+              if (widget.onChanged != null) {
                 widget.onChanged("");
               }
               value = "";
@@ -58,7 +61,6 @@ class _OrderWishesDriverNoteState extends State<OrderWishesDriverNote> {
           }
         },
       ),
-
     );
   }
 
@@ -90,8 +92,8 @@ class _OrderWishesDriverNoteState extends State<OrderWishesDriverNote> {
                   hintText: 'Ваш комментарий для водителя',
                   icon: SvgPicture.asset(
                     "assets/icons/ic_wishes_driver_note.svg",
-                    width: 32.0,
-                    height: 32.0,
+                    height: Const.modalBottomSheetsLeadingSize,
+                    width: Const.modalBottomSheetsLeadingSize,
                     color: Color(0xFF757575),
                   ),
                 ),
