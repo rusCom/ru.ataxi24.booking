@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'arc_clipper.dart';
-import 'core.dart';
+import '../utils/core.dart';
 
 class MainBackground extends StatelessWidget {
   final showLogo;
@@ -22,7 +22,7 @@ class MainBackground extends StatelessWidget {
             new Container(
               decoration: new BoxDecoration(
                   gradient: new LinearGradient(
-                    colors: kitGradients,
+                    colors: Const.kitGradients,
                   )),
             ),
             showLogo
@@ -57,3 +57,5 @@ class MainBackground extends StatelessWidget {
 
 
 }
+
+

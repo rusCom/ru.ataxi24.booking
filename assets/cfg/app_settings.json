@@ -1,0 +1,9 @@
+{
+  "dispatchingToken": "C3345D6297882D04F0AAE85A19611119",
+  "isTest": true,
+  "restHost": [
+    "http://lkt.toptaxi.org:5872",
+    "http://api1.toptaxi.org:5872",
+    "http://api2.toptaxi.org:5872"
+  ]
+}

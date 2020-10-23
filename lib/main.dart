@@ -1,11 +1,19 @@
 import 'package:booking/ui/profile/profile_login_screen.dart';
 import 'package:booking/ui/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'ui/main_screen.dart';
 
-
-void main() => runApp(MyApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]).then((_) {
+    runApp(MyApp());
+  });
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -13,7 +21,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MainApp();
   }
-
 }
 
 class MainApp extends StatelessWidget {
@@ -42,6 +49,4 @@ class MainApp extends StatelessWidget {
       },
     );
   }
-
-
 }

@@ -3,7 +3,7 @@ import 'package:booking/models/profile.dart';
 import 'package:booking/services/geo_service.dart';
 import 'package:booking/ui/main_screen.dart';
 import 'package:booking/ui/profile/profile_login_screen.dart';
-import 'package:booking/ui/utils/background.dart';
+import 'file:///C:/Projects/ataxi24/booking/lib/ui/widgets/background.dart';
 import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/material.dart';
 

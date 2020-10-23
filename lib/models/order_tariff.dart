@@ -4,7 +4,7 @@ class OrderTariff {
   String type;
   String price;
 
-  OrderTariff({this.type, this.price}) {}
+  OrderTariff({this.type, this.price});
 
   factory OrderTariff.fromJson(Map<String, dynamic> json) {
     return OrderTariff(

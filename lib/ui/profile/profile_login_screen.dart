@@ -1,7 +1,7 @@
 import 'package:booking/models/main_application.dart';
 import 'package:booking/models/profile.dart';
 import 'package:booking/ui/profile/profile_registration_screen.dart';
-import 'package:booking/ui/utils/gradient_button.dart';
+import 'file:///C:/Projects/ataxi24/booking/lib/ui/widgets/gradient_button.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
@@ -20,7 +20,7 @@ class ProfileLoginScreen extends StatefulWidget {
 class _ProfileLoginScreenState extends State<ProfileLoginScreen> with SingleTickerProviderStateMixin {  
   String errorText = "Номер телефона";
   Color errorColor = Color(0xFF999A9A);
-  final MaskedTextController controller = MaskedTextController(mask: '(000) 000-00-00');
+  final MaskedTextController controller = MaskedTextController(mask: '+7 (000) 000-00-00');
 
 
   @override

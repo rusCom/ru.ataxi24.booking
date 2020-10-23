@@ -10,6 +10,7 @@ import 'package:booking/ui/utils/core.dart';
 import 'package:device_id/device_id.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:global_configuration/global_configuration.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -42,7 +43,9 @@ class MainApplication {
     _sharedPreferences = await SharedPreferences.getInstance();
     deviceId = await DeviceId.getID;
 
-    currentPosition = await getLastKnownPosition();
+    await GlobalConfiguration().loadFromAsset("app_settings");
+
+    currentPosition = await Geolocator.getLastKnownPosition();
 
     if (currentPosition == null){
       currentPosition = new Position(latitude: 54.7184554, longitude: 55.9257656);
@@ -53,7 +56,7 @@ class MainApplication {
         .of(context)
         .platform;
 
-    getPositionStream(desiredAccuracy: LocationAccuracy.high).listen(
+    Geolocator.getPositionStream(desiredAccuracy: LocationAccuracy.high).listen(
           (Position position) {
         if (position != null) {
           currentPosition = position;

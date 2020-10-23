@@ -1,20 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 
-const Color black = Colors.black;
-const Color white = Colors.white;
-
-
-
-List<Color> kitGradients = [
-  // new Color.fromRGBO(103, 218, 255, 1.0),
-  // new Color.fromRGBO(3, 169, 244, 1.0),
-  // new Color.fromRGBO(0, 122, 193, 1.0),
-  Colors.blueGrey.shade800,
-  Colors.black87,
-];
-
-
 
 class MainUtils{
   static bool parseBool(var value){
@@ -31,16 +17,7 @@ class MainUtils{
 }
 
 class Const{
-  static List<String> restHost = ["http://lkt.toptaxi.org:5872", "http://api1.toptaxi.org:5872", "http://api2.toptaxi.org:5872" ];
-  //static List<String> restHost = [ "http://api1.toptaxi.org:5872", "http://api2.toptaxi.org:5872" ];
-  static const String dispatchingToken = "C3345D6297882D04F0AAE85A19611119";
-  static const int dbVersion = 1;
-
-
   static List<Color> kitGradients = [
-    // new Color.fromRGBO(103, 218, 255, 1.0),
-    // new Color.fromRGBO(3, 169, 244, 1.0),
-    // new Color.fromRGBO(0, 122, 193, 1.0),
     Colors.blueGrey.shade800,
     Colors.black87,
   ];
@@ -54,16 +31,11 @@ class Const{
 }
 
 class DebugPrint{
-  final isTest = true;
-  final _allDebugPrint = true;
+  final _allDebugPrint = false;
 
   final _splashScreen = false;
   final _geoCodeReplaceScreen = false;
   final _routePointScreen = false;
-
-
-
-
 
   final _restService = false;
   final _geoService = false;
@@ -99,7 +71,10 @@ class DebugPrint{
   }
 
   flog(message){
-    Logger().v("########## " + message.toString());
+    if (_allDebugPrint){
+      Logger().v("########## " + message.toString());
+    }
+
   }
 
 }
