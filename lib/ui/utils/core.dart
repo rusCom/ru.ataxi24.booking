@@ -31,14 +31,14 @@ class Const{
 }
 
 class DebugPrint{
-  final _allDebugPrint = false;
+  final _allDebugPrint = true;
 
   final _splashScreen = false;
   final _geoCodeReplaceScreen = false;
   final _routePointScreen = false;
 
   final _restService = false;
-  final _geoService = false;
+  final _geoService = true;
 
   final _mainApplication = false;
   final _preferences    = false;

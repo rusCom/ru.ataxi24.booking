@@ -15,6 +15,27 @@ class GeoService {
 
   LatLng _lastGeoCodeLocation = LatLng(0, 0);
 
+  Future<List<RoutePoint>> autocompleteHouse(String route, String number, String splash) async{
+    if (route.isEmpty) return null;
+    if (route == "") return null;
+    LatLng location = MainApplication().currentLocation;
+    String url =
+        "http://geo.toptaxi.org/autocomplete/house?route=" + route + "&number=" + number  + "&splash=" + splash +"&lt=" + location.latitude.toString() + "&ln=" + location.longitude.toString() + "&key=" + MainApplication().preferences.googleKey;
+    DebugPrint().log(TAG, "autocompleteHouse", url);
+    http.Response response = await http.get(url);
+    if (response == null) return null;
+    if (response.statusCode != 200) return null;
+    var result = json.decode(response.body);
+    DebugPrint().log(TAG, "autocompleteHouse", result.toString());
+
+    if (result['status'] == 'OK') {
+      Iterable list = result['result'];
+      List<RoutePoint> listRoutePoints = list.map((model) => RoutePoint.fromJson(model)).toList();
+      return listRoutePoints;
+    }
+    return null;
+  }
+
   Future<List<RoutePoint>> autocomplete(String input) async {
     if (input.isEmpty) return null;
     if (input == "") return null;

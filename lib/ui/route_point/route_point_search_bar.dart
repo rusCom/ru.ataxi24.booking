@@ -4,8 +4,9 @@ class RoutePointSearchBar extends StatelessWidget {
   final ValueChanged<String> onChanged;
   final TextEditingController _controller = new TextEditingController();
   final String hintText;
+  final bool enabled;
 
-  RoutePointSearchBar({this.onChanged, this.hintText}): super();
+  RoutePointSearchBar({this.onChanged, this.hintText, this.enabled = true}): super();
 
   void setText(String data){
     WidgetsBinding.instance.addPostFrameCallback((_)  {
@@ -26,10 +27,11 @@ class RoutePointSearchBar extends StatelessWidget {
     return Theme(
       data: ThemeData(hintColor: Colors.transparent),
       child: Container(
-        height: 42,
+
         child: TextField(
           controller: _controller,
           onChanged: onChanged,
+          enabled: enabled,
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: TextStyle(color: Color(0xFF757575), fontSize: 16),

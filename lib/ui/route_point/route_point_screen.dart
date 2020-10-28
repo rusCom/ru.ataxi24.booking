@@ -3,7 +3,6 @@ import 'package:booking/models/order.dart';
 import 'package:booking/models/route_point.dart';
 import 'package:booking/services/app_blocs.dart';
 import 'package:booking/services/geo_service.dart';
-import 'package:booking/services/map_markers_service.dart';
 import 'package:booking/ui/route_point/route_point_search_bar.dart';
 import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/material.dart';
@@ -13,20 +12,30 @@ class RoutePointScreen extends StatelessWidget {
   final String TAG = (RoutePointScreen).toString(); // ignore: non_constant_identifier_names
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final bool isFirst, viewReturn;
+  final RoutePoint routeStreet;
 
-  RoutePointScreen({this.isFirst = false, this.viewReturn = true}) : super();
+  RoutePointScreen({this.isFirst = false, this.viewReturn = true, this.routeStreet}) : super();
 
   @override
   Widget build(BuildContext context) {
-    String hintText = "Куда поедите?";
-    if (isFirst) {
-      hintText = "Откуда Вас забрать?";
+    String hintText = "";
+    bool titleEnabled = true;
+    if (routeStreet == null){
+      hintText = "Куда поедите?";
+      if (isFirst) {
+        hintText = "Откуда Вас забрать?";
+      }
+    }
+    else {
+      hintText = routeStreet.name;
+      titleEnabled = false;
     }
 
-    DebugPrint().log(TAG, "build", MapMarkersService().pickUpRoutePoint);
+    // DebugPrint().log(TAG, "build", MapMarkersService().pickUpRoutePoint);
 
     RoutePointSearchBar routePointSearchBar = new RoutePointSearchBar(
       hintText: hintText,
+      enabled: titleEnabled,
       onChanged: (value) {
         _autocomplete(value);
       },
@@ -75,6 +84,7 @@ class RoutePointScreen extends StatelessWidget {
                         if (routePoint.detail == '0') {
                           GeoService().detail(routePoint);
                         }
+                        RoutePoint routePointAddress = await Navigator.push<RoutePoint>(context, MaterialPageRoute(builder: (context) => RoutePointScreen(routeStreet: routePoint)));
                         routePointSearchBar.setText(routePoint.name);
                       } else if (routePoint.detail == '1') {
                         Navigator.pop(context, routePoint);
