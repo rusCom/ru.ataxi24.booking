@@ -5,7 +5,7 @@ import 'package:booking/services/app_blocs.dart';
 import 'package:booking/services/geo_service.dart';
 import 'package:booking/services/map_markers_service.dart';
 import 'package:booking/ui/route_point/route_point_screen.dart';
-import 'package:booking/ui/system/geocde_replace_screen.dart';
+import 'package:booking/ui/system/system_geocde_replace_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -49,16 +49,9 @@ class NewOrderFirstPointScreen extends StatelessWidget {
                   decoration: InputDecoration(
                     hintText: "Ожидание GPS данных",
                     hintStyle: TextStyle(color: Color(0xFF757575), fontSize: 16),
-                    prefixIcon: IconButton(
-                      icon: Icon(
-                        Icons.add_location,
-                        color: Color(0xFF757575),
-                      ),
-                      onPressed: () async {
-                        if (Preferences().mapAdmin) {
-                          await Navigator.push(context, MaterialPageRoute(builder: (context) => GeoCodeReplaceScreen(MapMarkersService().pickUpRoutePoint)));
-                        }
-                      },
+                    prefixIcon: Icon(
+                      Icons.add_location,
+                      color: Color(0xFF757575),
                     ),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -75,8 +68,7 @@ class NewOrderFirstPointScreen extends StatelessWidget {
                           ),
                         );
                         if (pickUpRoutePoint != null) {
-                          RoutePoint destinationRoutePoint =
-                              await Navigator.push<RoutePoint>(context, MaterialPageRoute(builder: (context) => RoutePointScreen()));
+                          RoutePoint destinationRoutePoint = await Navigator.push<RoutePoint>(context, MaterialPageRoute(builder: (context) => RoutePointScreen()));
                           if (destinationRoutePoint != null) {
                             MainApplication().curOrder.addRoutePoint(pickUpRoutePoint);
                             MainApplication().curOrder.addRoutePoint(destinationRoutePoint);
@@ -171,10 +163,9 @@ class NewOrderFirstPointScreen extends StatelessWidget {
     GeoService().geocode(MapMarkersService().pickUpLocation).then((routePoint) {
       if (routePoint != MapMarkersService().pickUpRoutePoint) {
         MapMarkersService().pickUpRoutePoint = routePoint;
-        if (routePoint.type == "street_address" || routePoint.type == "premise"){
+        if (routePoint.type == "street_address" || routePoint.type == "premise") {
           setText(routePoint.name);
-        }
-        else {
+        } else {
           setText(routePoint.name + ", " + routePoint.dsc);
         }
 

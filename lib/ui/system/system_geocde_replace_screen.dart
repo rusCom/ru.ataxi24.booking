@@ -4,17 +4,17 @@ import 'package:booking/ui/route_point/route_point_screen.dart';
 import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/material.dart';
 
-class GeoCodeReplaceScreen extends StatefulWidget {
+class SystemGeocodeReplaceScreen extends StatefulWidget {
   final RoutePoint fromRoutePoint;
 
-  GeoCodeReplaceScreen(this.fromRoutePoint);
+  SystemGeocodeReplaceScreen(this.fromRoutePoint);
 
   @override
-  _GeoCodeReplaceScreenState createState() => _GeoCodeReplaceScreenState();
+  _SystemGeocodeReplaceScreenState createState() => _SystemGeocodeReplaceScreenState();
 }
 
-class _GeoCodeReplaceScreenState extends State<GeoCodeReplaceScreen> {
-  final TAG = (GeoCodeReplaceScreen).toString(); // ignore: non_constant_identifier_names
+class _SystemGeocodeReplaceScreenState extends State<SystemGeocodeReplaceScreen> {
+  final TAG = (SystemGeocodeReplaceScreen).toString(); // ignore: non_constant_identifier_names
   RoutePoint toRoutePoint;
 
   @override

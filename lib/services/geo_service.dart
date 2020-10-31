@@ -88,6 +88,15 @@ class GeoService {
     return routePoint;
   }
 
+  Future<bool> geocodeReplaceAddress(String lt, String ln, String place) async {
+    String url = "http://geo.toptaxi.org/geocode/replace/address?lt=" + lt + "&ln=" + ln + "&place=" + place + "&phone=" + Profile().phone;
+    DebugPrint().log(TAG, "geocodeReplaceAddress", "url = " + url);
+    http.Response response = await http.get(url);
+    var result = json.decode(response.body);
+    DebugPrint().log(TAG, "geocodeReplaceAddress", "response = " + result.toString());
+    return true;
+  }
+
   Future<bool> geocodeReplace(String from, String to) async {
     String url = "http://geo.toptaxi.org/geocode/replace?from=" + from + "&to=" + to + "&phone=" + Profile().phone;
     DebugPrint().log(TAG, "geocodeReplace", "url = " + url);

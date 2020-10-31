@@ -1,8 +1,12 @@
 import 'package:booking/models/main_application.dart';
 import 'package:booking/models/order.dart';
+import 'package:booking/models/preferences.dart';
+import 'package:booking/models/profile.dart';
 import 'package:booking/services/app_blocs.dart';
 import 'package:booking/services/map_markers_service.dart';
 import 'package:booking/ui/orders/new_order_calc_screen.dart';
+import 'package:booking/ui/system/system_geocde_replace_screen.dart';
+import 'package:booking/ui/system/system_geocode_address_replace_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -93,18 +97,58 @@ class _MainScreenState extends State<MainScreen> {
             ),
             MainApplication().curOrder.mapBoundsIcon
                 ? Positioned(
-              top: 100,
-              right: 8,
-              child: FloatingActionButton(
-                heroTag: '_mapBounds',
-                onPressed: _onMapBoundsButtonPressed,
-                backgroundColor: Colors.white,
-                child: Icon(
-                  Icons.zoom_out_map,
-                  color: Colors.black,
-                ),
-              ),
-            )
+                    top: 100,
+                    right: 8,
+                    child: FloatingActionButton(
+                      heroTag: '_mapBounds',
+                      onPressed: _onMapBoundsButtonPressed,
+                      backgroundColor: Colors.white,
+                      child: Icon(
+                        Icons.zoom_out_map,
+                        color: Colors.black,
+                      ),
+                    ),
+                  )
+                : Container(),
+            Preferences().mapAdmin
+                ? Stack(
+                    children: [
+                      Positioned(
+                        top: 200,
+                        right: 8,
+                        child: FloatingActionButton(
+                          heroTag: '_mapAdminGeocodeReplace',
+                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SystemGeocodeReplaceScreen(MapMarkersService().pickUpRoutePoint))),
+                          backgroundColor: Colors.green,
+                          child: Icon(
+                            Icons.find_replace,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: 260,
+                        right: 8,
+                        child: FloatingActionButton(
+                          heroTag: '_mapAdminGeocodeAddressReplace',
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SystemGeocodeAddressReplaceScreen(
+                                routePoint: MapMarkersService().pickUpRoutePoint,
+                                location: MapMarkersService().pickUpLocation,
+                              ),
+                            ),
+                          ),
+                          backgroundColor: Colors.green,
+                          child: Icon(
+                            Icons.fireplace,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
                 : Container(),
           ],
         ),

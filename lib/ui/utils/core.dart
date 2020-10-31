@@ -34,8 +34,11 @@ class Const{
 class DebugPrint{
   final _allDebugPrint = true;
 
+
+  final _systemGeocodeReplaceScreen = false;
+  final _systemGeocodeAddressReplaceScreen = false;
+
   final _splashScreen = false;
-  final _geoCodeReplaceScreen = false;
   final _routePointScreen = false;
 
   final _restService = false;
@@ -56,12 +59,16 @@ class DebugPrint{
       if (className == "RestService" && _restService)isPrint = true;
       if (className == "Preferences" && _preferences)isPrint = true;
       if (className == "Profile" && _profile)isPrint = true;
-      if (className == "GeoCodeReplaceScreen" && _geoCodeReplaceScreen)isPrint = true;
+
       if (className == "GeoService" && _geoService)isPrint = true;
       if (className == "MainApplication" && _mainApplication)isPrint = true;
       if (className == "Order" && _order)isPrint = true;
       if (className == "PaymentType" && _paymentType)isPrint = true;
       if (className == "RoutePointScreen" && _routePointScreen)isPrint = true;
+
+      if (className == "SystemGeocodeReplaceScreen" && _systemGeocodeReplaceScreen)isPrint = true;
+      if (className == "SystemGeocodeAddressReplaceScreen" && _systemGeocodeAddressReplaceScreen)isPrint = true;
+
 
 
     }
