@@ -6,6 +6,7 @@ class MainUtils{
   static bool parseBool(var value){
     if (value == null)return false;
     if (value.toString().toLowerCase() == "true")return true;
+    if (value.toString() == "1")return true;
     return false;
   }
 
@@ -38,12 +39,12 @@ class DebugPrint{
   final _routePointScreen = false;
 
   final _restService = false;
-  final _geoService = true;
+  final _geoService = false;
 
   final _mainApplication = false;
   final _preferences    = false;
   final _profile        = false;
-  final _order          = true;
+  final _order          = false;
   final _paymentType    = false;
 
 

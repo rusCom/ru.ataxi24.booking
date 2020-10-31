@@ -50,10 +50,10 @@ class RoutePointSearchBar extends StatelessWidget {
               },
             ),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30),
+              borderRadius: BorderRadius.circular(16.0),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30),
+              borderRadius: BorderRadius.circular(16.0),
             ),
             contentPadding: EdgeInsets.symmetric(vertical: 0),
             fillColor: Color(0xFFEEEEEE),

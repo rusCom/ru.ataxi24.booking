@@ -30,6 +30,7 @@ class Order {
   String _lastRoutePoints = "";
   String dispatcherPhone = "";
   Agent agent; // водитель
+  bool canDeny;
 
   String cost;
   OrderWishes orderWishes = OrderWishes();
@@ -197,6 +198,7 @@ class Order {
     selectedPaymentType = jsonData['payment'] != null ? jsonData['payment'] : "";
     if (jsonData['wishes'] != null){orderWishes.parseData(jsonData['wishes']);}
     else {orderWishes.clear();}
+    canDeny = MainUtils.parseBool(jsonData['deny']);
 
     // DebugPrint().flog(orderWishes.count);
 

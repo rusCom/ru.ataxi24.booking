@@ -27,6 +27,14 @@ class AppBlocs{
     }
     return _geoAutocompleteController;
   }
+  StreamController _geoAutocompleteAddressController;
+  Stream get geoAutocompleteAddressStream => geoAutocompleteAddressController.stream;
+  StreamController get geoAutocompleteAddressController{
+    if (_geoAutocompleteAddressController == null){
+      _geoAutocompleteAddressController = StreamController.broadcast();
+    }
+    return _geoAutocompleteAddressController;
+  }
 
 
 
@@ -92,6 +100,7 @@ class AppBlocs{
   void dispose(){
     if (_pickUpController != null)_pickUpController.close();
     if (_geoAutocompleteController != null)_geoAutocompleteController.close();
+    if (_geoAutocompleteAddressController != null)_geoAutocompleteAddressController.close();
     if (_mapMarkersController != null)_mapMarkersController.close();
     if (_orderStateController != null)_orderStateController.close();
     if (_orderRoutePointsController != null)_orderRoutePointsController.close();
