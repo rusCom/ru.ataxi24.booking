@@ -27,6 +27,8 @@ class _MainScreenState extends State<MainScreen> {
   NewOrderFirstPointScreen newOrderFirstPointScreen;
   NewOrderCalcScreen newOrderCalcScreen;
 
+  String polyline = "_tfmImccuICbAENC@[??]mDSs@IaAIiBKsBIYCAb@GfEMzIKrHo@vAe@h@a@x@|@lBx@nBzFdMJl@d@lARv@^dBVnBb@pDJpACz@Oh@SPOBOAMGQY[yAEa@@m@N]JIRMPJr@`@NHhAr@lIbGxPpM~E`E`CjD`ArBt@vB~@xD\\lBh@pEQr@Wd@ORe@N_AXKHOXCf@E~@[nA}@TeAXiAb@cDnAFp@";
+
   @override
   void initState() {
     super.initState();
