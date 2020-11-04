@@ -1,13 +1,14 @@
 import 'package:booking/models/main_application.dart';
 import 'package:booking/models/order.dart';
 import 'package:booking/models/preferences.dart';
-import 'package:booking/models/profile.dart';
 import 'package:booking/services/app_blocs.dart';
 import 'package:booking/services/map_markers_service.dart';
 import 'package:booking/ui/orders/new_order_calc_screen.dart';
 import 'package:booking/ui/system/system_geocde_replace_screen.dart';
 import 'package:booking/ui/system/system_geocode_address_replace_screen.dart';
+import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'orders/new_order_first_point_screen.dart';
@@ -23,11 +24,33 @@ class _MainScreenState extends State<MainScreen> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
   MapType _currentMapType = MapType.normal;
   Set<Marker> _markers;
+  Map<PolylineId, Polyline> polylines = {};
   DateTime _backButtonPressedTime;
   NewOrderFirstPointScreen newOrderFirstPointScreen;
   NewOrderCalcScreen newOrderCalcScreen;
 
-  String polyline = "_tfmImccuICbAENC@[??]mDSs@IaAIiBKsBIYCAb@GfEMzIKrHo@vAe@h@a@x@|@lBx@nBzFdMJl@d@lARv@^dBVnBb@pDJpACz@Oh@SPOBOAMGQY[yAEa@@m@N]JIRMPJr@`@NHhAr@lIbGxPpM~E`E`CjD`ArBt@vB~@xD\\lBh@pEQr@Wd@ORe@N_AXKHOXCf@E~@[nA}@TeAXiAb@cDnAFp@";
+  List<LatLng> polylineCoordinates = [];
+  PolylinePoints polylinePoints = PolylinePoints();
+
+  _addPolyLine() {
+    PolylineId id = PolylineId("poly");
+    Polyline polyline = Polyline(
+        polylineId: id, color: Colors.blueAccent, points: polylineCoordinates, width: 4);
+    polylines[id] = polyline;
+    setState(() {});
+  }
+
+  _getPolyline()  {
+    // List<PointLatLng> result = polylinePoints.decodePolyline("upfmIiocuIrADBq@qAEcCI}AEwDIiBGqACsABRmNDwDRoLJ_IBYJc@p@qAJKwAaDk@oAaDgHaEaJqEuJcB}DkCeGkC_Go@{AgAsB_@i@u@u@_E{DqDmDyDoDu@o@c@Q[AQDKHa@b@k@|@{ArBuCzDmE~F_BrBSXf@~AnAjDFZCpA@\\VhB?PaoimIosfuICg@My@Gg@BaBG[oAkDg@_B]b@eGnIeApAy@rAaBzCi@lAIZyAsAcAaA_EsDyGyFwFiFyBmBmA_AyAwA{DkDu@g@}@c@s@SiAS_CMaA@cAD_JbA]@[SWISAg@Gg@Im@OQUKa@Ik@MaAhAkRD}CdA{RTqEPiBh@eK~@iQ^}G?o@f@uJ|@qPtDkt@lFecAJiF@oEAqGBaD?kVBw^Ekk@CgAS}@MOSOSCaBC_CCwEDsHBcTC{K@_FGa@?e@Dm@JiA\\qF`CqIlEWXOTZdA\\r@bBjEvAdGf@`ClA|F^zAdAtFHn@Eh@@b@?fJA\\s@@gAA{A@sA@?tB");
+    List<PointLatLng> result = polylinePoints.decodePolyline("aoimIosfuICg@My@Gg@BaBG[oAkDg@_B]b@eGnIeApAy@rAaBzCi@lAIZyAsAcAaA_EsDyGyFwFiFyBmBmA_AyAwA{DkDu@g@}@c@s@SiAS_CMaA@cAD_JbA]@[SWISAg@Gg@Im@OQUKa@Ik@MaAhAkRD}CdA{RTqEPiBh@eK~@iQ^}G?o@f@uJ|@qPtDkt@lFecAJiF@oEAqGBaD?kVBw^Ekk@CgAS}@MOSOSCaBC_CCwEDsHBcTC{K@_FGa@?e@Dm@JiA\\qF`CqIlEWXOTZdA\\r@bBjEvAdGf@`ClA|F^zAdAtFHn@Eh@@b@?fJA\\s@@gAA{A@sA@?tB");
+    DebugPrint().flog(result);
+    result.forEach((PointLatLng point) {
+      polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+    });
+
+    _addPolyLine();
+  }
+
 
   @override
   void initState() {
@@ -36,10 +59,13 @@ class _MainScreenState extends State<MainScreen> {
     AppBlocs().mapMarkersStream.listen((markers) {
       setState(() {
         _markers = markers;
+
+
       });
     });
     newOrderFirstPointScreen = NewOrderFirstPointScreen();
     newOrderCalcScreen = NewOrderCalcScreen();
+    _getPolyline();
   }
 
   @override
@@ -62,6 +88,7 @@ class _MainScreenState extends State<MainScreen> {
               mapType: _currentMapType,
               compassEnabled: true,
               markers: _markers,
+              polylines: Set<Polyline>.of(polylines.values),
               onCameraMove: _onCameraMove,
               onCameraIdle: _onCameraIdle,
               onTap: _onMapTap,

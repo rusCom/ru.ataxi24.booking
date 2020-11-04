@@ -12,6 +12,7 @@ class Preferences{
   String googleKey = "";
   int timerTask;
   bool mapAdmin = false;
+  bool mapDirections = false;
   List<PaymentType> paymentTypes = [];
   List<OrderTariff> orderTariffs = [];
   bool geocodeMove = false;
@@ -24,6 +25,7 @@ class Preferences{
     googleKey           = jsonData['google_key'] != null ? jsonData['google_key'] : "";
     timerTask           = jsonData['timer'] != null ? int.parse(jsonData['timer']) : 5;
     mapAdmin            = jsonData['map_admin'] != null ? jsonData['map_admin'].toLowerCase() == 'true'  : false;
+    mapDirections       = MainUtils.parseBool(jsonData['map_directions']);
     if (jsonData.containsKey('payments')){
       paymentTypes = [];
       List<String> payments = jsonData['payments'].cast<String>();
