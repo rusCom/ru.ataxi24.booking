@@ -41,13 +41,11 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   _getPolyline()  {
-    // List<PointLatLng> result = polylinePoints.decodePolyline("upfmIiocuIrADBq@qAEcCI}AEwDIiBGqACsABRmNDwDRoLJ_IBYJc@p@qAJKwAaDk@oAaDgHaEaJqEuJcB}DkCeGkC_Go@{AgAsB_@i@u@u@_E{DqDmDyDoDu@o@c@Q[AQDKHa@b@k@|@{ArBuCzDmE~F_BrBSXf@~AnAjDFZCpA@\\VhB?PaoimIosfuICg@My@Gg@BaBG[oAkDg@_B]b@eGnIeApAy@rAaBzCi@lAIZyAsAcAaA_EsDyGyFwFiFyBmBmA_AyAwA{DkDu@g@}@c@s@SiAS_CMaA@cAD_JbA]@[SWISAg@Gg@Im@OQUKa@Ik@MaAhAkRD}CdA{RTqEPiBh@eK~@iQ^}G?o@f@uJ|@qPtDkt@lFecAJiF@oEAqGBaD?kVBw^Ekk@CgAS}@MOSOSCaBC_CCwEDsHBcTC{K@_FGa@?e@Dm@JiA\\qF`CqIlEWXOTZdA\\r@bBjEvAdGf@`ClA|F^zAdAtFHn@Eh@@b@?fJA\\s@@gAA{A@sA@?tB");
     List<PointLatLng> result = polylinePoints.decodePolyline("aoimIosfuICg@My@Gg@BaBG[oAkDg@_B]b@eGnIeApAy@rAaBzCi@lAIZyAsAcAaA_EsDyGyFwFiFyBmBmA_AyAwA{DkDu@g@}@c@s@SiAS_CMaA@cAD_JbA]@[SWISAg@Gg@Im@OQUKa@Ik@MaAhAkRD}CdA{RTqEPiBh@eK~@iQ^}G?o@f@uJ|@qPtDkt@lFecAJiF@oEAqGBaD?kVBw^Ekk@CgAS}@MOSOSCaBC_CCwEDsHBcTC{K@_FGa@?e@Dm@JiA\\qF`CqIlEWXOTZdA\\r@bBjEvAdGf@`ClA|F^zAdAtFHn@Eh@@b@?fJA\\s@@gAA{A@sA@?tB");
     DebugPrint().flog(result);
     result.forEach((PointLatLng point) {
       polylineCoordinates.add(LatLng(point.latitude, point.longitude));
     });
-
     _addPolyLine();
   }
 

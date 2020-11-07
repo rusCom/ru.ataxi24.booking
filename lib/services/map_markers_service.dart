@@ -137,6 +137,11 @@ class MapMarkersService {
     }
   }
 
+  Polyline getMapPolyline(){
+    Polyline polyline;
+    return polyline;
+  }
+
 
   void refresh() {
     if (MainApplication().curOrder.orderState == OrderState.new_order) {

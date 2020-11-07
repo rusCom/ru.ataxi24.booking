@@ -36,6 +36,22 @@ class GeoService {
     return null;
   }
 
+  Future<List<String>> directions(Map<String, dynamic> body) async {
+    String url = "http://geo.toptaxi.org/directions?key=" + MainApplication().preferences.googleKey;
+    DebugPrint().log(TAG, "directions", url);
+    http.Response response = await http.post(url, body: body);
+    if (response == null) return null;
+    if (response.statusCode != 200) return null;
+    var result = json.decode(response.body);
+    DebugPrint().log(TAG, "directions", result.toString());
+    if (result['status'] == 'OK') {
+      Iterable list = result['result'];
+      List<RoutePoint> listRoutePoints = list.map((model) => RoutePoint.fromJson(model)).toList();
+      return null;
+    }
+    return null;
+  }
+
   Future<List<RoutePoint>> autocomplete(String input) async {
     if (input.isEmpty) return null;
     if (input == "") return null;
