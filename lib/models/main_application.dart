@@ -7,11 +7,11 @@ import 'package:booking/models/route_point.dart';
 import 'package:booking/services/map_markers_service.dart';
 import 'package:booking/services/rest_service.dart';
 import 'package:booking/ui/utils/core.dart';
-import 'package:device_id/device_id.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:platform_device_id/platform_device_id.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -41,7 +41,7 @@ class MainApplication {
 
   Future<bool> init(BuildContext context) async {
     _sharedPreferences = await SharedPreferences.getInstance();
-    deviceId = await DeviceId.getID;
+    deviceId = await PlatformDeviceId.getDeviceId;
 
     await GlobalConfiguration().loadFromAsset("app_settings");
 
@@ -151,7 +151,7 @@ class MainApplication {
     if (_dataCycle) {
       if (!_timerStarted) {
         _timerStarted = true;
-        Timer.periodic(Duration(seconds: 5), (timer) async {
+        Timer.periodic(Duration(seconds: Preferences().systemTimerTask), (timer) async {
           Map<String, dynamic> restResult = await RestService().httpGet("/data");
           if ((restResult['status'] == 'OK') & (restResult.containsKey("result"))) {
             parseData(restResult['result']);

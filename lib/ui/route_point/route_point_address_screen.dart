@@ -69,7 +69,6 @@ class RoutePointAddressScreen extends StatelessWidget {
             StreamBuilder(
               stream: AppBlocs().geoAutocompleteAddressStream,
               builder: (context, snapshot) {
-                DebugPrint().flog(snapshot);
                 if (snapshot.data == "searching_") {
                   return Center(
                     child: CircularProgressIndicator(),

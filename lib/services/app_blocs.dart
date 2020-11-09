@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:booking/models/order.dart';
 import 'package:booking/models/route_point.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 
 
@@ -39,9 +40,13 @@ class AppBlocs{
 
 
 
-  StreamController _mapMarkersController = StreamController();
+  StreamController _mapMarkersController = StreamController.broadcast();
   Stream get mapMarkersStream => _mapMarkersController.stream;
   StreamController get mapMarkersController => _mapMarkersController;
+
+  StreamController _mapPolylinesController = StreamController<Map<PolylineId, Polyline>>.broadcast();
+  Stream get mapPolylinesStream => _mapPolylinesController.stream;
+  StreamController get mapPolylinesController => _mapPolylinesController;
 
   StreamController<OrderState> _orderStateController;
   Stream get orderStateStream => orderStateController.stream;
@@ -102,6 +107,7 @@ class AppBlocs{
     if (_geoAutocompleteController != null)_geoAutocompleteController.close();
     if (_geoAutocompleteAddressController != null)_geoAutocompleteAddressController.close();
     if (_mapMarkersController != null)_mapMarkersController.close();
+    if (_mapPolylinesController != null)_mapPolylinesController.close();
     if (_orderStateController != null)_orderStateController.close();
     if (_orderRoutePointsController != null)_orderRoutePointsController.close();
     if (_newOrderTariffController != null)_newOrderTariffController.close();

@@ -1,5 +1,6 @@
 import 'package:booking/models/main_application.dart';
 import 'package:booking/models/order.dart';
+import 'package:booking/models/preferences.dart';
 import 'package:booking/models/route_point.dart';
 import 'package:booking/services/app_blocs.dart';
 import 'package:booking/services/map_markers_service.dart';
@@ -267,6 +268,6 @@ class NewOrderCalcScreen extends StatelessWidget {
   }
 
   void mapBounds() {
-    MainApplication().mapController.animateCamera(CameraUpdate.newLatLngBounds(MapMarkersService().mapBounds(), 50));
+    MainApplication().mapController.animateCamera(CameraUpdate.newLatLngBounds(MapMarkersService().mapBounds(), Preferences().systemMapBounds));
   }
 }

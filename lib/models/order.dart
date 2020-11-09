@@ -3,6 +3,7 @@ import 'package:booking/models/main_application.dart';
 import 'package:booking/models/order_tariff.dart';
 import 'package:booking/models/order_wishes.dart';
 import 'package:booking/models/payment_type.dart';
+import 'package:booking/models/preferences.dart';
 import 'package:booking/models/route_point.dart';
 import 'package:booking/services/app_blocs.dart';
 import 'package:booking/services/map_markers_service.dart';
@@ -247,7 +248,7 @@ class Order {
 
   bool animateCamera() {
     if (MainApplication().mapController != null) {
-      MainApplication().mapController.animateCamera(CameraUpdate.newLatLngBounds(MapMarkersService().mapBounds(), 50));
+      MainApplication().mapController.animateCamera(CameraUpdate.newLatLngBounds(MapMarkersService().mapBounds(), Preferences().systemMapBounds));
       return true;
     }
     return false;

@@ -15,7 +15,6 @@ class NewOrderCalcTariffWidget extends StatelessWidget {
         padding: const EdgeInsets.only(right: 10.0, top: 0, bottom: 1),
         child: RaisedButton(
           onPressed: () {
-            DebugPrint().flog("NewOrderCalcTariffWidget pressed " + orderTariff.toString());
             MainApplication().curOrder.selectedOrderTariff = orderTariff.type;
           },
           shape: orderTariff.selected == true

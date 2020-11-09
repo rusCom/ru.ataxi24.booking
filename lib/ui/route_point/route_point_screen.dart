@@ -5,7 +5,6 @@ import 'package:booking/services/app_blocs.dart';
 import 'package:booking/services/geo_service.dart';
 import 'package:booking/ui/route_point/route_point_address_screen.dart';
 import 'package:booking/ui/route_point/route_point_search_bar.dart';
-import 'package:booking/ui/route_point/route_point_text_field.dart';
 import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/material.dart';
 import 'package:list_tile_more_customizable/list_tile_more_customizable.dart';
@@ -76,8 +75,6 @@ class RoutePointScreen extends StatelessWidget {
     return Container();
   }
 
-
-
   Widget _bodyRoutePointScreen(BuildContext context, RoutePointSearchBar routePointSearchBar) {
     return StreamBuilder(
       stream: AppBlocs().geoAutocompleteStream,
@@ -114,15 +111,12 @@ class RoutePointScreen extends StatelessWidget {
                       GeoService().detail(routePoint);
                     }
 
-                    RoutePoint routePointAddress = await Navigator.push<RoutePoint>(
-                        context, MaterialPageRoute(builder: (context) => RoutePointAddressScreen(routeStreet: routePoint)));
-                    DebugPrint().flog(routePointAddress);
+                    RoutePoint routePointAddress = await Navigator.push<RoutePoint>(context,
+                        MaterialPageRoute(builder: (context) => RoutePointAddressScreen(routeStreet: routePoint)));
+
                     if (routePointAddress != null) {
                       Navigator.pop(context, routePointAddress);
                     }
-
-
-                    // routePointSearchBar.setText(routePoint.name);
                   } else if (routePoint.detail == '1') {
                     Navigator.pop(context, routePoint);
                   } else {
@@ -171,6 +165,4 @@ class RoutePointScreen extends StatelessWidget {
       AppBlocs().geoAutocompleteController.sink.add("null_");
     }
   }
-
-
 }

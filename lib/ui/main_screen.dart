@@ -6,9 +6,7 @@ import 'package:booking/services/map_markers_service.dart';
 import 'package:booking/ui/orders/new_order_calc_screen.dart';
 import 'package:booking/ui/system/system_geocde_replace_screen.dart';
 import 'package:booking/ui/system/system_geocode_address_replace_screen.dart';
-import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'orders/new_order_first_point_screen.dart';
@@ -24,30 +22,11 @@ class _MainScreenState extends State<MainScreen> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
   MapType _currentMapType = MapType.normal;
   Set<Marker> _markers;
-  Map<PolylineId, Polyline> polylines = {};
+  Map<PolylineId, Polyline> _polylines = {};
   DateTime _backButtonPressedTime;
   NewOrderFirstPointScreen newOrderFirstPointScreen;
   NewOrderCalcScreen newOrderCalcScreen;
 
-  List<LatLng> polylineCoordinates = [];
-  PolylinePoints polylinePoints = PolylinePoints();
-
-  _addPolyLine() {
-    PolylineId id = PolylineId("poly");
-    Polyline polyline = Polyline(
-        polylineId: id, color: Colors.blueAccent, points: polylineCoordinates, width: 4);
-    polylines[id] = polyline;
-    setState(() {});
-  }
-
-  _getPolyline()  {
-    List<PointLatLng> result = polylinePoints.decodePolyline("aoimIosfuICg@My@Gg@BaBG[oAkDg@_B]b@eGnIeApAy@rAaBzCi@lAIZyAsAcAaA_EsDyGyFwFiFyBmBmA_AyAwA{DkDu@g@}@c@s@SiAS_CMaA@cAD_JbA]@[SWISAg@Gg@Im@OQUKa@Ik@MaAhAkRD}CdA{RTqEPiBh@eK~@iQ^}G?o@f@uJ|@qPtDkt@lFecAJiF@oEAqGBaD?kVBw^Ekk@CgAS}@MOSOSCaBC_CCwEDsHBcTC{K@_FGa@?e@Dm@JiA\\qF`CqIlEWXOTZdA\\r@bBjEvAdGf@`ClA|F^zAdAtFHn@Eh@@b@?fJA\\s@@gAA{A@sA@?tB");
-    DebugPrint().flog(result);
-    result.forEach((PointLatLng point) {
-      polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-    });
-    _addPolyLine();
-  }
 
 
   @override
@@ -55,15 +34,27 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
     _markers = MapMarkersService().markers();
     AppBlocs().mapMarkersStream.listen((markers) {
+      MapMarkersService().getMapPolyline();
       setState(() {
         _markers = markers;
+      });
+    });
 
+    AppBlocs().mapPolylinesStream.listen((polylines) {
+      setState(() {
+        if (polylines == null){
+          _polylines.clear();
+        }
+        else {
+          _polylines = polylines;
+        }
 
       });
     });
+
     newOrderFirstPointScreen = NewOrderFirstPointScreen();
     newOrderCalcScreen = NewOrderCalcScreen();
-    _getPolyline();
+
   }
 
   @override
@@ -86,7 +77,7 @@ class _MainScreenState extends State<MainScreen> {
               mapType: _currentMapType,
               compassEnabled: true,
               markers: _markers,
-              polylines: Set<Polyline>.of(polylines.values),
+              polylines: Set<Polyline>.of(_polylines.values),
               onCameraMove: _onCameraMove,
               onCameraIdle: _onCameraIdle,
               onTap: _onMapTap,
@@ -137,7 +128,7 @@ class _MainScreenState extends State<MainScreen> {
                     ),
                   )
                 : Container(),
-            Preferences().mapAdmin
+            Preferences().systemMapAdmin
                 ? Stack(
                     children: [
                       Positioned(
@@ -192,7 +183,7 @@ class _MainScreenState extends State<MainScreen> {
     }
     _onCameraIdle();
     if (MainApplication().curOrder.mapBoundsIcon) {
-      MainApplication().mapController.animateCamera(CameraUpdate.newLatLngBounds(MapMarkersService().mapBounds(), 50));
+      MainApplication().mapController.animateCamera(CameraUpdate.newLatLngBounds(MapMarkersService().mapBounds(), Preferences().systemMapBounds));
     }
   }
 
@@ -253,6 +244,6 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _onMapBoundsButtonPressed() {
-    MainApplication().mapController.animateCamera(CameraUpdate.newLatLngBounds(MapMarkersService().mapBounds(), 50));
+    MainApplication().mapController.animateCamera(CameraUpdate.newLatLngBounds(MapMarkersService().mapBounds(), Preferences().systemMapBounds));
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -6,6 +7,8 @@ import 'package:booking/models/main_application.dart';
 import 'package:booking/models/order.dart';
 import 'package:booking/models/route_point.dart';
 import 'package:booking/services/app_blocs.dart';
+import 'package:booking/services/geo_service.dart';
+import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -32,12 +35,17 @@ class MapMarkersService {
   PickUpState _pickUpState;
   double zoomLevel = 17.0;
 
-  init(BuildContext context) async {
+  PolylinePoints polylinePoints = PolylinePoints();
+  List<LatLng> polylineCoordinates;
+  Map<PolylineId, Polyline> polylines;
+  List<PointLatLng> polylinePointLatLng;
 
-    _mapPickUpIcon      = BitmapDescriptor.fromBytes(await getBytesFromAsset("assets/icons/ic_onboard_pick_up.png", 200));
-    _mapDestinationIcon = BitmapDescriptor.fromBytes(await getBytesFromAsset("assets/icons/ic_onboard_destination.png", 200));
-    _mapAddressIcon     = BitmapDescriptor.fromBytes(await getBytesFromAsset("assets/icons/ic_onboard_address.png", 200));
-    _mapCarIcon         = BitmapDescriptor.fromBytes(await getBytesFromAsset("assets/icons/ic_onboard_car.png", 80));
+  init(BuildContext context) async {
+    _mapPickUpIcon = BitmapDescriptor.fromBytes(await getBytesFromAsset("assets/icons/ic_onboard_pick_up.png", 200));
+    _mapDestinationIcon =
+        BitmapDescriptor.fromBytes(await getBytesFromAsset("assets/icons/ic_onboard_destination.png", 200));
+    _mapAddressIcon = BitmapDescriptor.fromBytes(await getBytesFromAsset("assets/icons/ic_onboard_address.png", 200));
+    _mapCarIcon = BitmapDescriptor.fromBytes(await getBytesFromAsset("assets/icons/ic_onboard_car.png", 80));
 
     _pickUpLocation = MainApplication().currentLocation;
 
@@ -120,9 +128,8 @@ class MapMarkersService {
     return Set<Marker>.of(_markers.values);
   }
 
-
   void agentMarkerRefresh() {
-    if (MainApplication().curOrder.agent != null){
+    if (MainApplication().curOrder.agent != null) {
       Marker updatedPickUpMarker = _mapCarMarker.copyWith(
         positionParam: MainApplication().curOrder.agent.location,
       );
@@ -131,17 +138,36 @@ class MapMarkersService {
     }
   }
 
-  void clearAgentMarker(){
-    if (_markers[_mapCarMarkerID] != null){
+  void clearAgentMarker() {
+    if (_markers[_mapCarMarkerID] != null) {
       _markers[_mapCarMarkerID] = null;
     }
   }
 
-  Polyline getMapPolyline(){
-    Polyline polyline;
-    return polyline;
-  }
+  Future<void> getMapPolyline() async {
+    if (MainApplication().curOrder.routePoints.length > 1) {
+      List<String> polylineData = await GeoService().directions(jsonEncode(MainApplication().curOrder.routePoints));
+      if (polylineData != null) {
+        polylineCoordinates = [];
+        polylines = {};
+        polylineData.forEach((polylineString) {
+          polylinePointLatLng = polylinePoints.decodePolyline(polylineString);
+          polylinePointLatLng.forEach((PointLatLng polylinePointLatLngPoint) {
+            polylineCoordinates.add(LatLng(polylinePointLatLngPoint.latitude, polylinePointLatLngPoint.longitude));
+          });
+        });
+        PolylineId id = PolylineId("poly");
+        Polyline polyline = Polyline(
+            polylineId: id, color: Colors.blueAccent, points: polylineCoordinates, width: 4);
+        polylines[id] = polyline;
+        AppBlocs().mapPolylinesController.sink.add(polylines);
+      }
+    }
+    else { // если точка маршрута одна, то очистить данные
+      AppBlocs().mapPolylinesController.sink.add(null);
 
+    }
+  }
 
   void refresh() {
     if (MainApplication().curOrder.orderState == OrderState.new_order) {
@@ -157,7 +183,8 @@ class MapMarkersService {
         for (int index = 1; index < (MainApplication().curOrder.routePoints.length - 1); index++) {
           RoutePoint routePoint = MainApplication().curOrder.routePoints[index];
           MarkerId markerId = MarkerId(routePoint.placeId);
-          Marker marker = Marker(markerId: markerId, position: routePoint.getLocation(), draggable: false, icon: _mapAddressIcon);
+          Marker marker =
+              Marker(markerId: markerId, position: routePoint.getLocation(), draggable: false, icon: _mapAddressIcon);
           _markers[markerId] = marker;
         }
       }
@@ -180,7 +207,8 @@ class MapMarkersService {
         for (int index = 1; index < (MainApplication().curOrder.routePoints.length - 1); index++) {
           RoutePoint routePoint = MainApplication().curOrder.routePoints[index];
           MarkerId markerId = MarkerId(routePoint.placeId);
-          Marker marker = Marker(markerId: markerId, position: routePoint.getLocation(), draggable: false, icon: _mapAddressIcon);
+          Marker marker =
+              Marker(markerId: markerId, position: routePoint.getLocation(), draggable: false, icon: _mapAddressIcon);
           _markers[markerId] = marker;
         }
       }
@@ -197,66 +225,44 @@ class MapMarkersService {
       );
       _markers[_mapDestinationMarkerID] = updatedDestinationMarker;
       agentMarkerRefresh();
-
     } // else if (MainApplication().curOrder.orderState == OrderState.client_in_car){
 
     AppBlocs().mapMarkersController.sink.add(Set<Marker>.of(_markers.values));
   }
 
-  LatLngBounds get _agentDestinationBounds{
+  LatLngBounds get _agentDestinationBounds {
     List<Marker> list = [];
-    if (_markers[_mapDestinationMarkerID] != null)list.add(_markers[_mapDestinationMarkerID]);
-    if (_markers[_mapCarMarkerID] != null)list.add(_markers[_mapCarMarkerID]);
-    else {list.add(_markers[_mapPickUpMarkerID]);}
-
-    assert(list.isNotEmpty);
-    double x0, x1, y0, y1;
-    for (Marker marker in list) {
-      if (x0 == null) {
-        x0 = x1 = marker.position.latitude;
-        y0 = y1 = marker.position.longitude;
-      } else {
-        if (marker.position.latitude > x1) x1 = marker.position.latitude;
-        if (marker.position.latitude < x0) x0 = marker.position.latitude;
-        if (marker.position.longitude > y1) y1 = marker.position.longitude;
-        if (marker.position.longitude < y0) y0 = marker.position.longitude;
-      }
+    if (_markers[_mapDestinationMarkerID] != null) list.add(_markers[_mapDestinationMarkerID]);
+    if (_markers[_mapCarMarkerID] != null)
+      list.add(_markers[_mapCarMarkerID]);
+    else {
+      list.add(_markers[_mapPickUpMarkerID]);
     }
-    x0 = x0 - (x1 - x0) * 0.2;
-    return LatLngBounds(northeast: LatLng(x1, y1), southwest: LatLng(x0, y0));
+    return calcBounds(list);
   }
 
-  LatLngBounds get _agentPickUpBounds{
+  LatLngBounds get _agentPickUpBounds {
     List<Marker> list = [];
-    if (_markers[_mapPickUpMarkerID] != null)list.add(_markers[_mapPickUpMarkerID]);
-    if (_markers[_mapCarMarkerID] != null)list.add(_markers[_mapCarMarkerID]);
-    else {list.add(_markers[_mapPickUpMarkerID]);}
-
-    assert(list.isNotEmpty);
-    double x0, x1, y0, y1;
-    for (Marker marker in list) {
-      if (x0 == null) {
-        x0 = x1 = marker.position.latitude;
-        y0 = y1 = marker.position.longitude;
-      } else {
-        if (marker.position.latitude > x1) x1 = marker.position.latitude;
-        if (marker.position.latitude < x0) x0 = marker.position.latitude;
-        if (marker.position.longitude > y1) y1 = marker.position.longitude;
-        if (marker.position.longitude < y0) y0 = marker.position.longitude;
-      }
+    if (_markers[_mapPickUpMarkerID] != null) list.add(_markers[_mapPickUpMarkerID]);
+    if (_markers[_mapCarMarkerID] != null)
+      list.add(_markers[_mapCarMarkerID]);
+    else {
+      list.add(_markers[_mapPickUpMarkerID]);
     }
-    x0 = x0 - (x1 - x0) * 0.2;
-    return LatLngBounds(northeast: LatLng(x1, y1), southwest: LatLng(x0, y0));
+
+    return calcBounds(list);
   }
 
   LatLngBounds mapBounds() {
-    if (MainApplication().curOrder.orderState == OrderState.drive_to_client)return _agentPickUpBounds;
-    if (MainApplication().curOrder.orderState == OrderState.drive_at_client)return _agentPickUpBounds;
-    if (MainApplication().curOrder.orderState == OrderState.paid_idle)return _agentPickUpBounds;
-    if (MainApplication().curOrder.orderState == OrderState.client_in_car)return _agentDestinationBounds;
+    if (MainApplication().curOrder.orderState == OrderState.drive_to_client) return _agentPickUpBounds;
+    if (MainApplication().curOrder.orderState == OrderState.drive_at_client) return _agentPickUpBounds;
+    if (MainApplication().curOrder.orderState == OrderState.paid_idle) return _agentPickUpBounds;
+    if (MainApplication().curOrder.orderState == OrderState.client_in_car) return _agentDestinationBounds;
 
+    return calcBounds(List<Marker>.of(_markers.values));
+  }
 
-    List<Marker> list = List<Marker>.of(_markers.values);
+  LatLngBounds calcBounds(List<Marker> list){
     assert(list.isNotEmpty);
     double x0, x1, y0, y1;
     for (Marker marker in list) {
@@ -270,7 +276,8 @@ class MapMarkersService {
         if (marker.position.longitude < y0) y0 = marker.position.longitude;
       }
     }
+    x1 = x1 + (x1 - x0) * 0.15;
+    x0 = x0 - (x1 - x0) * 1.3;
     return LatLngBounds(northeast: LatLng(x1, y1), southwest: LatLng(x0, y0));
   }
-
 }

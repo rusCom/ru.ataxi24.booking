@@ -10,12 +10,15 @@ class Preferences{
 
   String administrationPhone;
   String googleKey = "";
-  int timerTask;
-  bool mapAdmin = false;
   bool mapDirections = false;
   List<PaymentType> paymentTypes = [];
   List<OrderTariff> orderTariffs = [];
   bool geocodeMove = false;
+
+  bool systemMapAdmin = false;
+  double systemMapBounds = 35.0;
+  int systemHttpTimeOut = 10;
+  int systemTimerTask = 5;
 
 
   void parseData(Map<String, dynamic> jsonData){
@@ -23,9 +26,14 @@ class Preferences{
 
     administrationPhone = jsonData['administration_phone'] != null ? jsonData['administration_phone'] : "";
     googleKey           = jsonData['google_key'] != null ? jsonData['google_key'] : "";
-    timerTask           = jsonData['timer'] != null ? int.parse(jsonData['timer']) : 5;
-    mapAdmin            = jsonData['map_admin'] != null ? jsonData['map_admin'].toLowerCase() == 'true'  : false;
     mapDirections       = MainUtils.parseBool(jsonData['map_directions']);
+
+    if (jsonData['system'] != null){
+      systemMapAdmin    = MainUtils.parseBool(jsonData['system']['map_admin']);
+      systemHttpTimeOut = MainUtils.parseInt(jsonData['system']['http_timeout'], def: 20);
+      systemTimerTask   = MainUtils.parseInt(jsonData['system']['timer_task'], def: 5);
+    }
+
     if (jsonData.containsKey('payments')){
       paymentTypes = [];
       List<String> payments = jsonData['payments'].cast<String>();

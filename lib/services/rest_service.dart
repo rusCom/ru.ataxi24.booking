@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:booking/models/main_application.dart';
+import 'package:booking/models/preferences.dart';
 import 'package:booking/ui/utils/core.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:http/http.dart' as http;
@@ -79,7 +80,7 @@ class RestService {
     http.Response response;
     try {
       response = await http.post(url, headers: {HttpHeaders.authorizationHeader: "Bearer " + _authHeader()}, body: body).timeout(
-        Duration(seconds: 10),
+        Duration(seconds: Preferences().systemHttpTimeOut),
         onTimeout: () {
           DebugPrint().log(TAG, "_httpPostH", "$url timeout");
           return null;
@@ -99,7 +100,7 @@ class RestService {
         url,
         headers: {HttpHeaders.authorizationHeader: "Bearer " + _authHeader()},
       ).timeout(
-        Duration(seconds: 10),
+        Duration(seconds: Preferences().systemHttpTimeOut),
         onTimeout: () {
           DebugPrint().log(TAG, "_httpGetH", "$url timeout");
           return null;
