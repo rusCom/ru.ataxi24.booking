@@ -32,7 +32,7 @@ class Const{
 }
 
 class DebugPrint{
-  final _allDebugPrint = false;
+  final _allDebugPrint = true;
 
 
   final _systemGeocodeReplaceScreen = false;

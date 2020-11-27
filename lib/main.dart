@@ -1,8 +1,10 @@
+import 'package:booking/ui/history/orders_history_screen.dart';
 import 'package:booking/ui/profile/profile_login_screen.dart';
 import 'package:booking/ui/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:page_transition/page_transition.dart';
 import 'ui/main_screen.dart';
 
 void main() {
@@ -46,6 +48,15 @@ class MainApp extends StatelessWidget {
         '/main': (context) => MainScreen(),
         '/splash': (context) => SplashScreen(),
         '/login': (context) => ProfileLoginScreen(),
+      },
+      onGenerateRoute: (settings){
+        switch (settings.name) {
+          case '/history':
+            return PageTransition(child: OrdersHistoryScreen(), type: PageTransitionType.fade, duration: Duration(seconds: 1));
+            break;
+          default:
+            return null;
+        }
       },
     );
   }

@@ -3,11 +3,14 @@ import 'package:booking/models/order.dart';
 import 'package:booking/models/preferences.dart';
 import 'package:booking/services/app_blocs.dart';
 import 'package:booking/services/map_markers_service.dart';
+import 'package:booking/ui/drawer/app_drawer.dart';
 import 'package:booking/ui/orders/new_order_calc_screen.dart';
 import 'package:booking/ui/system/system_geocde_replace_screen.dart';
 import 'package:booking/ui/system/system_geocode_address_replace_screen.dart';
+import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:global_configuration/global_configuration.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'orders/new_order_first_point_screen.dart';
 import 'orders/sliding_panel/order_sliding_panel.dart';
@@ -27,8 +30,6 @@ class _MainScreenState extends State<MainScreen> {
   NewOrderFirstPointScreen newOrderFirstPointScreen;
   NewOrderCalcScreen newOrderCalcScreen;
 
-
-
   @override
   void initState() {
     super.initState();
@@ -42,19 +43,16 @@ class _MainScreenState extends State<MainScreen> {
 
     AppBlocs().mapPolylinesStream.listen((polylines) {
       setState(() {
-        if (polylines == null){
+        if (polylines == null) {
           _polylines.clear();
-        }
-        else {
+        } else {
           _polylines = polylines;
         }
-
       });
     });
 
     newOrderFirstPointScreen = NewOrderFirstPointScreen();
     newOrderCalcScreen = NewOrderCalcScreen();
-
   }
 
   @override
@@ -64,6 +62,8 @@ class _MainScreenState extends State<MainScreen> {
       child: Scaffold(
         key: scaffoldKey,
         resizeToAvoidBottomInset: false,
+        drawer: GlobalConfiguration().getValue("tmp_drawer")?AppDrawer():Container(),
+          drawerEnableOpenDragGesture: false,
         body: Stack(
           children: <Widget>[
             GoogleMap(
@@ -86,6 +86,7 @@ class _MainScreenState extends State<MainScreen> {
               child: StreamBuilder<Object>(
                 stream: AppBlocs().orderStateStream,
                 builder: (context, snapshot) {
+                  DebugPrint().flog("AppBlocs().orderStateStream");
                   switch (MainApplication().curOrder.orderState) {
                     case OrderState.new_order:
                       return newOrderFirstPointScreen;
@@ -100,10 +101,27 @@ class _MainScreenState extends State<MainScreen> {
                 },
               ),
             ),
+            GlobalConfiguration().getValue("tmp_drawer")
+                ? Positioned(
+                    top: 40,
+                    left: 8,
+                    child: FloatingActionButton(
+                      mini: true,
+                      heroTag: 'openDrawer',
+                      onPressed: () => scaffoldKey.currentState.openDrawer(),
+                      backgroundColor: Colors.white,
+                      child: Icon(
+                        Icons.menu,
+                        color: Colors.black,
+                      ),
+                    ),
+                  )
+                : Container(),
             Positioned(
               top: 40,
               right: 8,
               child: FloatingActionButton(
+                mini: true,
                 heroTag: '_onMapTypeButtonPressed',
                 onPressed: _onMapTypeButtonPressed,
                 backgroundColor: Colors.white,
@@ -118,6 +136,7 @@ class _MainScreenState extends State<MainScreen> {
                     top: 100,
                     right: 8,
                     child: FloatingActionButton(
+                      mini: true,
                       heroTag: '_mapBounds',
                       onPressed: _onMapBoundsButtonPressed,
                       backgroundColor: Colors.white,
@@ -135,8 +154,13 @@ class _MainScreenState extends State<MainScreen> {
                         top: 200,
                         right: 8,
                         child: FloatingActionButton(
+                          mini: true,
                           heroTag: '_mapAdminGeocodeReplace',
-                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SystemGeocodeReplaceScreen(MapMarkersService().pickUpRoutePoint))),
+                          onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      SystemGeocodeReplaceScreen(MapMarkersService().pickUpRoutePoint))),
                           backgroundColor: Colors.green,
                           child: Icon(
                             Icons.find_replace,
@@ -148,6 +172,7 @@ class _MainScreenState extends State<MainScreen> {
                         top: 260,
                         right: 8,
                         child: FloatingActionButton(
+                          mini: true,
                           heroTag: '_mapAdminGeocodeAddressReplace',
                           onPressed: () => Navigator.push(
                             context,
@@ -183,7 +208,9 @@ class _MainScreenState extends State<MainScreen> {
     }
     _onCameraIdle();
     if (MainApplication().curOrder.mapBoundsIcon) {
-      MainApplication().mapController.animateCamera(CameraUpdate.newLatLngBounds(MapMarkersService().mapBounds(), Preferences().systemMapBounds));
+      MainApplication()
+          .mapController
+          .animateCamera(CameraUpdate.newLatLngBounds(MapMarkersService().mapBounds(), Preferences().systemMapBounds));
     }
   }
 
@@ -222,11 +249,11 @@ class _MainScreenState extends State<MainScreen> {
       return false;
     }
 
-    // Если статус заказа - идет расчет стоимости, то ничего не делаем
+// Если статус заказа - идет расчет стоимости, то ничего не делаем
     if (MainApplication().curOrder.orderState == OrderState.new_order_calculating) {
       return false;
     }
-    // Если расчтет стоимости произведен, то возвращаем на новый заказ
+// Если расчтет стоимости произведен, то возвращаем на новый заказ
     if (MainApplication().curOrder.orderState == OrderState.new_order_calculated) {
       newOrderCalcScreen.backPressed();
       return false;
@@ -234,16 +261,22 @@ class _MainScreenState extends State<MainScreen> {
 
     DateTime currentTime = DateTime.now();
     //Statement 1 Or statement2
-    bool backButton = _backButtonPressedTime == null || currentTime.difference(_backButtonPressedTime) > Duration(seconds: 3);
+    bool backButton =
+        _backButtonPressedTime == null || currentTime.difference(_backButtonPressedTime) > Duration(seconds: 3);
     if (backButton) {
       _backButtonPressedTime = currentTime;
-      Fluttertoast.showToast(msg: "Для выхода из приложения нажмите кнопку \"Назад\" еще раз.", backgroundColor: Colors.black, textColor: Colors.white);
+      Fluttertoast.showToast(
+          msg: "Для выхода из приложения нажмите кнопку \"Назад\" еще раз.",
+          backgroundColor: Colors.black,
+          textColor: Colors.white);
       return false;
     }
     return true;
   }
 
   void _onMapBoundsButtonPressed() {
-    MainApplication().mapController.animateCamera(CameraUpdate.newLatLngBounds(MapMarkersService().mapBounds(), Preferences().systemMapBounds));
+    MainApplication()
+        .mapController
+        .animateCamera(CameraUpdate.newLatLngBounds(MapMarkersService().mapBounds(), Preferences().systemMapBounds));
   }
 }

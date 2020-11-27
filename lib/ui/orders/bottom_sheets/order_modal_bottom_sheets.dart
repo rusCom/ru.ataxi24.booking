@@ -147,6 +147,84 @@ class OrderModalBottomSheets {
     ).whenComplete(() => MainApplication().curOrder.calcOrder());
   }
 
+  static orderNotesRes(BuildContext context) async {
+    final noteController = TextEditingController();
+    await showModalBottomSheet(
+      context: context,
+      useRootNavigator: true,
+      isDismissible: true,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return FractionallySizedBox(
+          heightFactor: 0.8,
+          child: DraggableScrollableSheet(
+            initialChildSize: 0.8,
+            maxChildSize: 1,
+            minChildSize: 0.25,
+            builder: (BuildContext context, ScrollController scrollController) {
+              return Container(
+                decoration: BoxDecoration(borderRadius: BorderRadius.only(topRight: borderRadius, topLeft: borderRadius), color: Colors.white),
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 8, right: 8, top: 16),
+                  child: Column(
+                    children: [
+                      Text(
+                        MainApplication().curOrder.routePoints.first.name,
+                        textAlign: TextAlign.center,
+                        // overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                      ),
+                      Text(
+                        "Введите к чему подъехать или выберите из списка",
+                        textAlign: TextAlign.center,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                        child: TextField(
+                          textInputAction: TextInputAction.go,
+                          onSubmitted: (value) {
+                            Navigator.of(context).pop();
+                          },
+                          controller: noteController,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Введите к чему подъехать',
+                            icon: Icon(
+                              Icons.note,
+                              color: Color(0xFF757575),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          controller: scrollController,
+                          itemCount: MainApplication().curOrder.routePoints.first.notes.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return ListTile(
+                              leading: Icon(Icons.add_circle),
+                              title: Text(MainApplication().curOrder.routePoints.first.notes[index]),
+                              onTap: () {
+                                MainApplication().curOrder.routePoints.first.note = MainApplication().curOrder.routePoints.first.notes[index];
+                                Navigator.of(context).pop();
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+    return noteController.text;
+  }
+
   static orderNotes(BuildContext context) {
     final noteController = TextEditingController();
     showModalBottomSheet(
@@ -294,6 +372,76 @@ class OrderModalBottomSheets {
       }
       MainApplication().curOrder.routePoints.first.note = note;
     });
+  }
+
+  static Future<String> orderNoteRes(BuildContext context) async {
+    final entranceController = TextEditingController();
+    final noteController = TextEditingController();
+    String note = "";
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      builder: (BuildContext context) {
+        return Padding(
+          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 8, right: 8, top: 16),
+          child: ListView(
+            shrinkWrap: true,
+            children: <Widget>[
+              Text(
+                MainApplication().curOrder.routePoints.first.name,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+              ),
+              TextField(
+                autofocus: true,
+                textInputAction: TextInputAction.go,
+                onSubmitted: (value) {
+                  Navigator.of(context).pop();
+                },
+                controller: entranceController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Укажите номер подъезда',
+                  icon: Icon(
+                    Icons.format_list_numbered,
+                    color: Color(0xFF757575),
+                  ),
+                ),
+              ),
+              TextField(
+                textInputAction: TextInputAction.go,
+                onSubmitted: (value) {
+                  Navigator.of(context).pop();
+                },
+                controller: noteController,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'или к чему подъехать',
+                  icon: Icon(
+                    Icons.note,
+                    color: Color(0xFF757575),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    ).whenComplete(() {
+
+      if (entranceController.text != "") {
+        note = entranceController.text + " подъезд";
+      } else if (noteController.text != "") {
+        note = noteController.text;
+      }
+
+    });
+    return note;
   }
 
   static paymentTypes(BuildContext context) {

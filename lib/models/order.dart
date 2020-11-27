@@ -36,6 +36,9 @@ class Order {
   String cost;
   OrderWishes orderWishes = OrderWishes();
 
+
+  Order();
+
   String getLastRouteName() {
     if (routePoints.length == 1)
       return "";
@@ -191,7 +194,14 @@ class Order {
     return toJson().toString();
   }
 
-  void parseData(Map<String, dynamic> jsonData) {
+  factory Order.fromJson(Map<String, dynamic> jsonData){
+    Order order = new Order();
+    order.parseData(jsonData, isAnimateCamera: false);
+    // DebugPrint().flog(order);
+    return order;
+  }
+
+  void parseData(Map<String, dynamic> jsonData, {bool isAnimateCamera = true}) {
     DebugPrint().log(TAG, "parseData", jsonData.toString());
     _uid = jsonData['uid'];
     dispatcherPhone = jsonData['dispatcher_phone'];
@@ -237,10 +247,13 @@ class Order {
         // если есть изменения по точкам маршрута
         Iterable list = jsonData['route'];
         routePoints = list.map((model) => RoutePoint.fromJson(model)).toList();
-        MapMarkersService().refresh();
-        if (animateCamera()) {
-          _lastRoutePoints = jsonData['route'].toString();
+        if (isAnimateCamera){
+          MapMarkersService().refresh();
+          if (animateCamera()) {
+            _lastRoutePoints = jsonData['route'].toString();
+          }
         }
+
       } // if (_lastRoutePoints != jsonData['route'].toString()){
     }
     DebugPrint().log(TAG, "parseData", this.toString());
@@ -267,6 +280,12 @@ class Order {
       default:
         return false;
     }
+  }
+
+  note(String note) async {
+    Map<String, dynamic> restResult = await RestService().httpGet("/orders/note?uid=" + _uid + "&note=" + Uri.encodeFull(note));
+    MainApplication().parseData(restResult['result']);
+    AppBlocs().orderStateController.sink.add(null);
   }
 
   deny(String reason) async {

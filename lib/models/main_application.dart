@@ -15,7 +15,6 @@ import 'package:platform_device_id/platform_device_id.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
 class MainApplication {
   final String TAG = (MainApplication).toString(); // ignore: non_constant_identifier_names
   static final MainApplication _singleton = MainApplication._internal();
@@ -31,7 +30,7 @@ class MainApplication {
   GoogleMapController mapController;
   Preferences preferences = Preferences();
   bool _timerStarted = false, _lastLocation = true;
-  bool _dataCycle;
+  bool _dataCycle, _loadingDialog = false;
   TargetPlatform targetPlatform;
   Map<String, dynamic> clientLinks = Map();
   List<RoutePoint> nearbyRoutePoint;
@@ -47,20 +46,18 @@ class MainApplication {
 
     currentPosition = await Geolocator.getLastKnownPosition();
 
-    if (currentPosition == null){
+    if (currentPosition == null) {
       currentPosition = new Position(latitude: 54.7184554, longitude: 55.9257656);
       _lastLocation = false;
     }
 
-    targetPlatform = Theme
-        .of(context)
-        .platform;
+    targetPlatform = Theme.of(context).platform;
 
     Geolocator.getPositionStream(desiredAccuracy: LocationAccuracy.high).listen(
-          (Position position) {
+      (Position position) {
         if (position != null) {
           currentPosition = position;
-          if (!_lastLocation){
+          if (!_lastLocation) {
             _lastLocation = true;
             MainApplication().curOrder.moveToCurLocation();
           }
@@ -72,7 +69,6 @@ class MainApplication {
     _clientToken = _sharedPreferences.getString("_clientToken") ?? "";
     return true;
   }
-
 
   Order get curOrder {
     if (_curOrder == null) {
@@ -90,19 +86,27 @@ class MainApplication {
   }
 
   hideProgress(BuildContext context) {
-    Navigator.pop(context);
+    if (_loadingDialog){
+      Navigator.pop(context);
+      _loadingDialog = false;
+
+    }
+
   }
 
   showProgress(BuildContext context) {
-    showDialog(
+    if (!_loadingDialog){
+      showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) =>
-            Center(
-              child: CircularProgressIndicator(
-                //backgroundColor: Colors.yellow,
-              ),
-            ));
+        builder: (context) => Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+      _loadingDialog = true;
+
+    }
+
   }
 
   showSnackBarError(BuildContext context, String text) {
@@ -151,17 +155,19 @@ class MainApplication {
     if (_dataCycle) {
       if (!_timerStarted) {
         _timerStarted = true;
-        Timer.periodic(Duration(seconds: Preferences().systemTimerTask), (timer) async {
-          Map<String, dynamic> restResult = await RestService().httpGet("/data");
-          if ((restResult['status'] == 'OK') & (restResult.containsKey("result"))) {
-            parseData(restResult['result']);
-          }
-          if (!_timerStarted) {
-            timer.cancel();
-          }
-        });
+        Timer.periodic(
+          Duration(seconds: Preferences().systemTimerTask),
+          (timer) async {
+            Map<String, dynamic> restResult = await RestService().httpGet("/data");
+            if ((restResult['status'] == 'OK') & (restResult.containsKey("result"))) {
+              parseData(restResult['result']);
+            }
+            if (!_timerStarted) {
+              timer.cancel();
+            }
+          },
+        );
       }
     }
   }
-
 }

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:booking/models/main_application.dart';
 import 'package:booking/models/preferences.dart';
 import 'package:booking/ui/utils/core.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:http/http.dart' as http;
 
