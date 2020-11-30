@@ -36,7 +36,6 @@ class Order {
   String cost;
   OrderWishes orderWishes = OrderWishes();
 
-
   Order();
 
   String getLastRouteName() {
@@ -187,14 +186,22 @@ class Order {
         "agent": agent,
         "route": routePoints,
         "payments": paymentTypes,
+        "routeNote": routeNote,
       };
+
+  String get routeNote {
+    if (routePoints == null) return "";
+    if (routePoints.isEmpty) return "";
+    if (!routePoints.first.isNoteSet) return "";
+    return routePoints.first.note;
+  }
 
   @override
   String toString() {
     return toJson().toString();
   }
 
-  factory Order.fromJson(Map<String, dynamic> jsonData){
+  factory Order.fromJson(Map<String, dynamic> jsonData) {
     Order order = new Order();
     order.parseData(jsonData, isAnimateCamera: false);
     // DebugPrint().flog(order);
@@ -207,8 +214,11 @@ class Order {
     dispatcherPhone = jsonData['dispatcher_phone'];
     cost = jsonData['cost'] != null ? jsonData['cost'] : "";
     selectedPaymentType = jsonData['payment'] != null ? jsonData['payment'] : "";
-    if (jsonData['wishes'] != null){orderWishes.parseData(jsonData['wishes']);}
-    else {orderWishes.clear();}
+    if (jsonData['wishes'] != null) {
+      orderWishes.parseData(jsonData['wishes']);
+    } else {
+      orderWishes.clear();
+    }
     canDeny = MainUtils.parseBool(jsonData['deny']);
 
     // DebugPrint().flog(orderWishes.count);
@@ -247,13 +257,12 @@ class Order {
         // если есть изменения по точкам маршрута
         Iterable list = jsonData['route'];
         routePoints = list.map((model) => RoutePoint.fromJson(model)).toList();
-        if (isAnimateCamera){
+        if (isAnimateCamera) {
           MapMarkersService().refresh();
           if (animateCamera()) {
             _lastRoutePoints = jsonData['route'].toString();
           }
         }
-
       } // if (_lastRoutePoints != jsonData['route'].toString()){
     }
     DebugPrint().log(TAG, "parseData", this.toString());
@@ -261,7 +270,9 @@ class Order {
 
   bool animateCamera() {
     if (MainApplication().mapController != null) {
-      MainApplication().mapController.animateCamera(CameraUpdate.newLatLngBounds(MapMarkersService().mapBounds(), Preferences().systemMapBounds));
+      MainApplication()
+          .mapController
+          .animateCamera(CameraUpdate.newLatLngBounds(MapMarkersService().mapBounds(), Preferences().systemMapBounds));
       return true;
     }
     return false;
@@ -283,13 +294,15 @@ class Order {
   }
 
   note(String note) async {
-    Map<String, dynamic> restResult = await RestService().httpGet("/orders/note?uid=" + _uid + "&note=" + Uri.encodeFull(note));
+    Map<String, dynamic> restResult =
+        await RestService().httpGet("/orders/note?uid=" + _uid + "&note=" + Uri.encodeFull(note));
     MainApplication().parseData(restResult['result']);
     AppBlocs().orderStateController.sink.add(null);
   }
 
   deny(String reason) async {
-    Map<String, dynamic> restResult = await RestService().httpGet("/orders/deny?uid=" + _uid + "&reason=" + Uri.encodeFull(reason));
+    Map<String, dynamic> restResult =
+        await RestService().httpGet("/orders/deny?uid=" + _uid + "&reason=" + Uri.encodeFull(reason));
     MainApplication().parseData(restResult['result']);
   }
 
@@ -342,7 +355,7 @@ class Order {
         if (paymentType.selected) searchingPaymentType = paymentType;
       });
       if (searchingPaymentType == null) {
-        if (_orderState == OrderState.new_order_calculating || _orderState == OrderState.new_order_calculated){
+        if (_orderState == OrderState.new_order_calculating || _orderState == OrderState.new_order_calculated) {
           _selectedPaymentType = "cash";
         }
 

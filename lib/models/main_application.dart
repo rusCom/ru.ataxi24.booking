@@ -121,7 +121,6 @@ class MainApplication {
 
     if (jsonData == null) return;
     if (jsonData.containsKey('client_links')) {
-      clientLinks['user_agreement'] = jsonData['client_links']['user_agreement'];
       clientLinks['privacy_policy'] = jsonData['client_links']['privacy_policy'];
       clientLinks['license_agreement'] = jsonData['client_links']['license_agreement'];
     }

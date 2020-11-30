@@ -68,9 +68,6 @@ class DebugPrint{
 
       if (className == "SystemGeocodeReplaceScreen" && _systemGeocodeReplaceScreen)isPrint = true;
       if (className == "SystemGeocodeAddressReplaceScreen" && _systemGeocodeAddressReplaceScreen)isPrint = true;
-
-
-
     }
 
     if (isPrint){

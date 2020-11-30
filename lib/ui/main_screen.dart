@@ -86,7 +86,6 @@ class _MainScreenState extends State<MainScreen> {
               child: StreamBuilder<Object>(
                 stream: AppBlocs().orderStateStream,
                 builder: (context, snapshot) {
-                  DebugPrint().flog("AppBlocs().orderStateStream");
                   switch (MainApplication().curOrder.orderState) {
                     case OrderState.new_order:
                       return newOrderFirstPointScreen;

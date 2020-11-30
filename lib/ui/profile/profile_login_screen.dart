@@ -1,12 +1,12 @@
 import 'package:booking/models/main_application.dart';
 import 'package:booking/models/profile.dart';
 import 'package:booking/ui/profile/profile_registration_screen.dart';
+import 'package:booking/ui/utils/core.dart';
 import 'package:booking/ui/widgets/gradient_button.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:page_transition/page_transition.dart';
-
 
 class ProfileLoginScreen extends StatefulWidget {
   final Widget background;
@@ -17,11 +17,10 @@ class ProfileLoginScreen extends StatefulWidget {
   _ProfileLoginScreenState createState() => _ProfileLoginScreenState();
 }
 
-class _ProfileLoginScreenState extends State<ProfileLoginScreen> with SingleTickerProviderStateMixin {  
+class _ProfileLoginScreenState extends State<ProfileLoginScreen> with SingleTickerProviderStateMixin {
   String errorText = "Номер телефона";
   Color errorColor = Color(0xFF999A9A);
   final MaskedTextController controller = MaskedTextController(mask: '+7 (000) 000-00-00');
-
 
   @override
   void initState() {
@@ -30,8 +29,13 @@ class _ProfileLoginScreenState extends State<ProfileLoginScreen> with SingleTick
   }
 
   @override
-  Widget build(BuildContext context) {
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       backgroundColor: Colors.white,
@@ -74,13 +78,21 @@ class _ProfileLoginScreenState extends State<ProfileLoginScreen> with SingleTick
                               child: Material(
                                 elevation: 10,
                                 color: Colors.white,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(bottomRight: Radius.circular(30), topRight: Radius.circular(0))),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.only(
+                                        bottomRight: Radius.circular(30), topRight: Radius.circular(0))),
                                 child: Padding(
                                   padding: EdgeInsets.only(left: 40, right: 20, top: 10, bottom: 10),
                                   child: TextField(
                                     keyboardType: TextInputType.number,
                                     controller: controller,
-                                    onChanged: (value) => Profile().phone = value,
+                                    autofocus: true,
+                                    onChanged: (value) {
+                                      if (value == "8"){
+                                        controller.text = "+7 (";
+                                      }
+                                      Profile().phone = value;
+                                    },
                                     decoration: InputDecoration(
                                         border: InputBorder.none,
                                         hintStyle: TextStyle(
@@ -113,7 +125,10 @@ class _ProfileLoginScreenState extends State<ProfileLoginScreen> with SingleTick
                                     padding: EdgeInsets.all(10),
                                     decoration: ShapeDecoration(
                                       shape: CircleBorder(),
-                                      gradient: LinearGradient(colors: signInGradients, begin: Alignment.topLeft, end: Alignment.bottomRight),
+                                      gradient: LinearGradient(
+                                          colors: signInGradients,
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight),
                                     ),
                                     child: InkWell(
                                       onTap: () => FocusScope.of(context).unfocus(),
@@ -151,21 +166,23 @@ class _ProfileLoginScreenState extends State<ProfileLoginScreen> with SingleTick
       ),
     );
   }
-  
-  
 
   Future<void> _onLoginPressed() async {
     MainApplication().showProgress(context);
     String res = await Profile().login();
     MainApplication().hideProgress(context);
-    if (res == 'OK'){
+    if (res == 'OK') {
       setState(() {
         errorText = "Номер телефона";
         errorColor = Color(0xFF999A9A);
       });
-      Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: ProfileRegistrationScreen(background: widget.background),duration: Duration(seconds: 2)));
-    }
-    else {
+      Navigator.pushReplacement(
+          context,
+          PageTransition(
+              type: PageTransitionType.fade,
+              child: ProfileRegistrationScreen(background: widget.background),
+              duration: Duration(seconds: 2)));
+    } else {
       setState(() {
         errorText = res;
         errorColor = Colors.deepOrange;
@@ -189,14 +206,6 @@ Widget _termsText() {
             recognizer: TapGestureRecognizer()
               ..onTap = () {
                 MainApplication().launchURL(MainApplication().clientLinks['license_agreement']);
-              }),
-        TextSpan(text: ', '),
-        TextSpan(
-            text: '"Пользовательским соглашением"',
-            style: linkStyle,
-            recognizer: TapGestureRecognizer()
-              ..onTap = () {
-                MainApplication().launchURL(MainApplication().clientLinks['user_agreement']);
               }),
         TextSpan(text: ', а так же с обработкой моей персональной информации на условиях '),
         TextSpan(

@@ -22,15 +22,17 @@ class RoutePoint {
   List<PaymentType> paymentTypes = [];
   bool canPickUp;
 
-  RoutePoint({this.name, this.dsc, this.lt, this.ln, this.type, this.placeId, this.detail, this.canPickUp, this.orderTariffs, this.notes}) {
+  RoutePoint({this.name, this.dsc, this.lt, this.ln, this.type, this.placeId, this.detail, this.canPickUp, this.orderTariffs, this.notes, note}) {
     key = ValueKey(Uuid().v1());
-    // orderTariffs = List<OrderTariff>;
+    _note = note;
+
   }
 
   factory RoutePoint.fromJson(Map<String, dynamic> jsonData) {
     return RoutePoint(
       name: jsonData['name'] != null ? jsonData['name'] : "",
       dsc: jsonData['dsc'] != null ? jsonData['dsc'] : "",
+      note: jsonData['note'] != null ? jsonData['note'] : "",
       lt: jsonData['lt'] != null ? jsonData['lt'] : "",
       ln: jsonData['ln'] != null ? jsonData['ln'] : "",
       type: jsonData['type'] != null ? jsonData['type'] : "",
@@ -44,6 +46,7 @@ class RoutePoint {
     return RoutePoint(
         name: routePoint.name,
         dsc: routePoint.dsc,
+        note: routePoint.note,
         lt: routePoint.lt,
         ln: routePoint.ln,
         type: routePoint.type,
@@ -67,6 +70,13 @@ class RoutePoint {
       return "Подъезд";
     }
     return _note;
+  }
+
+  bool get isNoteSet{
+    if (_note == "")return false;
+    if (_note == "Подъезд")return false;
+    if (_note == "подъезд")return false;
+    return true;
   }
 
   Map<String, dynamic> toJson() => {

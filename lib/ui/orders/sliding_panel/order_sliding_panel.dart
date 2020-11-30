@@ -56,16 +56,14 @@ class OrderSlidingPanel extends StatelessWidget {
                         itemBuilder: (BuildContext context, int index) {
                           RoutePoint routePoint = MainApplication().curOrder.routePoints[index];
                           String imageLocation = "assets/icons/ic_onboard_pick_up.png";
-                          if (index == 0){
-                            String subtitle = "Указать подьезд";
+                          if (index == 0) {
+                            String subtitle = "Указать подъезд";
                             String name = routePoint.name;
-                            if (routePoint.note == "Подъезд" || routePoint.note == ""){
-
-                            }
-                            else {
+                            if (routePoint.isNoteSet){
                               subtitle = routePoint.dsc;
                               name = name + ", " + routePoint.note;
                             }
+
                             return ListTile(
                               leading: CircleAvatar(
                                 backgroundImage: AssetImage(imageLocation),
@@ -74,19 +72,16 @@ class OrderSlidingPanel extends StatelessWidget {
                               title: Text(name),
                               subtitle: Text(subtitle),
                               onTap: () async {
-                                String note = await OrderModalBottomSheets.orderNoteRes(context);
-                                DebugPrint().flog(note);
-
-                                MainApplication().curOrder.note(note);
-
+                                if (!routePoint.isNoteSet){
+                                  String note = await OrderModalBottomSheets.orderNoteRes(context);
+                                  MainApplication().curOrder.note(note);
+                                }
                               },
                             );
-
                           }
                           if (index == MainApplication().curOrder.routePoints.length - 1) {
                             imageLocation = "assets/icons/ic_onboard_destination.png";
-                          }
-                          else {
+                          } else {
                             imageLocation = "assets/icons/ic_onboard_address.png";
                           }
                           return ListTile(
