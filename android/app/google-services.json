@@ -1,34 +1,63 @@
 {
   "project_info": {
-    "project_number": "977094933321",
-    "firebase_url": "https://taxibooking-e70ea.firebaseio.com",
-    "project_id": "taxibooking-e70ea",
-    "storage_bucket": "taxibooking-e70ea.appspot.com"
+    "project_number": "735359304642",
+    "firebase_url": "https://ataxibookingminimal.firebaseio.com",
+    "project_id": "ataxibookingminimal",
+    "storage_bucket": "ataxibookingminimal.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:977094933321:android:5497adbb6b62acbbfff898",
+        "mobilesdk_app_id": "1:735359304642:android:3ddaa3c09b8c8f0338cc5b",
         "android_client_info": {
           "package_name": "ru.ataxi24.booking"
         }
       },
       "oauth_client": [
         {
-          "client_id": "977094933321-gg2lmn5veianuhjcv43idrr5t3j35nel.apps.googleusercontent.com",
+          "client_id": "735359304642-jvpg25jauq721ohhj8kneqb25f5tjpm2.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCCJWM_qfV4N0VvrGLadNGPo8xap_t4tXw"
+          "current_key": "AIzaSyD_8qz9omHPEEpWFSDlfEA57ef0EkYLGcA"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "977094933321-gg2lmn5veianuhjcv43idrr5t3j35nel.apps.googleusercontent.com",
+              "client_id": "735359304642-jvpg25jauq721ohhj8kneqb25f5tjpm2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:735359304642:android:bcd295ad96ae11f738cc5b",
+        "android_client_info": {
+          "package_name": "ru.ataxi24.booking.minimal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "735359304642-jvpg25jauq721ohhj8kneqb25f5tjpm2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_8qz9omHPEEpWFSDlfEA57ef0EkYLGcA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "735359304642-jvpg25jauq721ohhj8kneqb25f5tjpm2.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

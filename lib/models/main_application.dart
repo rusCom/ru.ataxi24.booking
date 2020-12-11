@@ -7,6 +7,7 @@ import 'package:booking/models/route_point.dart';
 import 'package:booking/services/map_markers_service.dart';
 import 'package:booking/services/rest_service.dart';
 import 'package:booking/ui/utils/core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:global_configuration/global_configuration.dart';
@@ -24,6 +25,7 @@ class MainApplication {
   MainApplication._internal();
 
   SharedPreferences _sharedPreferences;
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   Position currentPosition;
   Order _curOrder;
   String deviceId, _clientToken;
@@ -67,6 +69,29 @@ class MainApplication {
 
     await MapMarkersService().init(context);
     _clientToken = _sharedPreferences.getString("_clientToken") ?? "";
+
+    String fcmToken = await _firebaseMessaging.getToken();
+    DebugPrint().flog(fcmToken);
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        DebugPrint().flog("onMessage" + message.toString());
+
+      },
+      /*
+      onBackgroundMessage: (Map<String, dynamic> message) async {
+        DebugPrint().flog("onMessage" + message.toString());
+      },
+
+       */
+
+      onLaunch: (Map<String, dynamic> message) async {
+        DebugPrint().flog("onLaunch" + message.toString());
+      },
+      onResume: (Map<String, dynamic> message) async {
+        DebugPrint().flog("onResume" + message.toString());
+      },
+
+    );
     return true;
   }
 
