@@ -26,12 +26,14 @@ class Preferences{
 
     administrationPhone = jsonData['administration_phone'] != null ? jsonData['administration_phone'] : "";
     googleKey           = jsonData['google_key'] != null ? jsonData['google_key'] : "";
-    mapDirections       = MainUtils.parseBool(jsonData['map_directions']);
+
 
     if (jsonData['system'] != null){
       systemMapAdmin    = MainUtils.parseBool(jsonData['system']['map_admin']);
+      mapDirections     = MainUtils.parseBool(jsonData['system']['map_directions']);
       systemHttpTimeOut = MainUtils.parseInt(jsonData['system']['http_timeout'], def: 20);
       systemTimerTask   = MainUtils.parseInt(jsonData['system']['timer_task'], def: 5);
+
     }
 
     if (jsonData.containsKey('payments')){

@@ -25,7 +25,12 @@ class Profile {
   }
 
   Future<bool> auth() async {
-    Map<String, dynamic> restResult = await RestService().httpGet("/profile/auth");
+    String url = "/profile/auth";
+    if (MainApplication().pushToken != ""){
+      url += "?push_token=" + MainApplication().pushToken;
+    }
+
+    Map<String, dynamic> restResult = await RestService().httpGet(url);
     DebugPrint().log(TAG, "auth", restResult.toString());
     if (restResult['status'] == 'OK') {
       MainApplication().parseData(restResult['result']);

@@ -145,7 +145,7 @@ class MapMarkersService {
   }
 
   Future<void> getMapPolyline() async {
-    if (MainApplication().curOrder.routePoints.length > 1) {
+    if (MainApplication().preferences.mapDirections && MainApplication().curOrder.routePoints.length > 1) {
       List<String> polylineData = await GeoService().directions(jsonEncode(MainApplication().curOrder.routePoints));
       if (polylineData != null) {
         polylineCoordinates = [];

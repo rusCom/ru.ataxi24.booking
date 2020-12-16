@@ -36,6 +36,7 @@ class MainApplication {
   TargetPlatform targetPlatform;
   Map<String, dynamic> clientLinks = Map();
   List<RoutePoint> nearbyRoutePoint;
+  String pushToken = "";
 
   static AudioCache audioCache = new AudioCache();
   static const audioAlarmOrderStateChange = "sounds/order_state_change.wav";
@@ -70,27 +71,11 @@ class MainApplication {
     await MapMarkersService().init(context);
     _clientToken = _sharedPreferences.getString("_clientToken") ?? "";
 
-    String fcmToken = await _firebaseMessaging.getToken();
-    DebugPrint().flog(fcmToken);
+    pushToken = await _firebaseMessaging.getToken();
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
-        DebugPrint().flog("onMessage" + message.toString());
-
+        _loadDataCycle();
       },
-      /*
-      onBackgroundMessage: (Map<String, dynamic> message) async {
-        DebugPrint().flog("onMessage" + message.toString());
-      },
-
-       */
-
-      onLaunch: (Map<String, dynamic> message) async {
-        DebugPrint().flog("onLaunch" + message.toString());
-      },
-      onResume: (Map<String, dynamic> message) async {
-        DebugPrint().flog("onResume" + message.toString());
-      },
-
     );
     return true;
   }
@@ -111,16 +96,14 @@ class MainApplication {
   }
 
   hideProgress(BuildContext context) {
-    if (_loadingDialog){
+    if (_loadingDialog) {
       Navigator.pop(context);
       _loadingDialog = false;
-
     }
-
   }
 
   showProgress(BuildContext context) {
-    if (!_loadingDialog){
+    if (!_loadingDialog) {
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -129,9 +112,7 @@ class MainApplication {
         ),
       );
       _loadingDialog = true;
-
     }
-
   }
 
   showSnackBarError(BuildContext context, String text) {
@@ -182,16 +163,20 @@ class MainApplication {
         Timer.periodic(
           Duration(seconds: Preferences().systemTimerTask),
           (timer) async {
-            Map<String, dynamic> restResult = await RestService().httpGet("/data");
-            if ((restResult['status'] == 'OK') & (restResult.containsKey("result"))) {
-              parseData(restResult['result']);
-            }
+            await _loadDataCycle();
             if (!_timerStarted) {
               timer.cancel();
             }
           },
         );
       }
+    }
+  }
+
+  _loadDataCycle() async {
+    Map<String, dynamic> restResult = await RestService().httpGet("/data");
+    if ((restResult['status'] == 'OK') & (restResult.containsKey("result"))) {
+      parseData(restResult['result']);
     }
   }
 }

@@ -11,7 +11,8 @@
          FlutterApplication and put your custom class here. -->
     <application
         android:label="Заказ Такси Уфа"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:name=".Application">
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBLXel67-VRpI1AqjBnt0K4LLVRuuxVppg"/>
         <activity
