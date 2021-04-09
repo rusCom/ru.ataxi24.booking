@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:page_transition/page_transition.dart';
 
-class ProfileRegistrationScreen extends StatefulWidget{
+class ProfileRegistrationScreen extends StatefulWidget {
   final Widget background;
 
   ProfileRegistrationScreen({this.background});
@@ -23,13 +23,12 @@ class _ProfileRegistrationScreenState extends State<ProfileRegistrationScreen> w
   AnimationController _logoMoveAnimationControllerBottom, _logoMoveAnimationControllerLeft;
   bool formVisible = true;
 
-
   @override
   void initState() {
     super.initState();
     int moveDuration = 500;
     _logoMoveAnimationControllerBottom = new AnimationController(vsync: this, duration: Duration(milliseconds: moveDuration));
-    Tween _logoMoveTweenBottom = new Tween<double>(begin: 1 - 1 / 3, end:  1 / 3);
+    Tween _logoMoveTweenBottom = new Tween<double>(begin: 1 - 1 / 3, end: 1 / 3);
     _logoMoveAnimationBottom = _logoMoveTweenBottom.animate(_logoMoveAnimationControllerBottom);
     _logoMoveAnimationBottom.addListener(() {
       setState(() {});
@@ -43,19 +42,18 @@ class _ProfileRegistrationScreenState extends State<ProfileRegistrationScreen> w
     });
 
     _logoMoveAnimationControllerLeft.addStatusListener((status) {
-      if (status == AnimationStatus.completed ){
+      if (status == AnimationStatus.completed) {
         Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: SplashScreen()));
         // Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: ProfileRegistrationScreen(background: background),duration: Duration(seconds: 2)));
 
       }
-
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
       body: Stack(
         children: <Widget>[
@@ -200,14 +198,13 @@ class _ProfileRegistrationScreenState extends State<ProfileRegistrationScreen> w
     MainApplication().showProgress(context);
     String res = await Profile().registration();
     MainApplication().hideProgress(context);
-    if (res == 'OK'){
+    if (res == 'OK') {
       setState(() {
         formVisible = false;
       });
       _logoMoveAnimationControllerBottom.forward();
       _logoMoveAnimationControllerLeft.forward();
-    }
-    else {
+    } else {
       setState(() {
         errorText = res;
         errorColor = Colors.deepOrange;
@@ -216,7 +213,7 @@ class _ProfileRegistrationScreenState extends State<ProfileRegistrationScreen> w
   }
 
   void _onBackPressed() {
-    Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: ProfileLoginScreen(background: widget.background),duration: Duration(seconds: 1)));
+    Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: ProfileLoginScreen(background: widget.background), duration: Duration(seconds: 1)));
   }
 }
 

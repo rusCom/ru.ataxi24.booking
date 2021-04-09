@@ -1,10 +1,12 @@
 import 'package:booking/ui/history/orders_history_screen.dart';
 import 'package:booking/ui/profile/profile_login_screen.dart';
 import 'package:booking/ui/splash/splash_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:page_transition/page_transition.dart';
+
 import 'ui/main_screen.dart';
 
 void main() {
@@ -12,7 +14,8 @@ void main() {
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
-  ]).then((_) {
+  ]).then((_) async {
+    await Firebase.initializeApp();
     runApp(MyApp());
   });
 }
@@ -49,7 +52,7 @@ class MainApp extends StatelessWidget {
         '/splash': (context) => SplashScreen(),
         '/login': (context) => ProfileLoginScreen(),
       },
-      onGenerateRoute: (settings){
+      onGenerateRoute: (settings) {
         switch (settings.name) {
           case '/history':
             return PageTransition(child: OrdersHistoryScreen(), type: PageTransitionType.fade, duration: Duration(seconds: 1));

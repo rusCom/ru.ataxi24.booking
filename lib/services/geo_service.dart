@@ -15,14 +15,24 @@ class GeoService {
 
   LatLng _lastGeoCodeLocation = LatLng(0, 0);
 
-  Future<List<RoutePoint>> autocompleteHouse(String route, String number, String splash) async{
+  Future<List<RoutePoint>> autocompleteHouse(String route, String number, String splash) async {
     if (route.isEmpty) return null;
     if (route == "") return null;
     LatLng location = MainApplication().currentLocation;
-    String url =
-        "http://geo.toptaxi.org/autocomplete/house?route=" + route + "&number=" + number  + "&splash=" + splash +"&lt=" + location.latitude.toString() + "&ln=" + location.longitude.toString() + "&key=" + MainApplication().preferences.googleKey;
+    String url = "http://geo.toptaxi.org/autocomplete/house?route=" +
+        route +
+        "&number=" +
+        number +
+        "&splash=" +
+        splash +
+        "&lt=" +
+        location.latitude.toString() +
+        "&ln=" +
+        location.longitude.toString() +
+        "&key=" +
+        MainApplication().preferences.googleKey;
     DebugPrint().log(TAG, "autocompleteHouse", url);
-    http.Response response = await http.get(url);
+    http.Response response = await http.get(Uri.parse(url));
     if (response == null) return null;
     if (response.statusCode != 200) return null;
     var result = json.decode(response.body);
@@ -40,13 +50,12 @@ class GeoService {
     String url = "http://geo.toptaxi.org/directions?key=" + MainApplication().preferences.googleKey;
     DebugPrint().log(TAG, "directions", url);
     DebugPrint().log(TAG, "directions", body);
-    http.Response response = await http.post(url, body: body);
+    http.Response response = await http.post(Uri.parse(url), body: body);
     if (response == null) return null;
     if (response.statusCode != 200) return null;
     var result = json.decode(response.body);
     DebugPrint().log(TAG, "directions", result.toString());
-    if ((result['status'] == 'OK') && (result['result']['status'] == 'OK')){
-
+    if ((result['status'] == 'OK') && (result['result']['status'] == 'OK')) {
       List<String> res = result['result']['polylines'].cast<String>();
       return res;
     }
@@ -58,10 +67,16 @@ class GeoService {
     if (input == "") return null;
     LatLng location = MainApplication().currentLocation;
 
-    String url =
-        "http://geo.toptaxi.org/autocomplete?keyword=" + Uri.encodeFull(input) + "&lt=" + location.latitude.toString() + "&ln=" + location.longitude.toString() + "&key=" + MainApplication().preferences.googleKey;
+    String url = "http://geo.toptaxi.org/autocomplete?keyword=" +
+        Uri.encodeFull(input) +
+        "&lt=" +
+        location.latitude.toString() +
+        "&ln=" +
+        location.longitude.toString() +
+        "&key=" +
+        MainApplication().preferences.googleKey;
     DebugPrint().log(TAG, "autocomplete", url);
-    http.Response response = await http.get(url);
+    http.Response response = await http.get(Uri.parse(url));
     if (response == null) return null;
     if (response.statusCode != 200) return null;
     var result = json.decode(response.body);
@@ -79,7 +94,7 @@ class GeoService {
     LatLng location = MainApplication().currentLocation;
     String url = "http://geo.toptaxi.org/nearby?lt=" + location.latitude.toString() + "&ln=" + location.longitude.toString() + "&key=" + MainApplication().preferences.googleKey;
     DebugPrint().log(TAG, "nearby", url);
-    http.Response response = await http.get(url);
+    http.Response response = await http.get(Uri.parse(url));
     if (response == null) return null;
     if (response.statusCode != 200) return null;
     var result = json.decode(response.body);
@@ -95,7 +110,7 @@ class GeoService {
 
   Future<RoutePoint> detail(RoutePoint routePoint) async {
     String url = "http://geo.toptaxi.org/detail?uid=" + routePoint.placeId + "&key=" + MainApplication().preferences.googleKey;
-    http.Response response = await http.get(url);
+    http.Response response = await http.get(Uri.parse(url));
     if (response == null) return routePoint;
     if (response.statusCode != 200) return routePoint;
     var result = json.decode(response.body);
@@ -108,7 +123,7 @@ class GeoService {
   Future<bool> geocodeReplaceAddress(String lt, String ln, String place) async {
     String url = "http://geo.toptaxi.org/geocode/replace/address?lt=" + lt + "&ln=" + ln + "&place=" + place + "&phone=" + Profile().phone;
     DebugPrint().log(TAG, "geocodeReplaceAddress", "url = " + url);
-    http.Response response = await http.get(url);
+    http.Response response = await http.get(Uri.parse(url));
     var result = json.decode(response.body);
     DebugPrint().log(TAG, "geocodeReplaceAddress", "response = " + result.toString());
     return true;
@@ -117,7 +132,7 @@ class GeoService {
   Future<bool> geocodeReplace(String from, String to) async {
     String url = "http://geo.toptaxi.org/geocode/replace?from=" + from + "&to=" + to + "&phone=" + Profile().phone;
     DebugPrint().log(TAG, "geocodeReplace", "url = " + url);
-    http.Response response = await http.get(url);
+    http.Response response = await http.get(Uri.parse(url));
     DebugPrint().log(TAG, "geocodeReplace", "response = " + response.toString());
     return true;
   }
@@ -125,7 +140,7 @@ class GeoService {
   Future<bool> geocodeClear(RoutePoint routePoint) async {
     String url = "http://geo.toptaxi.org/geocode/clear?place_id=" + routePoint.placeId + "&phone=" + Profile().phone;
     DebugPrint().log(TAG, "geocodeClear", "url = " + url);
-    http.Response response = await http.get(url);
+    http.Response response = await http.get(Uri.parse(url));
     DebugPrint().log(TAG, "geocodeClear", "response = " + response.toString());
     return true;
   }
@@ -135,7 +150,7 @@ class GeoService {
     if (location == _lastGeoCodeLocation) return _lastGeoCodeRoutePoint;
     String url = "http://geo.toptaxi.org/geocode?lt=" + location.latitude.toString() + "&ln=" + location.longitude.toString() + "&key=" + MainApplication().preferences.googleKey;
     DebugPrint().log(TAG, "geocode", "url = " + url);
-    http.Response response = await http.get(url);
+    http.Response response = await http.get(Uri.parse(url));
     if (response == null) return null;
     if (response.statusCode != 200) return null;
     var result = json.decode(response.body);

@@ -64,7 +64,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
         if (state == "init") {
           _logoScaleAnimationController.forward();
         } else if (state == "main") {
-          Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: MainScreen(),duration: Duration(seconds: 2)));
+          Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: MainScreen(), duration: Duration(seconds: 2)));
           // MainApplication().startTimer();
         } else {
           _logoMoveAnimationControllerBottom.forward();
@@ -94,12 +94,11 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     });
 
     _logoMoveAnimationControllerLeft.addStatusListener((status) {
-      if (status == AnimationStatus.completed ){
-        Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: ProfileLoginScreen(background: background),duration: Duration(seconds: 1)));
+      if (status == AnimationStatus.completed) {
+        Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: ProfileLoginScreen(background: background), duration: Duration(seconds: 1)));
         // Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: ProfileRegistrationScreen(background: background),duration: Duration(seconds: 2)));
 
       }
-
     });
   }
 
@@ -115,7 +114,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
       body: Stack(
         children: <Widget>[
@@ -131,10 +130,8 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
               ),
             ),
           ),
-
         ],
       ),
     );
   }
-
 }

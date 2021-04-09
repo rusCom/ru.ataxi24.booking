@@ -37,7 +37,7 @@ class _ProfileLoginScreenState extends State<ProfileLoginScreen> with SingleTick
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
       body: Stack(
         children: <Widget>[
@@ -78,9 +78,7 @@ class _ProfileLoginScreenState extends State<ProfileLoginScreen> with SingleTick
                               child: Material(
                                 elevation: 10,
                                 color: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.only(
-                                        bottomRight: Radius.circular(30), topRight: Radius.circular(0))),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(bottomRight: Radius.circular(30), topRight: Radius.circular(0))),
                                 child: Padding(
                                   padding: EdgeInsets.only(left: 40, right: 20, top: 10, bottom: 10),
                                   child: TextField(
@@ -88,7 +86,7 @@ class _ProfileLoginScreenState extends State<ProfileLoginScreen> with SingleTick
                                     controller: controller,
                                     autofocus: true,
                                     onChanged: (value) {
-                                      if (value == "8"){
+                                      if (value == "8") {
                                         controller.text = "+7 (";
                                       }
                                       Profile().phone = value;
@@ -125,10 +123,7 @@ class _ProfileLoginScreenState extends State<ProfileLoginScreen> with SingleTick
                                     padding: EdgeInsets.all(10),
                                     decoration: ShapeDecoration(
                                       shape: CircleBorder(),
-                                      gradient: LinearGradient(
-                                          colors: signInGradients,
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight),
+                                      gradient: LinearGradient(colors: signInGradients, begin: Alignment.topLeft, end: Alignment.bottomRight),
                                     ),
                                     child: InkWell(
                                       onTap: () => FocusScope.of(context).unfocus(),
@@ -176,12 +171,7 @@ class _ProfileLoginScreenState extends State<ProfileLoginScreen> with SingleTick
         errorText = "Номер телефона";
         errorColor = Color(0xFF999A9A);
       });
-      Navigator.pushReplacement(
-          context,
-          PageTransition(
-              type: PageTransitionType.fade,
-              child: ProfileRegistrationScreen(background: widget.background),
-              duration: Duration(seconds: 2)));
+      Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.fade, child: ProfileRegistrationScreen(background: widget.background), duration: Duration(seconds: 2)));
     } else {
       setState(() {
         errorText = res;

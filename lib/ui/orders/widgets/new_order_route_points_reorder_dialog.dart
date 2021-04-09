@@ -2,7 +2,7 @@ import 'package:booking/models/main_application.dart';
 import 'package:booking/models/route_point.dart';
 import 'package:booking/services/app_blocs.dart';
 import 'package:booking/ui/route_point/route_point_screen.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide ReorderableList;
 import 'package:flutter_reorderable_list/flutter_reorderable_list.dart';
 
 class NewOrderRoutePointsReorderDialog extends StatefulWidget {
@@ -64,8 +64,7 @@ class _NewOrderRoutePointsReorderDialogState extends State<NewOrderRoutePointsRe
                                       icon: Icon(Icons.add),
                                       label: Text("Добавить"),
                                       onPressed: () async {
-                                        RoutePoint routePoint =
-                                            await Navigator.push<RoutePoint>(context, MaterialPageRoute(builder: (context) => RoutePointScreen()));
+                                        RoutePoint routePoint = await Navigator.push<RoutePoint>(context, MaterialPageRoute(builder: (context) => RoutePointScreen()));
                                         if (routePoint != null) {
                                           MainApplication().curOrder.addRoutePoint(routePoint);
                                         }

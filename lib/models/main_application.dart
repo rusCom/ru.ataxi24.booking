@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:audioplayers/audio_cache.dart';
 import 'package:booking/models/order.dart';
 import 'package:booking/models/preferences.dart';
@@ -19,13 +20,11 @@ import 'package:url_launcher/url_launcher.dart';
 class MainApplication {
   final String TAG = (MainApplication).toString(); // ignore: non_constant_identifier_names
   static final MainApplication _singleton = MainApplication._internal();
-
   factory MainApplication() => _singleton;
-
   MainApplication._internal();
 
   SharedPreferences _sharedPreferences;
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  // final FirebaseMessaging _firebaseMessaging = FirebaseMessaging;
   Position currentPosition;
   Order _curOrder;
   String deviceId, _clientToken;
@@ -71,12 +70,11 @@ class MainApplication {
     await MapMarkersService().init(context);
     _clientToken = _sharedPreferences.getString("_clientToken") ?? "";
 
-    pushToken = await _firebaseMessaging.getToken();
-    _firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        _loadDataCycle();
-      },
-    );
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    pushToken = await messaging.getToken();
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      _loadDataCycle();
+    });
     return true;
   }
 

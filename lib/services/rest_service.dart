@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:booking/models/main_application.dart';
 import 'package:booking/models/preferences.dart';
 import 'package:booking/ui/utils/core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:http/http.dart' as http;
 
@@ -25,12 +25,12 @@ class RestService {
     String url = GlobalConfiguration().getValue("restHost")[_curRestIndex] + path;
     response = await _httpPostH(url, json.encode(body));
     if (response == null) {
-      for (var host in  GlobalConfiguration().getValue("restHost")) {
-        if ((response == null) & ( GlobalConfiguration().getValue("restHost").indexOf(host) != _curRestIndex)) {
+      for (var host in GlobalConfiguration().getValue("restHost")) {
+        if ((response == null) & (GlobalConfiguration().getValue("restHost").indexOf(host) != _curRestIndex)) {
           url = host + path;
           response = await _httpPostH(url, json.encode(body));
           if (response != null) {
-            _curRestIndex =  GlobalConfiguration().getValue("restHost").indexOf(host);
+            _curRestIndex = GlobalConfiguration().getValue("restHost").indexOf(host);
           }
         }
       } // for (var host in AppSettings.restHost){
@@ -50,16 +50,16 @@ class RestService {
     var result;
 
     http.Response response;
-    String url =  GlobalConfiguration().getValue("restHost")[_curRestIndex] + path;
+    String url = GlobalConfiguration().getValue("restHost")[_curRestIndex] + path;
     DebugPrint().log(TAG, "httpGet", "path = $url");
     response = await _httpGetH(url);
     if (response == null) {
-      for (var host in  GlobalConfiguration().getValue("restHost")) {
-        if ((response == null) & ( GlobalConfiguration().getValue("restHost").indexOf(host) != _curRestIndex)) {
+      for (var host in GlobalConfiguration().getValue("restHost")) {
+        if ((response == null) & (GlobalConfiguration().getValue("restHost").indexOf(host) != _curRestIndex)) {
           url = host + path;
           response = await _httpGetH(url);
           if (response != null) {
-            _curRestIndex =  GlobalConfiguration().getValue("restHost").indexOf(host);
+            _curRestIndex = GlobalConfiguration().getValue("restHost").indexOf(host);
           }
         }
       } // for (var host in AppSettings.restHost){
@@ -80,7 +80,7 @@ class RestService {
   Future<http.Response> _httpPostH(String url, String body) async {
     http.Response response;
     try {
-      response = await http.post(url, headers: {HttpHeaders.authorizationHeader: "Bearer " + _authHeader()}, body: body).timeout(
+      response = await http.post(Uri.parse(url), headers: {HttpHeaders.authorizationHeader: "Bearer " + _authHeader()}, body: body).timeout(
         Duration(seconds: Preferences().systemHttpTimeOut),
         onTimeout: () {
           DebugPrint().log(TAG, "_httpPostH", "$url timeout");
@@ -98,7 +98,7 @@ class RestService {
     http.Response response;
     try {
       response = await http.get(
-        url,
+        Uri.parse(url),
         headers: {HttpHeaders.authorizationHeader: "Bearer " + _authHeader()},
       ).timeout(
         Duration(seconds: Preferences().systemHttpTimeOut),

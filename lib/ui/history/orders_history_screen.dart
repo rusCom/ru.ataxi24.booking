@@ -1,6 +1,5 @@
 import 'package:booking/models/order.dart';
 import 'package:booking/services/rest_service.dart';
-import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 
@@ -20,7 +19,6 @@ class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
     scrollController = new ScrollController()..addListener(_scrollListener);
 
     RestService().httpGet("/orders/history").then((result) {
-      DebugPrint().flog(result);
       if (result['status'] == 'OK') {
         Iterable list = result['result'];
         List<Order> loadedOrders = list.map((model) => Order.fromJson(model)).toList();
@@ -80,18 +78,16 @@ class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
     );
   }
 
-  Widget _orderWidget(Order order){
+  Widget _orderWidget(Order order) {
     return Padding(
       padding: const EdgeInsets.only(left: 8, right: 8),
       child: Card(
         clipBehavior: Clip.antiAliasWithSaveLayer,
         child: Column(
           children: [
-
             Container(
               height: 200,
               child: Text(order.cost),
-
             ),
           ],
         ),
@@ -103,7 +99,7 @@ class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
     // DebugPrint().flog("_scrollListener position = " + scrollController.position.toString());
     // DebugPrint().flog("_scrollListener positionextentAfter = " + scrollController.position.extentAfter.toString());
     // print(scrollController.position.extentAfter);
-    if (scrollController.position.extentAfter < 200){
+    if (scrollController.position.extentAfter < 200) {
       // DebugPrint().flog("_scrollListener at last");
     }
     /*
