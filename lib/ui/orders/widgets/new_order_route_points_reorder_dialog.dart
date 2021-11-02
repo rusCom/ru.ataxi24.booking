@@ -1,4 +1,5 @@
 import 'package:booking/models/main_application.dart';
+import 'package:booking/models/preferences.dart';
 import 'package:booking/models/route_point.dart';
 import 'package:booking/services/app_blocs.dart';
 import 'package:booking/ui/route_point/route_point_screen.dart';
@@ -71,7 +72,7 @@ class _NewOrderRoutePointsReorderDialogState extends State<NewOrderRoutePointsRe
                                       },
                                     ),
                                   ),
-                                  Container(height: 40, child: VerticalDivider(color: Colors.amber)),
+                                  Container(height: 40, child: VerticalDivider(color: Preferences().mainColor)),
                                   Expanded(
                                     child: FlatButton.icon(
                                       icon: Icon(Icons.cached),

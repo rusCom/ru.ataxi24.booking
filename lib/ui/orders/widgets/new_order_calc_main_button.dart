@@ -1,5 +1,6 @@
 import 'package:booking/models/main_application.dart';
 import 'package:booking/models/order.dart';
+import 'package:booking/models/preferences.dart';
 import 'package:booking/services/app_blocs.dart';
 import 'package:booking/ui/orders/bottom_sheets/order_modal_bottom_sheets.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,7 @@ class NewOrderMainButton extends StatelessWidget {
                       ),
                       splashColor: Colors.yellow[200],
                       textColor: Colors.white,
-                      color: Colors.amber,
+                      color: Preferences().mainColor,
                       disabledColor: Colors.grey,
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
@@ -60,7 +61,7 @@ class NewOrderMainButton extends StatelessWidget {
                     label: Text(""),
                     splashColor: Colors.yellow[200],
                     textColor: Colors.white,
-                    color: Colors.amber,
+                    color: Preferences().mainColor,
                     disabledColor: Colors.grey,
                     onPressed: snapshot.data == OrderState.new_order_calculated ? () {
                       OrderModalBottomSheets.orderDate(context);

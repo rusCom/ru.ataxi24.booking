@@ -1,5 +1,6 @@
 import 'package:booking/models/main_application.dart';
 import 'package:booking/models/order.dart';
+import 'package:booking/models/preferences.dart';
 import 'package:booking/models/route_point.dart';
 import 'package:booking/services/app_blocs.dart';
 import 'package:booking/services/geo_service.dart';
@@ -17,7 +18,7 @@ class RoutePointScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String hintText = "Куда поедите?";
+    String hintText = "Куда поедете?";
     if (isFirst) {
       hintText = "Откуда Вас забрать?";
     }
@@ -36,6 +37,7 @@ class RoutePointScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: routePointSearchBar,
+        backgroundColor: Preferences().mainColor,
       ),
       body: _bodyRoutePointScreen(
         context,
@@ -89,7 +91,7 @@ class RoutePointScreen extends StatelessWidget {
         }
         if (snapshot.data == "searching_") {
           return Center(
-            child: CircularProgressIndicator(),
+            child: CircularProgressIndicator(backgroundColor: Preferences().mainColor,),
           );
         }
         if (snapshot.data == "not_found_") {

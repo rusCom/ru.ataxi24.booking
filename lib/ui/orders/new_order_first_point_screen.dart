@@ -111,7 +111,7 @@ class NewOrderFirstPointScreen extends StatelessWidget {
                       ),
                       splashColor: Colors.yellow[200],
                       textColor: Colors.white,
-                      color: Colors.amber,
+                      color: Preferences().mainColor,
                       disabledColor: Colors.grey,
                       padding: const EdgeInsets.all(8.0),
                       child: Row(

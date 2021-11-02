@@ -1,5 +1,6 @@
 import 'package:booking/models/main_application.dart';
 import 'package:booking/models/order_baby_seats.dart';
+import 'package:booking/models/preferences.dart';
 import 'package:booking/ui/orders/wishes/order_wishes_title.dart';
 import 'package:booking/ui/utils/core.dart';
 import 'package:booking/ui/widgets/number_counter.dart';
@@ -89,8 +90,8 @@ class _OrderWishesBabySeatsState extends State<OrderWishesBabySeats> {
                     trailing: NumberCounter(
                       initialValue: orderBabySeats.babySeat0010,
                       minValue: 0,
-                      maxValue: 2,
-                      color: Colors.amber,
+                      maxValue: Preferences().wishesBabySeatsCount,
+                      color: Preferences().mainColor,
                       onChanged: (value) => stateSetter(() => orderBabySeats.babySeat0010 = value),
                     ),
                   ),
@@ -100,8 +101,8 @@ class _OrderWishesBabySeatsState extends State<OrderWishesBabySeats> {
                     trailing: NumberCounter(
                       initialValue: orderBabySeats.babySeat0918,
                       minValue: 0,
-                      maxValue: 2,
-                      color: Colors.amber,
+                      maxValue: Preferences().wishesBabySeatsCount,
+                      color: Preferences().mainColor,
                       onChanged: (value) => stateSetter(() => orderBabySeats.babySeat0918 = value),
                     ),
                   ),
@@ -111,8 +112,8 @@ class _OrderWishesBabySeatsState extends State<OrderWishesBabySeats> {
                     trailing: NumberCounter(
                       initialValue: orderBabySeats.babySeat1525,
                       minValue: 0,
-                      maxValue: 2,
-                      color: Colors.amber,
+                      maxValue: Preferences().wishesBabySeatsCount,
+                      color: Preferences().mainColor,
                       onChanged: (value) => stateSetter(() => orderBabySeats.babySeat1525 = value),
                     ),
                   ),
@@ -122,8 +123,8 @@ class _OrderWishesBabySeatsState extends State<OrderWishesBabySeats> {
                     trailing: NumberCounter(
                       initialValue: orderBabySeats.babySeat2236,
                       minValue: 0,
-                      maxValue: 2,
-                      color: Colors.amber,
+                      maxValue: Preferences().wishesBabySeatsCount,
+                      color: Preferences().mainColor,
                       onChanged: (value) => stateSetter(() => orderBabySeats.babySeat2236 = value),
                     ),
                   ),

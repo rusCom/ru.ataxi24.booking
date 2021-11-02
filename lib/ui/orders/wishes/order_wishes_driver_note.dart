@@ -1,3 +1,4 @@
+import 'package:booking/models/preferences.dart';
 import 'package:booking/ui/orders/wishes/order_wishes_title.dart';
 import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/material.dart';
@@ -107,7 +108,7 @@ class _OrderWishesDriverNoteState extends State<OrderWishesDriverNote> {
                   ),
                   splashColor: Colors.yellow[200],
                   textColor: Colors.white,
-                  color: Colors.amber,
+                  color: Preferences().mainColor,
                   disabledColor: Colors.grey,
                   padding: const EdgeInsets.all(8.0),
                   child: Text(

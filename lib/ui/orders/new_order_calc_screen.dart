@@ -142,7 +142,7 @@ class NewOrderCalcScreen extends StatelessWidget {
                     contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
                   ),
                   Divider(
-                    color: Colors.amber,
+                    color: Preferences().mainColor,
                     indent: 15,
                     endIndent: 15,
                   ),
@@ -177,7 +177,7 @@ class NewOrderCalcScreen extends StatelessWidget {
                               );
                             }),
                       ),
-                      Container(height: 40, child: VerticalDivider(color: Colors.amber)),
+                      Container(height: 40, child: VerticalDivider(color: Preferences().mainColor)),
                       Expanded(
                         child: FlatButton.icon(
                           icon: StreamBuilder(
@@ -240,7 +240,7 @@ class NewOrderCalcScreen extends StatelessWidget {
     }
     return ClipOval(
       child: Container(
-        color: Colors.amberAccent,
+        color: Preferences().mainColor,
         height: 24,
         width: 24,
         child: Center(

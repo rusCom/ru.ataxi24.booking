@@ -1,6 +1,7 @@
 import 'package:booking/models/main_application.dart';
 import 'package:booking/models/order.dart';
 import 'package:booking/models/order_tariff.dart';
+import 'package:booking/models/preferences.dart';
 import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/material.dart';
 
@@ -20,7 +21,7 @@ class NewOrderCalcTariffWidget extends StatelessWidget {
           shape: orderTariff.selected == true
               ? RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
-                  side: BorderSide(color: Colors.amber, width: 2),
+                  side: BorderSide(color: Preferences().mainColor, width: 2),
                 )
               : RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -41,7 +42,7 @@ class NewOrderCalcTariffWidget extends StatelessWidget {
                         height: 18,
                         width: 18,
                         child: CircularProgressIndicator(
-                          backgroundColor: Colors.cyan,
+                          backgroundColor: Preferences().mainColor,
                           strokeWidth: 2.0,
                         ),
                       )

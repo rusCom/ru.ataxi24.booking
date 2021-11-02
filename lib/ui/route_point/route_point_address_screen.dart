@@ -1,3 +1,4 @@
+import 'package:booking/models/preferences.dart';
 import 'package:booking/models/route_point.dart';
 import 'package:booking/services/app_blocs.dart';
 import 'package:booking/services/geo_service.dart';
@@ -43,6 +44,7 @@ class RoutePointAddressScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: routePointSearchBar,
+        backgroundColor: Preferences().mainColor,
       ),
       body: SingleChildScrollView(
         physics: ScrollPhysics(),
@@ -71,7 +73,7 @@ class RoutePointAddressScreen extends StatelessWidget {
               builder: (context, snapshot) {
                 if (snapshot.data == "searching_") {
                   return Center(
-                    child: CircularProgressIndicator(),
+                    child: CircularProgressIndicator(backgroundColor: Preferences().mainColor),
                   );
                 }
                 if (snapshot.data == "not_found_") {

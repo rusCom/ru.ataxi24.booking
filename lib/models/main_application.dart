@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:booking/models/order.dart';
 import 'package:booking/models/preferences.dart';
 import 'package:booking/models/profile.dart';
@@ -106,7 +106,7 @@ class MainApplication {
         context: context,
         barrierDismissible: false,
         builder: (context) => Center(
-          child: CircularProgressIndicator(),
+          child: CircularProgressIndicator(backgroundColor: Preferences().mainColor,),
         ),
       );
       _loadingDialog = true;

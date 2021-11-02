@@ -1,4 +1,5 @@
 import 'package:booking/models/order.dart';
+import 'package:booking/models/preferences.dart';
 import 'package:booking/services/rest_service.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_indicators/progress_indicators.dart';
@@ -53,7 +54,7 @@ class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
       ),
       body: loading
           ? Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(backgroundColor: Preferences().mainColor,),
             )
           : hasData
               ? Scrollbar(

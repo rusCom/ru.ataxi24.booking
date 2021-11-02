@@ -1,4 +1,5 @@
 import 'package:booking/models/order_wishes.dart';
+import 'package:booking/models/preferences.dart';
 import 'package:booking/ui/orders/wishes/order_wishes_title.dart';
 import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,7 +23,7 @@ class OrderSlidingPanelWishesTile extends StatelessWidget {
         title: Text("Пожелания к заказу"),
         trailing: ClipOval(
           child: Container(
-            color: Colors.amberAccent,
+            color: Preferences().mainColor,
             height: 24,
             width: 24,
             child: Center(

@@ -1,3 +1,4 @@
+import 'package:booking/models/preferences.dart';
 import 'package:booking/ui/utils/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -50,7 +51,7 @@ class _OrderWishesSwitchState extends State<OrderWishesSwitch> {
   Widget _switch() {
     return Switch(
         value: orderWishesValue,
-        activeColor: Colors.amberAccent,
+        activeColor: Preferences().mainColor,
         onChanged: (value) => setState(() {
               orderWishesValue = value;
               if (widget.onChanged != null) widget.onChanged(value);
